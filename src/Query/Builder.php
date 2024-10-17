@@ -346,7 +346,7 @@ class Builder extends BaseBuilder
             if ($this->aggregate) {
                 $function = $this->aggregate['function'];
 
-                foreach ($this->aggregate['columns'] as $column) {
+                foreach ((array) $this->aggregate['columns'] as $column) {
                     // Add unwind if a subdocument array should be aggregated
                     // column: subarray.price => {$unwind: '$subarray'}
                     $splitColumns = explode('.*.', $column);
@@ -355,9 +355,9 @@ class Builder extends BaseBuilder
                         $column    = implode('.', $splitColumns);
                     }
 
-                    $aggregations = blank($this->aggregate['columns']) ? [] : $this->aggregate['columns'];
+                    $aggregations = blank($this->aggregate['columns']) ? [] : (array) $this->aggregate['columns'];
 
-                    if ($column === '*' && $function === 'count' && ! $this->groups) {
+                    if (in_array('*', $aggregations) && $function === 'count' && empty($group['_id'])) {
                         $options = $this->inheritConnectionOptions($this->options);
 
                         return ['countDocuments' => [$wheres, $options]];
@@ -506,11 +506,11 @@ class Builder extends BaseBuilder
         // here to either the passed columns, or the standard default of retrieving
         // all of the columns on the table using the "wildcard" column character.
         if ($this->columns === null) {
-            $this->columns = $columns;
+            $this->columns = (array) $columns;
         }
 
         // Drop all columns if * is present, MongoDB does not work this way.
-        if (in_array('*', $this->columns)) {
+        if (in_array('*', (array) $this->columns)) {
             $this->columns = [];
         }
 
