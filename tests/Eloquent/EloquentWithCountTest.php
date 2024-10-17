@@ -2,8 +2,11 @@
 
 namespace MongoDB\Laravel\Tests\Eloquent;
 
+use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Tests\TestCase;
+
+use function count;
 
 /** Copied from {@see \Illuminate\Tests\Integration\Database\EloquentWithCountTest\EloquentWithCountTest} */
 class EloquentWithCountTest extends TestCase
@@ -37,6 +40,7 @@ class EloquentWithCountTest extends TestCase
 
     public function testWithMultipleResults()
     {
+        $connection = DB::connection('mongodb');
         $ones = [
             EloquentWithCountModel1::create(['id' => 1]),
             EloquentWithCountModel1::create(['id' => 2]),
@@ -50,6 +54,7 @@ class EloquentWithCountTest extends TestCase
         $ones[2]->twos()->create(['value' => 1]);
         $ones[2]->twos()->create(['value' => 2]);
 
+        $connection->enableQueryLog();
         $results = EloquentWithCountModel1::withCount([
             'twos' => function ($query) {
                 $query->where('value', '>=', 2);
@@ -61,6 +66,9 @@ class EloquentWithCountTest extends TestCase
             ['id' => 2, 'twos_count' => 0],
             ['id' => 3, 'twos_count' => 1],
         ], $results->get()->toArray());
+
+        $connection->disableQueryLog();
+        $this->assertEquals(2, count($connection->getQueryLog()));
     }
 
     public function testGlobalScopes()
