@@ -364,7 +364,7 @@ class Builder extends EloquentBuilder
                         ->where($withAggregate['constraints'])
                         ->whereIn($withAggregate['relation']->getForeignKeyName(), $modelIds)
                         ->groupBy($withAggregate['relation']->getForeignKeyName())
-                        ->aggregate($withAggregate['function'], [$withAggregate['column'] ?? $withAggregate['relation']->getPrimaryKeyName()]);
+                        ->aggregate($withAggregate['function'], [$withAggregate['column']]);
 
                     foreach ($models as $model) {
                         $value = $withAggregate['function'] === 'count' ? 0 : null;
