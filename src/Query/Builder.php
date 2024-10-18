@@ -611,7 +611,7 @@ class Builder extends BaseBuilder
 
         $this->bindings['select'] = [];
 
-        $results = $this->get($columns);
+        $results = $this->get();
 
         // Once we have executed the query, we will reset the aggregate property so
         // that more select queries can be executed against the database without
@@ -648,6 +648,14 @@ class Builder extends BaseBuilder
         }
 
         return $this->aggregate($function, $columns);
+    }
+
+    public function count($columns = '*')
+    {
+        // Can be removed when available in Laravel: https://github.com/laravel/framework/pull/53209
+        $results = $this->aggregate(__FUNCTION__, Arr::wrap($columns));
+
+        return $results instanceof Collection ? $results : (int) $results;
     }
 
     /** @inheritdoc */

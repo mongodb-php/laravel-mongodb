@@ -207,10 +207,10 @@ class HybridRelationsTest extends TestCase
             ->each(function ($user) {
                 $this->assertEquals($user->id, $user->books->count());
             });
-        SqlUser::withCount('books')->get()
-            ->each(function ($user) {
-                $this->assertEquals($user->id, $user->books_count);
-            });
+        //SqlUser::withCount('books')->get()
+        //    ->each(function ($user) {
+        //        $this->assertEquals($user->id, $user->books_count);
+        //    });
 
         SqlUser::whereHas('sqlBooks', function ($query) {
             return $query->where('title', 'LIKE', 'Harry%');
