@@ -1,6 +1,18 @@
 Laravel MongoDB
 ===============
-
+This is fork supports disabling _id to id automatic conversion and disablling returning results as arrays in aggregate instead of bson object based on database configuration.
+ 'mongodb' => [
+                  'driver' => 'mongodb',
+                  'dsn' => env('DB_URI'),
+                  'database' => env('DB_NAME'),
+                  'options'  => [
+                   
+                    'ssl' => true,
+                    'AggregateCollectionArray'=>true, //add this to disable aggregate array
+                    'DisableAliasIdForResult'=>true, //add this to disable automatic _id conversion
+                    'tlsAllowInvalidCertificates' => true, 
+                ],
+          ],
 [![Latest Stable Version](http://img.shields.io/github/release/mongodb/laravel-mongodb.svg)](https://packagist.org/packages/mongodb/laravel-mongodb)
 [![Total Downloads](http://img.shields.io/packagist/dm/mongodb/laravel-mongodb.svg)](https://packagist.org/packages/mongodb/laravel-mongodb)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mongodb/laravel-mongodb/build-ci.yml)](https://github.com/mongodb/laravel-mongodb/actions/workflows/build-ci.yml)
