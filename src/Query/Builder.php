@@ -1667,6 +1667,9 @@ class Builder extends BaseBuilder
      */
     public function aliasIdForResult(array|object $values): array|object
     {
+        if(config('database.connections.mongodb.options.DisableAliasIdForResult')){
+            return $values;
+        }
         if (is_array($values)) {
             if (array_key_exists('_id', $values) && ! array_key_exists('id', $values)) {
                 $values['id'] = $values['_id'];
