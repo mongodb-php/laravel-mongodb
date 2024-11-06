@@ -30,7 +30,8 @@
         "illuminate/database": "^10.30|^11",
         "illuminate/events": "^10.0|^11",
         "illuminate/support": "^10.0|^11",
-        "mongodb/mongodb": "^1.18"
+        "mongodb/mongodb": "^1.18",
+        "symfony/http-foundation": "^6.4|^7"
     },
     "require-dev": {
         "mongodb/builder": "^0.2",
