@@ -1,26 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<static\\(MongoDB\\\\Laravel\\\\Auth\\\\User\\)\\>\\:\\:pull\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/User.php
-
-		-
-			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<static\\(MongoDB\\\\Laravel\\\\Auth\\\\User\\)\\>\\:\\:push\\(\\)\\.$#"
-			count: 1
-			path: src/Auth/User.php
-
-		-
-			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<static\\(MongoDB\\\\Laravel\\\\Eloquent\\\\Model\\)\\>\\:\\:pull\\(\\)\\.$#"
-			count: 1
-			path: src/Eloquent/Model.php
-
-		-
-			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<static\\(MongoDB\\\\Laravel\\\\Eloquent\\\\Model\\)\\>\\:\\:push\\(\\)\\.$#"
-			count: 1
-			path: src/Eloquent/Model.php
-
-		-
 			message: "#^Access to an undefined property Illuminate\\\\Container\\\\Container\\:\\:\\$config\\.$#"
 			count: 3
 			path: src/MongoDBBusServiceProvider.php
