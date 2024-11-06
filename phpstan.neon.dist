@@ -13,7 +13,7 @@ parameters:
 
     ignoreErrors:
         - '#Unsafe usage of new static#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_\<\>]+::[a-zA-Z]+\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_\<\>\(\)]+::[a-zA-Z]+\(\)#'
 
 services:
     errorFormatter.sarif:
