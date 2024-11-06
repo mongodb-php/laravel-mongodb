@@ -63,9 +63,6 @@ class SarifErrorFormatter implements ErrorFormatter
                                 'uri' => $this->relativePathHelper->getRelativePath($fileSpecificError->getFile()),
                                 'uriBaseId' => self::URI_BASE_ID,
                             ],
-                            'region' => [
-                                'startLine' => $fileSpecificError->getLine(),
-                            ],
                         ],
                     ],
                 ],
@@ -76,6 +73,10 @@ class SarifErrorFormatter implements ErrorFormatter
 
             if ($fileSpecificError->getTip() !== null) {
                 $result['properties']['tip'] = $fileSpecificError->getTip();
+            }
+
+            if ($fileSpecificError->getLine() !== null) {
+                $result['locations'][0]['physicalLocation']['region']['startLine'] = $fileSpecificError->getLine();
             }
 
             $results[] = $result;
