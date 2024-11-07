@@ -136,10 +136,8 @@ For a MongoDB database connection, you can specify the following details:
 
           'host' => ['node1.example.com:27017', 'node2.example.com:27017', 'node3.example.com:27017'],
 
-       .. note::
-
-          This option does not accept hosts that use the DNS seedlist
-          connection format.
+       | This option does not accept hosts that use the DNS seedlist
+         connection format.
 
    * - ``database``
      - Specifies the name of the MongoDB database to read and write to.
