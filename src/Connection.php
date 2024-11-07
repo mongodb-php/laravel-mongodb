@@ -217,6 +217,10 @@ class Connection extends BaseConnection
             $options['password'] = $config['password'];
         }
 
+        if (isset($config['name'])) {
+            $driverOptions += ['connectionName' => $config['name']];
+        }
+
         return new Client($dsn, $options, $driverOptions);
     }
 

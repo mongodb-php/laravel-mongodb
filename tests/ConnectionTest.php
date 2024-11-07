@@ -277,6 +277,34 @@ class ConnectionTest extends TestCase
         }
     }
 
+    public function testQueryLogWithMultipleClients()
+    {
+        $connection = DB::connection('mongodb');
+        $this->assertInstanceOf(Connection::class, $connection);
+
+        // Create a second connection with the same config as the first
+        // Make sure to change the name as it's used as a connection identifier
+        $config = $connection->getConfig();
+        $config['name'] = 'mongodb2';
+        $secondConnection = new Connection($config);
+
+        $connection->enableQueryLog();
+        $secondConnection->enableQueryLog();
+
+        $this->assertCount(0, $connection->getQueryLog());
+        $this->assertCount(0, $secondConnection->getQueryLog());
+
+        $connection->table('items')->get();
+
+        $this->assertCount(1, $connection->getQueryLog());
+        $this->assertCount(0, $secondConnection->getQueryLog());
+
+        $secondConnection->table('items')->get();
+
+        $this->assertCount(1, $connection->getQueryLog());
+        $this->assertCount(1, $secondConnection->getQueryLog());
+    }
+
     public function testDisableQueryLog()
     {
         // Disabled by default
