@@ -15,11 +15,11 @@ Fundamentals
    :titlesonly:
    :maxdepth: 1
 
-   /fundamentals/connection
-   /fundamentals/database-collection
-   /fundamentals/read-operations
-   /fundamentals/write-operations
-   /fundamentals/aggregation-builder
+   Connections </fundamentals/connection>
+   Databases & Collections </fundamentals/database-collection>
+   Read Operations </fundamentals/read-operations>
+   Write Operations </fundamentals/write-operations>
+   Aggregation Builder </fundamentals/aggregation-builder>
 
 Learn more about the following concepts related to {+odm-long+}:
 

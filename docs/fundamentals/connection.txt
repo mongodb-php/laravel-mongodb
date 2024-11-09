@@ -13,9 +13,9 @@ Connections
 
 .. toctree::
 
-   /fundamentals/connection/connect-to-mongodb
-   /fundamentals/connection/connection-options
-   /fundamentals/connection/tls
+   Connection Guide </fundamentals/connection/connect-to-mongodb>
+   Connection Options </fundamentals/connection/connection-options>
+   Configure TLS </fundamentals/connection/tls>
 
 .. contents:: On this page
    :local:

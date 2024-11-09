@@ -17,6 +17,22 @@ Usage Examples
    :depth: 2
    :class: singlecol
 
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   Find a Document </usage-examples/findOne>
+   Find Multiple Documents </usage-examples/find>
+   Insert a Document </usage-examples/insertOne>
+   Insert Multiple Documents </usage-examples/insertMany>
+   Update a Document </usage-examples/updateOne>
+   Update Multiple Documents </usage-examples/updateMany>
+   Delete a Document </usage-examples/deleteOne>
+   Delete Multiple Documents </usage-examples/deleteMany>
+   Count Documents </usage-examples/count>
+   Distinct Field Values </usage-examples/distinct>
+   Run a Command </usage-examples/runCommand>
+
 Overview
 --------
 
@@ -89,19 +105,3 @@ See code examples of the following operations in this section:
 - :ref:`laravel-count-usage`
 - :ref:`laravel-distinct-usage`
 - :ref:`laravel-run-command-usage`
-
-.. toctree::
-   :titlesonly:
-   :maxdepth: 1
-
-   /usage-examples/findOne
-   /usage-examples/find
-   /usage-examples/insertOne
-   /usage-examples/insertMany
-   /usage-examples/updateOne
-   /usage-examples/updateMany
-   /usage-examples/deleteOne
-   /usage-examples/deleteMany
-   /usage-examples/count
-   /usage-examples/distinct
-   /usage-examples/runCommand

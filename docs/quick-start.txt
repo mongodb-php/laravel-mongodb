@@ -17,6 +17,16 @@ Quick Start
    :depth: 1
    :class: singlecol
 
+.. toctree::
+
+   Download & Install </quick-start/download-and-install/>
+   Create a Deployment </quick-start/create-a-deployment/>
+   Create a Connection String </quick-start/create-a-connection-string/>
+   Configure Your Connection </quick-start/configure-mongodb/>
+   View Data </quick-start/view-data/>
+   Write Data </quick-start/write-data/>
+   Next Steps </quick-start/next-steps/>
+
 Overview
 --------
 
@@ -55,14 +65,3 @@ that connects to a MongoDB deployment.
    You can download the complete web application project by cloning the
    `laravel-quickstart <https://github.com/mongodb-university/laravel-quickstart/>`__
    GitHub repository.
-
-.. toctree::
-
-   /quick-start/download-and-install/
-   /quick-start/create-a-deployment/
-   /quick-start/create-a-connection-string/
-   /quick-start/configure-mongodb/
-   /quick-start/view-data/
-   /quick-start/write-data/
-   /quick-start/next-steps/
-
