@@ -13,21 +13,21 @@
    :titlesonly:
    :maxdepth: 1
 
-   /quick-start
-   /usage-examples
+   Quick Start </quick-start>
+   Usage Examples </usage-examples>
    Release Notes <https://github.com/mongodb/laravel-mongodb/releases/>
-   /fundamentals
-   /eloquent-models
-   /query-builder
-   /user-authentication
-   /cache
-   /queues
-   /transactions
-   /filesystems
-   /issues-and-help
-   /feature-compatibility
-   /compatibility
-   /upgrade
+   Fundamentals </fundamentals>
+   Eloquent Models </eloquent-models>
+   Query Builder </query-builder>
+   User Authentication </user-authentication>
+   Cache & Locks </cache>
+   Queues </queues>
+   Transactions </transactions>
+   GridFS Filesystems </filesystems>
+   Issues & Help </issues-and-help>
+   Feature Compatibility </feature-compatibility>
+   Compatibility </compatibility>
+   Upgrade </upgrade>
 
 Introduction
 ------------
