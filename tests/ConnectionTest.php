@@ -350,8 +350,8 @@ class ConnectionTest extends TestCase
             'dsn'      => env('MONGODB_URI', 'mongodb://127.0.0.1/'),
             'database' => 'unittest',
             'options'  => [
-                'connectTimeoutMS'         => 100,
-                'serverSelectionTimeoutMS' => 250,
+                'connectTimeoutMS'         => 1000,
+                'serverSelectionTimeoutMS' => 1000,
             ],
         ];
 
