@@ -65,6 +65,9 @@ jobs:
                     until docker exec --tty mongodb mongosh 127.0.0.1:27017 --eval "db.runCommand({ ping: 1 })"; do
                       sleep 1
                     done
+                    until docker exec --tty mongodb mongosh 127.0.0.1:27017 --eval "db.createCollection('connection_test') && db.getCollection('connection_test').createSearchIndex({mappings:{dynamic: true}})"; do
+                      sleep 1
+                    done
 
             -   name: "Show MongoDB server status"
                 run: |

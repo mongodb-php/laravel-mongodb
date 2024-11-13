@@ -14,10 +14,12 @@ use MongoDB\Laravel\Tests\Models\Book;
 
 use function array_map;
 use function assert;
+
 use function mt_getrandmax;
 use function rand;
 use function range;
 use function srand;
+use function sort;
 use function usleep;
 use function usort;
 
@@ -202,11 +204,14 @@ class AtlasSearchTest extends TestCase
 
         self::assertInstanceOf(LaravelCollection::class, $results);
         self::assertCount(3, $results);
+        // Sort results, because order is not guaranteed
+        $results = $results->all();
+        sort($results);
         self::assertSame([
             'Database System Concepts',
             'Modern Operating Systems',
             'Operating System Concepts',
-        ], $results->sort()->values()->all());
+        ], $results);
     }
 
     public function testDatabaseBuilderVectorSearch()

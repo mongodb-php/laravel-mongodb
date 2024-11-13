@@ -24,3 +24,8 @@ parameters:
 			message: "#^Method Illuminate\\\\Database\\\\Schema\\\\Blueprint\\:\\:create\\(\\) invoked with 1 parameter, 0 required\\.$#"
 			count: 1
 			path: src/Schema/Builder.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Support\\\\HigherOrderCollectionProxy\\<\\(int\\|string\\), Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:pushSoftDeleteMetadata\\(\\)\\.$#"
+			count: 1
+			path: src/Scout/ScoutEngine.php

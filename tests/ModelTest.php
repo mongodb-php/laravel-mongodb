@@ -406,8 +406,9 @@ class ModelTest extends TestCase
         $this->assertEquals(2, Soft::count());
     }
 
+    /** @param class-string<Model> $model */
     #[DataProvider('provideId')]
-    public function testPrimaryKey(string $model, $id, $expected, bool $expectedFound): void
+    public function testPrimaryKey(string $model, mixed $id, mixed $expected, bool $expectedFound): void
     {
         $model::truncate();
         $expectedType = get_debug_type($expected);

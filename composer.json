@@ -35,6 +35,7 @@
     },
     "require-dev": {
         "mongodb/builder": "^0.2",
+        "laravel/scout": "^11",
         "league/flysystem-gridfs": "^3.28",
         "league/flysystem-read-only": "^3.0",
         "phpunit/phpunit": "^10.3",
