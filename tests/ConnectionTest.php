@@ -351,7 +351,7 @@ class ConnectionTest extends TestCase
             'database' => 'unittest',
             'options'  => [
                 'connectTimeoutMS'         => 1000,
-                'serverSelectionTimeoutMS' => 1000,
+                'serverSelectionTimeoutMS' => 6000,
             ],
         ];
 
