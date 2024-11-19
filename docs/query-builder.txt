@@ -66,8 +66,8 @@ The following example shows the syntax of a query builder call:
 
 This guide provides examples of the following types of query builder operations:
 
-- :ref:`laravel-options-query-builder`
 - :ref:`laravel-retrieve-query-builder`
+- :ref:`laravel-options-query-builder`
 - :ref:`laravel-modify-results-query-builder`
 - :ref:`laravel-mongodb-read-query-builder`
 - :ref:`laravel-mongodb-write-query-builder`
@@ -85,33 +85,6 @@ of the Quick Start.
 
 To perform read and write operations by using the query builder, import the
 ``Illuminate\Support\Facades\DB`` facade and compose your query.
-
-.. _laravel-options-query-builder:
-
-Set Query-Level Options
------------------------
-
-You can modify the way that the {+odm-short+} performs queries by
-setting options on the query builder. You can pass an array of options
-to the ``options()`` query builder method to specify options for the
-query.
-
-The following code demonstrates how to attach a comment to
-a query:
-
-.. literalinclude:: /includes/query-builder/QueryBuilderTest.php
-   :language: php
-   :dedent:
-   :start-after: begin options
-   :end-before: end options
-
-The query builder accepts the same options that you can set for
-the :phpmethod:`find() <phpmethod.MongoDB\\Collection::find()>` method in the
-{+php-library+}. Some of the options to modify query results, such as
-``skip``, ``sort``, and ``limit``, are settable directly as query
-builder methods and are described in the
-:ref:`laravel-modify-results-query-builder` section of this guide. We
-recommend that you use these methods instead of passing them as options.
 
 .. _laravel-retrieve-query-builder:
 
@@ -637,6 +610,33 @@ value of ``imdb.rating`` of those matches by using the
    :dedent:
    :start-after: begin aggregation with filter
    :end-before: end aggregation with filter
+
+.. _laravel-options-query-builder:
+
+Set Query-Level Options
+-----------------------
+
+You can modify the way that the {+odm-short+} performs operations by
+setting options on the query builder. You can pass an array of options
+to the ``options()`` query builder method to specify options for the
+query.
+
+The following code demonstrates how to attach a comment to
+a query:
+
+.. literalinclude:: /includes/query-builder/QueryBuilderTest.php
+   :language: php
+   :dedent:
+   :start-after: begin options
+   :end-before: end options
+
+The query builder accepts the same options that you can set for
+the :phpmethod:`find() <phpmethod.MongoDB\\Collection::find()>` method in the
+{+php-library+}. Some of the options to modify query results, such as
+``skip``, ``sort``, and ``limit``, are settable directly as query
+builder methods and are described in the
+:ref:`laravel-modify-results-query-builder` section of this guide. We
+recommend that you use these methods instead of passing them as options.
 
 .. _laravel-modify-results-query-builder:
 
