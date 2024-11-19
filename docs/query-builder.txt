@@ -106,7 +106,7 @@ a query:
    :end-before: end options
 
 The query builder accepts the same options that you can set for
-the :phpmethod:`MongoDB\Collection::find()` method in the
+the :phpmethod:`find() <phpmethod.MongoDB\\Collection::find()>` method in the
 {+php-library+}. Some of the options to modify query results, such as
 ``skip``, ``sort``, and ``limit``, are settable directly as query
 builder methods and are described in the
