@@ -46,6 +46,19 @@ class QueryBuilderTest extends TestCase
         parent::tearDown();
     }
 
+    public function testOptions(): void
+    {
+        // begin options
+        $result = DB::connection('mongodb')
+            ->table('movies')
+            ->where('year', 2000)
+            ->options(['comment' => 'hello'])
+            ->get();
+        // end options
+
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
+    }
+
     public function testWhere(): void
     {
         // begin query where
