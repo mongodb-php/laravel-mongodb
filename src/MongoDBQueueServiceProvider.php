@@ -54,15 +54,15 @@ class MongoDBQueueServiceProvider extends QueueServiceProvider
      */
     protected function mongoFailedJobProvider(array $config): MongoFailedJobProvider
     {
-        if (! isset($config['collection']) && isset($config['table'])) {
-            trigger_error('Since mongodb/laravel-mongodb 4.4: Using "table" option for the queue is deprecated. Use "collection" instead.', E_USER_DEPRECATED);
-            $config['collection'] = $config['table'];
+        if (! isset($config['table']) && isset($config['collection'])) {
+            trigger_error('Since mongodb/laravel-mongodb 4.4: Using "collection" option for the queue is deprecated. Use "table" instead.', E_USER_DEPRECATED);
+            $config['table'] = $config['collection'];
         }
 
         return new MongoFailedJobProvider(
             $this->app['db'],
             $config['database'] ?? null,
-            $config['collection'] ?? 'failed_jobs',
+            $config['table'] ?? 'failed_jobs',
         );
     }
 }
