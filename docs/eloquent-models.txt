@@ -12,10 +12,10 @@ Eloquent Models
    :keywords: php framework, odm
 
 .. toctree::
-
-  Eloquent Model Class </eloquent-models/model-class/>
-  Relationships </eloquent-models/relationships>
-  Schema Builder </eloquent-models/schema-builder>
+  
+   Eloquent Model Class </eloquent-models/model-class/>
+   Relationships </eloquent-models/relationships>
+   Schema Builder </eloquent-models/schema-builder>
 
 Eloquent models are part of the Laravel Eloquent object-relational
 mapping (ORM) framework, which lets you to work with data in a relational
