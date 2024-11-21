@@ -19,6 +19,7 @@ jobs:
                     - "5.0"
                     - "6.0"
                     - "7.0"
+                    - "Atlas"
                 php:
                     - "8.1"
                     - "8.2"
@@ -45,14 +46,23 @@ jobs:
             -   uses: "actions/checkout@v4"
 
             -   name: "Create MongoDB Replica Set"
+                if: ${{ matrix.mongodb != 'Atlas' }}
                 run: |
                     docker run --name mongodb -p 27017:27017 -e MONGO_INITDB_DATABASE=unittest --detach mongo:${{ matrix.mongodb }} mongod --replSet rs --setParameter transactionLifetimeLimitSeconds=5
 
                     if [ "${{ matrix.mongodb }}" = "4.4" ]; then MONGOSH_BIN="mongo"; else MONGOSH_BIN="mongosh"; fi
                     until docker exec --tty mongodb $MONGOSH_BIN 127.0.0.1:27017 --eval "db.runCommand({ ping: 1 })"; do
-                    sleep 1
+                      sleep 1
                     done
                     sudo docker exec --tty mongodb $MONGOSH_BIN 127.0.0.1:27017 --eval "rs.initiate({\"_id\":\"rs\",\"members\":[{\"_id\":0,\"host\":\"127.0.0.1:27017\" }]})"
+
+            -   name: "Create MongoDB Atlas Local"
+                if: ${{ matrix.mongodb == 'Atlas' }}
+                run: |
+                    docker run --name mongodb -p 27017:27017 -e MONGO_INITDB_DATABASE=unittest --detach mongodb/mongodb-atlas-local:latest
+                    until docker exec --tty mongodb mongosh 127.0.0.1:27017 --eval "db.runCommand({ ping: 1 })"; do
+                      sleep 1
+                    done
 
             -   name: "Show MongoDB server status"
                 run: |
@@ -93,4 +103,4 @@ jobs:
             -   name: "Run tests"
                 run: "./vendor/bin/phpunit --coverage-clover coverage.xml"
                 env:
-                    MONGODB_URI: 'mongodb://127.0.0.1/?replicaSet=rs'
+                    MONGODB_URI: 'mongodb://127.0.0.1/'
