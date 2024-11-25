@@ -11,6 +11,16 @@ Queues
 .. meta::
    :keywords: php framework, odm, code example, jobs
 
+Overview
+--------
+
+In this guide, you can learn how to use MongoDB as your database for
+Laravel Queue. Laravel Queue allows you to create queued jobs that can
+processed in the background.
+
+Configuration
+-------------
+
 To use MongoDB as your database for Laravel Queue, change
 the driver in your application's ``config/queue.php`` file:
 
@@ -22,7 +32,7 @@ the driver in your application's ``config/queue.php`` file:
            // You can also specify your jobs-specific database
            // in the config/database.php file
            'connection' => 'mongodb',
-           'collection' => 'jobs',
+           'table' => 'jobs',
            'queue' => 'default',
            // Optional setting
            // 'retry_after' => 60,
@@ -48,7 +58,7 @@ the behavior of the queue:
        ``mongodb`` connection. The driver uses the default connection if
        a connection is not specified.
 
-   * - ``collection``
+   * - ``table``
      - **Required** Name of the MongoDB collection to
        store jobs to process.
 
@@ -60,7 +70,7 @@ the behavior of the queue:
        before retrying a job that is being processed. The value is
        ``60`` by default.
 
-To use MongoDB to handle failed jobs, create a ``failed`` entry in your
+To use MongoDB to handle *failed jobs*, create a ``failed`` entry in your
 application's ``config/queue.php`` file and specify the database and
 collection:
 
@@ -69,7 +79,7 @@ collection:
    'failed' => [
        'driver' => 'mongodb',
        'database' => 'mongodb',
-       'collection' => 'failed_jobs',
+       'table' => 'failed_jobs',
    ],
 
 The following table describes properties that you can specify to configure
@@ -91,16 +101,13 @@ how to handle failed jobs:
        a ``mongodb`` connection. The driver uses the default connection
        if a connection is not specified.
 
-   * - ``collection``
+   * - ``table``
      - Name of the MongoDB collection to store failed
        jobs. The value is ``failed_jobs`` by default.
 
-Then, add the service provider in your application's
-``config/app.php`` file:
-
-.. code-block:: php
-
-   MongoDB\Laravel\MongoDBQueueServiceProvider::class,
+The {+odm-short+} automatically provides the
+``MongoDB\Laravel\MongoDBQueueServiceProvider::class`` class as the
+service provider to handle failed jobs.
 
 Job Batching
 ------------
@@ -124,7 +131,7 @@ application's ``config/queue.php`` file:
     'batching' => [
        'driver' => 'mongodb',
        'database' => 'mongodb',
-       'collection' => 'job_batches',
+       'table' => 'job_batches',
    ],
 
 The following table describes properties that you can specify to configure
@@ -146,13 +153,13 @@ job batching:
        ``mongodb`` connection. The driver uses the default connection if
        a connection is not specified.
 
-   * - ``collection``
+   * - ``table``
      - Name of the MongoDB collection to store job
        batches. The value is ``job_batches`` by default.
 
 Then, add the service provider in your application's ``config/app.php``
 file:
 
-.. code-block:: php
-
-   MongoDB\Laravel\MongoDBBusServiceProvider::class,
+The {+odm-short+} automatically provides the
+``MongoDB\Laravel\MongoDBBusServiceProvider::class`` class as the
+service provider for job batching.
