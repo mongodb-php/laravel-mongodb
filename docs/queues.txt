@@ -15,7 +15,7 @@ Overview
 --------
 
 In this guide, you can learn how to use MongoDB as your database for
-Laravel Queue. Laravel Queue allows you to create queued jobs that can
+Laravel Queue. Laravel Queue allows you to create queued jobs that are
 processed in the background.
 
 Configuration
