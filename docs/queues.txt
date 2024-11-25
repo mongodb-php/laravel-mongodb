@@ -105,9 +105,11 @@ how to handle failed jobs:
      - Name of the MongoDB collection to store failed
        jobs. The value is ``failed_jobs`` by default.
 
-The {+odm-short+} automatically provides the
-``MongoDB\Laravel\MongoDBQueueServiceProvider::class`` class as the
-service provider to handle failed jobs.
+To register failed jobs, you can use the default failed
+job provider from Laravel. To learn more, see
+`Dealing With Failed Jobs
+<https://laravel.com/docs/{+laravel-docs-version+}/queues#dealing-with-failed-jobs>`__ in
+the Laravel documentation on Queues.
 
 Job Batching
 ------------
