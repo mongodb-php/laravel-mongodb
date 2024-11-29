@@ -69,7 +69,7 @@ collection:
    'failed' => [
        'driver' => 'mongodb',
        'database' => 'mongodb',
-       'collection' => 'failed_jobs',
+       'table' => 'failed_jobs',
    ],
 
 The following table describes properties that you can specify to configure
@@ -86,21 +86,14 @@ how to handle failed jobs:
      - **Required** Queue driver to use. The value of
        this property must be ``mongodb``.
 
-   * - ``connection``
+   * - ``database``
      - Database connection used to store jobs. It must be
        a ``mongodb`` connection. The driver uses the default connection
        if a connection is not specified.
 
-   * - ``collection``
+   * - ``table``
      - Name of the MongoDB collection to store failed
        jobs. The value is ``failed_jobs`` by default.
-
-Then, add the service provider in your application's
-``config/app.php`` file:
-
-.. code-block:: php
-
-   MongoDB\Laravel\MongoDBQueueServiceProvider::class,
 
 Job Batching
 ------------
@@ -141,12 +134,12 @@ job batching:
      - **Required** Queue driver to use. The value of
        this property must be ``mongodb``.
 
-   * - ``connection``
+   * - ``database``
      - Database connection used to store jobs. It must be a
        ``mongodb`` connection. The driver uses the default connection if
        a connection is not specified.
 
-   * - ``collection``
+   * - ``table``
      - Name of the MongoDB collection to store job
        batches. The value is ``job_batches`` by default.
 
