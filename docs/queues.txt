@@ -96,7 +96,7 @@ how to handle failed jobs:
      - **Required** Queue driver to use. The value of
        this property must be ``mongodb``.
 
-   * - ``connection``
+   * - ``database``
      - Database connection used to store jobs. It must be
        a ``mongodb`` connection. The driver uses the default connection
        if a connection is not specified.
@@ -150,7 +150,7 @@ job batching:
      - **Required** Queue driver to use. The value of
        this property must be ``mongodb``.
 
-   * - ``connection``
+   * - ``database``
      - Database connection used to store jobs. It must be a
        ``mongodb`` connection. The driver uses the default connection if
        a connection is not specified.
