@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Collection;
 use MongoDB\Laravel\Schema\Blueprint;
 
+use function assert;
 use function collect;
 use function count;
 
@@ -523,14 +525,68 @@ class SchemaTest extends TestCase
         $this->assertSame([], $indexes);
     }
 
+    /** @todo requires SearchIndex support */
+    public function testSearchIndex(): void
+    {
+        Schema::create('newcollection', function (Blueprint $collection) {
+            $collection->searchIndex([
+                'mappings' => [
+                    'dynamic' => false,
+                    'fields' => [
+                        'foo' => ['type' => 'string', 'analyzer' => 'lucene.whitespace'],
+                    ],
+                ],
+            ]);
+        });
+
+        $index = $this->getSearchIndex('newcollection', 'default');
+        self::assertNotFalse($index);
+
+        self::assertSame('default', $index['name']);
+        self::assertSame('search', $index['type']);
+        self::assertFalse($index['latestDefinition']['mappings']['dynamic']);
+        self::assertSame('lucene.whitespace', $index['latestDefinition']['mappings']['fields']['foo']['analyzer']);
+    }
+
+    public function testVectorSearchIndex()
+    {
+        Schema::create('newcollection', function (Blueprint $collection) {
+            $collection->vectorSearchIndex([
+                'fields' => [
+                    ['type' => 'vector', 'path' => 'foo', 'numDimensions' => 128, 'similarity' => 'euclidean', 'quantization' => 'none'],
+                ],
+            ], 'vector');
+        });
+
+        $index = $this->getSearchIndex('newcollection', 'vector');
+        self::assertNotFalse($index);
+
+        self::assertSame('vector', $index['name']);
+        self::assertSame('vectorSearch', $index['type']);
+        self::assertSame('vector', $index['latestDefinition']['fields'][0]['type']);
+    }
+
     protected function getIndex(string $collection, string $name)
     {
         $collection = DB::getCollection($collection);
+        assert($collection instanceof Collection);
 
         foreach ($collection->listIndexes() as $index) {
             if (isset($index['key'][$name])) {
                 return $index;
             }
+        }
+
+        return false;
+    }
+
+    protected function getSearchIndex(string $collection, string $name)
+    {
+        $collection = DB::getCollection($collection);
+        assert($collection instanceof Collection);
+
+        foreach ($collection->listSearchIndexes(['name' => $name]) as $index) {
+            return $index;
         }
 
         return false;

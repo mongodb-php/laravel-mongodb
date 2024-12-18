@@ -16,6 +16,14 @@ use function is_int;
 use function is_string;
 use function key;
 
+/**
+ * @phpstan-type SearchIndexField array{type: 'boolean'|'date'|'dateFacet'|'objectId'|'stringFacet'|'uuid'} | array{type: 'autocomplete', analyzer?: string, maxGrams?: int, minGrams?: int, tokenization?: 'edgeGram'|'rightEdgeGram'|'nGram', foldDiacritics?: bool} | array{type: 'document'|'embeddedDocuments', dynamic?:bool, fields: array<string, array>} | array{type: 'geo', indexShapes?: bool} | array{type: 'number'|'numberFacet', representation?: 'int64'|'double', indexIntegers?: bool, indexDoubles?: bool} | array{type: 'token', normalizer?: 'lowercase'|'none'} | array{type: 'string', analyzer?: string, searchAnalyzer?: string, indexOptions?: 'docs'|'freqs'|'positions'|'offsets', store?: bool, ignoreAbove?: int, multi?: array<string, array>, norms?: 'include'|'omit'}
+ * @phpstan-type SearchIndexAnalyser array{name: string, charFilters?: list<array<string, mixed>>, tokenizer: array{type: string}, tokenFilters?: list<array<string, mixed>>}
+ * @phpstan-type SearchIndexStoredSource bool | array{includes: array<string>} | array{excludes: array<string>}
+ * @phpstan-type SearchIndexDefinition array{analyser?: string, analyzers?: SearchIndexAnalyser[], searchAnalyzer?: string, mappings: array{dynamic: true} | array{dynamic?: bool, fields: array<string, SearchIndexField>}, storedSource?: SearchIndexStoredSource}
+ * @phpstan-type VectorSearchIndexField array{type: 'vector', path: string, numDimensions: int, similarity: 'euclidean'|'cosine'|'dotProduct', quantization?: 'none'|'scalar'|'binary'}
+ * @phpstan-type VectorSearchIndexDefinition array{fields: array<string, VectorSearchIndexField>}
+ */
 class Blueprint extends SchemaBlueprint
 {
     /**
@@ -299,6 +307,34 @@ class Blueprint extends SchemaBlueprint
         $options['unique'] = true;
 
         $this->index($columns, null, null, $options);
+
+        return $this;
+    }
+
+    /**
+     * Create an Atlas Search Index.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-search/
+     *
+     * @phpstan-param SearchIndexDefinition $definition
+     */
+    public function searchIndex(array $definition, string $name = 'default'): static
+    {
+        $this->collection->createSearchIndex($definition, ['name' => $name, 'type' => 'search']);
+
+        return $this;
+    }
+
+    /**
+     * Create an Atlas Vector Search Index.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/
+     *
+     * @phpstan-param VectorSearchIndexDefinition $definition
+     */
+    public function vectorSearchIndex(array $definition, string $name = 'default'): static
+    {
+        $this->collection->createSearchIndex($definition, ['name' => $name, 'type' => 'vectorSearch']);
 
         return $this;
     }
