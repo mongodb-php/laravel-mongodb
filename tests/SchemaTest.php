@@ -7,6 +7,7 @@ namespace MongoDB\Laravel\Tests;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use MongoDB\BSON\Binary;
+use MongoDB\BSON\Document;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
 use MongoDB\Laravel\Schema\Blueprint;
@@ -541,7 +542,7 @@ class SchemaTest extends TestCase
         });
 
         $index = $this->getSearchIndex('newcollection', 'default');
-        self::assertNotFalse($index);
+        self::assertNotNull($index);
 
         self::assertSame('default', $index['name']);
         self::assertSame('search', $index['type']);
@@ -562,7 +563,7 @@ class SchemaTest extends TestCase
         });
 
         $index = $this->getSearchIndex('newcollection', 'vector');
-        self::assertNotFalse($index);
+        self::assertNotNull($index);
 
         self::assertSame('vector', $index['name']);
         self::assertSame('vectorSearch', $index['type']);
@@ -583,15 +584,15 @@ class SchemaTest extends TestCase
         return false;
     }
 
-    protected function getSearchIndex(string $collection, string $name)
+    protected function getSearchIndex(string $collection, string $name): ?Document
     {
         $collection = DB::getCollection($collection);
         assert($collection instanceof Collection);
 
-        foreach ($collection->listSearchIndexes(['name' => $name]) as $index) {
+        foreach ($collection->listSearchIndexes(['name' => $name, 'typeMap' => ['root' => 'bson']]) as $index) {
             return $index;
         }
 
-        return false;
+        return null;
     }
 }
