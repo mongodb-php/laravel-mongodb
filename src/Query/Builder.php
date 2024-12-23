@@ -24,12 +24,14 @@ use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Builder\Stage\FluentFactoryTrait;
+use MongoDB\Builder\Type\SearchOperatorInterface;
 use MongoDB\Driver\Cursor;
 use Override;
 use RuntimeException;
 use stdClass;
 
 use function array_fill_keys;
+use function array_filter;
 use function array_is_list;
 use function array_key_exists;
 use function array_map;
@@ -1488,6 +1490,42 @@ class Builder extends BaseBuilder
         $this->options = $options;
 
         return $this;
+    }
+
+    /**
+     * Performs a full-text search of the field or fields in an Atlas collection.
+     * NOTE: $search is only available for MongoDB Atlas clusters, and is not available for self-managed deployments.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/search/
+     *
+     * @param SearchOperatorInterface|array $operator           Operator to search with.  You can provide a specific operator or use the compound operator to run a compound query with multiple operators.
+     * @param ?string                       $index              Name of the Atlas Search index to use. If omitted, defaults to "default".
+     * @param ?array                        $highlight          Specifies the highlighting options for displaying search terms in their original context.
+     * @param ?bool                         $concurrent         Parallelize search across segments on dedicated search nodes.
+     * @param ?string                       $count              Document that specifies the count options for retrieving a count of the results.
+     * @param ?string                       $searchAfter        Reference point for retrieving results. searchAfter returns documents starting immediately following the specified reference point.
+     * @param ?string                       $searchBefore       Reference point for retrieving results. searchBefore returns documents starting immediately before the specified reference point.
+     * @param ?bool                         $scoreDetails       Flag that specifies whether to retrieve a detailed breakdown of the score for the documents in the results. If omitted, defaults to false.
+     * @param ?array                        $sort               Document that specifies the fields to sort the Atlas Search results by in ascending or descending order.
+     * @param ?bool                         $returnStoredSource Flag that specifies whether to perform a full document lookup on the backend database or return only stored source fields directly from Atlas Search.
+     * @param ?array                        $tracking           Document that specifies the tracking option to retrieve analytics information on the search terms.
+     */
+    public function search(
+        SearchOperatorInterface|array $operator,
+        ?string $index = null,
+        ?array $highlight = null,
+        ?bool $concurrent = null,
+        ?string $count = null,
+        ?string $searchAfter = null,
+        ?string $searchBefore = null,
+        ?bool $scoreDetails = null,
+        ?array $sort = null,
+        ?bool $returnStoredSource = null,
+        ?array $tracking = null,
+    ): Collection|LazyCollection {
+        return $this->aggregate()
+            ->search(...array_filter(func_get_args(), fn ($arg) => $arg !== null))
+            ->get();
     }
 
     /**
