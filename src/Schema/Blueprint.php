@@ -87,7 +87,7 @@ use function key;
  *     quantization?: 'none'|'scalar'|'binary',
  * } | array{
  *     type: 'filter',
- *      path: string,
+ *     path: string,
  * }
  * @phpstan-type TypeVectorSearchIndexDefinition array{
  *     fields: array<string, TypeVectorSearchIndexField>,

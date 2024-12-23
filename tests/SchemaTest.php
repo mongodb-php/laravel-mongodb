@@ -525,9 +525,10 @@ class SchemaTest extends TestCase
         $this->assertSame([], $indexes);
     }
 
-    /** @todo requires SearchIndex support */
     public function testSearchIndex(): void
     {
+        $this->skipIfSearchIndexManagementIsNotSupported();
+
         Schema::create('newcollection', function (Blueprint $collection) {
             $collection->searchIndex([
                 'mappings' => [
@@ -550,6 +551,8 @@ class SchemaTest extends TestCase
 
     public function testVectorSearchIndex()
     {
+        $this->skipIfSearchIndexManagementIsNotSupported();
+
         Schema::create('newcollection', function (Blueprint $collection) {
             $collection->vectorSearchIndex([
                 'fields' => [
