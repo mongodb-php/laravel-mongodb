@@ -17,6 +17,7 @@ use function is_string;
 use function key;
 
 /**
+ * @link https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/#std-label-fts-field-mappings
  * @phpstan-type TypeSearchIndexField array{
  *     type: 'boolean'|'date'|'dateFacet'|'objectId'|'stringFacet'|'uuid',
  * } | array{
@@ -51,6 +52,7 @@ use function key;
  *     multi?: array<string, array<mixed>>,
  *     norms?: 'include'|'omit',
  * }
+ * @link https://www.mongodb.com/docs/atlas/atlas-search/analyzers/character-filters/
  * @phpstan-type TypeSearchIndexCharFilter array{
  *      type: 'icuNormalize'|'persian',
  *  } | array{
@@ -60,18 +62,22 @@ use function key;
  *     type: 'mapping',
  *     mappings?: array<string, string>,
  * }
+ * @link https://www.mongodb.com/docs/atlas/atlas-search/analyzers/token-filters/
  * @phpstan-type TypeSearchIndexTokenFilter array{type: string, ...}
+ * @link https://www.mongodb.com/docs/atlas/atlas-search/analyzers/custom/
  * @phpstan-type TypeSearchIndexAnalyzer array{
  *     name: string,
  *     charFilters?: TypeSearchIndexCharFilter,
  *     tokenizer: array{type: string},
  *     tokenFilters?: TypeSearchIndexTokenFilter,
  * }
+ * @link https://www.mongodb.com/docs/atlas/atlas-search/stored-source-definition/#std-label-fts-stored-source-definition
  * @phpstan-type TypeSearchIndexStoredSource bool | array{
  *     includes: array<string>,
  * } | array{
  *     excludes: array<string>,
  * }
+ * @link https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#std-label-search-index-definition-create
  * @phpstan-type TypeSearchIndexDefinition array{
  *     analyser?: string,
  *     analyzers?: TypeSearchIndexAnalyzer[],
@@ -79,6 +85,7 @@ use function key;
  *     mappings: array{dynamic: true} | array{dynamic?: bool, fields: array<string, TypeSearchIndexField>},
  *     storedSource?: TypeSearchIndexStoredSource,
  * }
+ * @link https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-type/#atlas-vector-search-index-fields
  * @phpstan-type TypeVectorSearchIndexField array{
  *     type: 'vector',
  *     path: string,
@@ -89,6 +96,7 @@ use function key;
  *     type: 'filter',
  *     path: string,
  * }
+ * @link https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-type/#atlas-vector-search-index-fields
  * @phpstan-type TypeVectorSearchIndexDefinition array{
  *     fields: array<string, TypeVectorSearchIndexField>,
  * }
@@ -383,7 +391,7 @@ class Blueprint extends SchemaBlueprint
     /**
      * Create an Atlas Search Index.
      *
-     * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/
+     * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#std-label-search-index-definition-create
      *
      * @phpstan-param TypeSearchIndexDefinition $definition
      */
@@ -397,7 +405,7 @@ class Blueprint extends SchemaBlueprint
     /**
      * Create an Atlas Vector Search Index.
      *
-     * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/
+     * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#std-label-vector-search-index-definition-create
      *
      * @phpstan-param TypeVectorSearchIndexDefinition $definition
      */
