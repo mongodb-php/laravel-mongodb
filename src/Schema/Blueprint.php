@@ -17,12 +17,81 @@ use function is_string;
 use function key;
 
 /**
- * @phpstan-type SearchIndexField array{type: 'boolean'|'date'|'dateFacet'|'objectId'|'stringFacet'|'uuid'} | array{type: 'autocomplete', analyzer?: string, maxGrams?: int, minGrams?: int, tokenization?: 'edgeGram'|'rightEdgeGram'|'nGram', foldDiacritics?: bool} | array{type: 'document'|'embeddedDocuments', dynamic?:bool, fields: array<string, array>} | array{type: 'geo', indexShapes?: bool} | array{type: 'number'|'numberFacet', representation?: 'int64'|'double', indexIntegers?: bool, indexDoubles?: bool} | array{type: 'token', normalizer?: 'lowercase'|'none'} | array{type: 'string', analyzer?: string, searchAnalyzer?: string, indexOptions?: 'docs'|'freqs'|'positions'|'offsets', store?: bool, ignoreAbove?: int, multi?: array<string, array>, norms?: 'include'|'omit'}
- * @phpstan-type SearchIndexAnalyser array{name: string, charFilters?: list<array<string, mixed>>, tokenizer: array{type: string}, tokenFilters?: list<array<string, mixed>>}
- * @phpstan-type SearchIndexStoredSource bool | array{includes: array<string>} | array{excludes: array<string>}
- * @phpstan-type SearchIndexDefinition array{analyser?: string, analyzers?: SearchIndexAnalyser[], searchAnalyzer?: string, mappings: array{dynamic: true} | array{dynamic?: bool, fields: array<string, SearchIndexField>}, storedSource?: SearchIndexStoredSource}
- * @phpstan-type VectorSearchIndexField array{type: 'vector', path: string, numDimensions: int, similarity: 'euclidean'|'cosine'|'dotProduct', quantization?: 'none'|'scalar'|'binary'}
- * @phpstan-type VectorSearchIndexDefinition array{fields: array<string, VectorSearchIndexField>}
+ * @phpstan-type TypeSearchIndexField array{
+ *     type: 'boolean'|'date'|'dateFacet'|'objectId'|'stringFacet'|'uuid',
+ * } | array{
+ *     type: 'autocomplete',
+ *     analyzer?: string,
+ *     maxGrams?: int,
+ *     minGrams?: int,
+ *     tokenization?: 'edgeGram'|'rightEdgeGram'|'nGram',
+ *     foldDiacritics?: bool,
+ * } | array{
+ *     type: 'document'|'embeddedDocuments',
+ *     dynamic?:bool,
+ *     fields: array<string, array<mixed>>,
+ * } | array{
+ *     type: 'geo',
+ *     indexShapes?: bool,
+ * } | array{
+ *     type: 'number'|'numberFacet',
+ *     representation?: 'int64'|'double',
+ *     indexIntegers?: bool,
+ *     indexDoubles?: bool,
+ * } | array{
+ *     type: 'token',
+ *     normalizer?: 'lowercase'|'none',
+ * } | array{
+ *     type: 'string',
+ *     analyzer?: string,
+ *     searchAnalyzer?: string,
+ *     indexOptions?: 'docs'|'freqs'|'positions'|'offsets',
+ *     store?: bool,
+ *     ignoreAbove?: int,
+ *     multi?: array<string, array<mixed>>,
+ *     norms?: 'include'|'omit',
+ * }
+ * @phpstan-type TypeSearchIndexCharFilter array{
+ *      type: 'icuNormalize'|'persian',
+ *  } | array{
+ *     type: 'htmlStrip',
+ *     ignoredTags?: string[],
+ * } | array{
+ *     type: 'mapping',
+ *     mappings?: array<string, string>,
+ * }
+ * @phpstan-type TypeSearchIndexTokenFilter array{type: string, ...}
+ * @phpstan-type TypeSearchIndexAnalyzer array{
+ *     name: string,
+ *     charFilters?: TypeSearchIndexCharFilter,
+ *     tokenizer: array{type: string},
+ *     tokenFilters?: TypeSearchIndexTokenFilter,
+ * }
+ * @phpstan-type TypeSearchIndexStoredSource bool | array{
+ *     includes: array<string>,
+ * } | array{
+ *     excludes: array<string>,
+ * }
+ * @phpstan-type TypeSearchIndexDefinition array{
+ *     analyser?: string,
+ *     analyzers?: TypeSearchIndexAnalyzer[],
+ *     searchAnalyzer?: string,
+ *     mappings: array{dynamic: true} | array{dynamic?: bool, fields: array<string, TypeSearchIndexField>},
+ *     storedSource?: TypeSearchIndexStoredSource,
+ * }
+ * @phpstan-type TypeVectorSearchIndexField array{
+ *     type: 'vector',
+ *     path: string,
+ *     numDimensions: int,
+ *     similarity: 'euclidean'|'cosine'|'dotProduct',
+ *     quantization?: 'none'|'scalar'|'binary',
+ * } | array{
+ *     type: 'filter',
+ *      path: string,
+ * }
+ * @phpstan-type TypeVectorSearchIndexDefinition array{
+ *     fields: array<string, TypeVectorSearchIndexField>,
+ * }
  */
 class Blueprint extends SchemaBlueprint
 {
@@ -314,9 +383,9 @@ class Blueprint extends SchemaBlueprint
     /**
      * Create an Atlas Search Index.
      *
-     * @see https://www.mongodb.com/docs/atlas/atlas-search/
+     * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/
      *
-     * @phpstan-param SearchIndexDefinition $definition
+     * @phpstan-param TypeSearchIndexDefinition $definition
      */
     public function searchIndex(array $definition, string $name = 'default'): static
     {
@@ -330,7 +399,7 @@ class Blueprint extends SchemaBlueprint
      *
      * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/
      *
-     * @phpstan-param VectorSearchIndexDefinition $definition
+     * @phpstan-param TypeVectorSearchIndexDefinition $definition
      */
     public function vectorSearchIndex(array $definition, string $name = 'default'): static
     {
