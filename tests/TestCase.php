@@ -76,6 +76,8 @@ class TestCase extends OrchestraTestCase
                 case 40324:
                 // MongoDB 7: PlanExecutor error during aggregation :: caused by :: Search index commands are only supported with Atlas.
                 case 115:
+                // MongoDB 7: $listSearchIndexes stage is only allowed on MongoDB Atlas
+                case 6047401:
                 // MongoDB 8: Using Atlas Search Database Commands and the $listSearchIndexes aggregation stage requires additional configuration.
                 case 31082:
                     self::markTestSkipped('Search index management is not supported on this server');
