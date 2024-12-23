@@ -49,7 +49,7 @@ use function key;
  *     indexOptions?: 'docs'|'freqs'|'positions'|'offsets',
  *     store?: bool,
  *     ignoreAbove?: int,
- *     multi?: array<string, array<mixed>>,
+ *     multi?: array<string, array<string, mixed>>,
  *     norms?: 'include'|'omit',
  * }
  * @link https://www.mongodb.com/docs/atlas/atlas-search/analyzers/character-filters/
@@ -77,13 +77,20 @@ use function key;
  * } | array{
  *     excludes: array<string>,
  * }
+ * @link https://www.mongodb.com/docs/atlas/atlas-search/synonyms/#std-label-synonyms-ref
+ * @phpstan-type TypeSearchIndexSynonyms array{
+ *     analyzer: string,
+ *     name: string,
+ *     source?: array{collection: string},
+ * }
  * @link https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#std-label-search-index-definition-create
  * @phpstan-type TypeSearchIndexDefinition array{
- *     analyser?: string,
+ *     analyzer?: string,
  *     analyzers?: TypeSearchIndexAnalyzer[],
  *     searchAnalyzer?: string,
  *     mappings: array{dynamic: true} | array{dynamic?: bool, fields: array<string, TypeSearchIndexField>},
  *     storedSource?: TypeSearchIndexStoredSource,
+ *     synonyms?: TypeSearchIndexSynonyms[],
  * }
  * @link https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-type/#atlas-vector-search-index-fields
  * @phpstan-type TypeVectorSearchIndexField array{
