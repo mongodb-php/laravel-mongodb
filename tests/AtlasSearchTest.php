@@ -2,7 +2,8 @@
 
 namespace MongoDB\Laravel\Tests;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection as LaravelCollection;
 use Illuminate\Support\Facades\Schema;
 use MongoDB\Builder\Search;
 use MongoDB\Collection as MongoDBCollection;
@@ -44,8 +45,8 @@ class AtlasSearchTest extends TestCase
         ]);
 
         $collection = $this->getConnection('mongodb')->getCollection('books');
-
         assert($collection instanceof MongoDBCollection);
+
         try {
             $collection->createSearchIndex([
                 'mappings' => [
@@ -143,7 +144,7 @@ class AtlasSearchTest extends TestCase
     {
         $results = Book::search(Search::text('title', 'systems'));
 
-        self::assertInstanceOf(Collection::class, $results);
+        self::assertInstanceOf(EloquentCollection::class, $results);
         self::assertCount(3, $results);
         self::assertInstanceOf(Book::class, $results->first());
         self::assertSame([
@@ -158,7 +159,7 @@ class AtlasSearchTest extends TestCase
         $results = $this->getConnection('mongodb')->table('books')
             ->search(Search::text('title', 'systems'));
 
-        self::assertInstanceOf(\Illuminate\Support\Collection::class, $results);
+        self::assertInstanceOf(LaravelCollection::class, $results);
         self::assertCount(3, $results);
         self::assertIsArray($results->first());
         self::assertSame([
@@ -172,7 +173,7 @@ class AtlasSearchTest extends TestCase
     {
         $results = Book::autocomplete('title', 'system');
 
-        self::assertInstanceOf(\Illuminate\Support\Collection::class, $results);
+        self::assertInstanceOf(LaravelCollection::class, $results);
         self::assertCount(3, $results);
         self::assertSame([
             'Operating System Concepts',
@@ -186,7 +187,7 @@ class AtlasSearchTest extends TestCase
         $results = $this->getConnection('mongodb')->table('books')
             ->autocomplete('title', 'system');
 
-        self::assertInstanceOf(\Illuminate\Support\Collection::class, $results);
+        self::assertInstanceOf(LaravelCollection::class, $results);
         self::assertCount(3, $results);
         self::assertSame([
             'Operating System Concepts',

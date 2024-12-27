@@ -42,7 +42,6 @@ use function assert;
 use function blank;
 use function call_user_func;
 use function call_user_func_array;
-use function compact;
 use function count;
 use function ctype_xdigit;
 use function date_default_timezone_get;
@@ -1531,11 +1530,11 @@ class Builder extends BaseBuilder
     /** @return Collection<string> */
     public function autocomplete(string $path, string $query, bool|array $fuzzy = false, string $tokenOrder = 'any'): Collection
     {
-        $args = compact('path', 'query', 'fuzzy', 'tokenOrder');
-        if ($args['fuzzy'] === true) {
+        $args = ['path' => $path, 'query' => $query, 'tokenOrder' => $tokenOrder];
+        if ($fuzzy === true) {
             $args['fuzzy'] = ['maxEdits' => 2];
-        } elseif ($args['fuzzy'] === false) {
-            unset($args['fuzzy']);
+        } elseif ($fuzzy !== false) {
+            $args['fuzzy'] = $fuzzy;
         }
 
         return $this->aggregate()->search(
