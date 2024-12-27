@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MongoDB\Laravel\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Support\Collection;
 use MongoDB\BSON\Document;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\WriteException;
@@ -16,6 +17,7 @@ use MongoDB\Model\BSONDocument;
 use function array_key_exists;
 use function array_merge;
 use function collect;
+use function compact;
 use function is_array;
 use function is_object;
 use function iterator_to_array;
@@ -67,6 +69,18 @@ class Builder extends EloquentBuilder
         $result = $this->toBase()->aggregate($function, $columns);
 
         return $result ?: $this;
+    }
+
+    public function search(...$args)
+    {
+        $results = $this->toBase()->search(...$args);
+
+        return $this->model->hydrate($results->all());
+    }
+
+    public function autocomplete(string $path, string $query, bool|array $fuzzy = false, string $tokenOrder = 'any'): Collection
+    {
+        return $this->toBase()->autocomplete(...compact('path', 'query', 'fuzzy', 'tokenOrder'));
     }
 
     /** @inheritdoc */

@@ -23,6 +23,7 @@ use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Builder\Search;
 use MongoDB\Builder\Stage\FluentFactoryTrait;
 use MongoDB\Builder\Type\SearchOperatorInterface;
 use MongoDB\Driver\Cursor;
@@ -41,6 +42,7 @@ use function assert;
 use function blank;
 use function call_user_func;
 use function call_user_func_array;
+use function compact;
 use function count;
 use function ctype_xdigit;
 use function date_default_timezone_get;
@@ -1522,10 +1524,23 @@ class Builder extends BaseBuilder
         ?array $sort = null,
         ?bool $returnStoredSource = null,
         ?array $tracking = null,
-    ): Collection|LazyCollection {
-        return $this->aggregate()
-            ->search(...array_filter(func_get_args(), fn ($arg) => $arg !== null))
-            ->get();
+    ): Collection {
+        return $this->aggregate()->search(...array_filter(func_get_args(), fn ($arg) => $arg !== null))->get();
+    }
+
+    /** @return Collection<string> */
+    public function autocomplete(string $path, string $query, bool|array $fuzzy = false, string $tokenOrder = 'any'): Collection
+    {
+        $args = compact('path', 'query', 'fuzzy', 'tokenOrder');
+        if ($args['fuzzy'] === true) {
+            $args['fuzzy'] = ['maxEdits' => 2];
+        } elseif ($args['fuzzy'] === false) {
+            unset($args['fuzzy']);
+        }
+
+        return $this->aggregate()->search(
+            Search::autocomplete(...$args),
+        )->get()->pluck($path);
     }
 
     /**
