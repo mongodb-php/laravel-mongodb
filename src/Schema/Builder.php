@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace MongoDB\Laravel\Schema;
 
 use Closure;
+use MongoDB\Collection;
+use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\IndexInfo;
 
+use function array_column;
 use function array_fill_keys;
 use function array_filter;
 use function array_keys;
@@ -225,9 +228,11 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getIndexes($table)
     {
-        $indexes = $this->connection->getMongoDB()->selectCollection($table)->listIndexes();
-
+        $collection = $this->connection->getMongoDB()->selectCollection($table);
+        assert($collection instanceof Collection);
         $indexList = [];
+
+        $indexes = $collection->listIndexes();
         foreach ($indexes as $index) {
             assert($index instanceof IndexInfo);
             $indexList[] = [
@@ -242,6 +247,26 @@ class Builder extends \Illuminate\Database\Schema\Builder
                 },
                 'unique' => $index->isUnique(),
             ];
+        }
+
+        try {
+            $indexes = $collection->listSearchIndexes(['typeMap' => ['root' => 'array', 'array' => 'array', 'document' => 'array']]);
+            foreach ($indexes as $index) {
+                $indexList[] = [
+                    'name' => $index['name'],
+                    'columns' => match ($index['type']) {
+                        'search' => array_keys($index['latestDefinition']['mappings']['fields'] ?? []),
+                        'vectorSearch' => array_column($index['latestDefinition']['fields'], 'path'),
+                    },
+                    'type' => $index['type'],
+                    'primary' => false,
+                    'unique' => false,
+                ];
+            }
+        } catch (ServerException $exception) {
+            if (! self::isAtlasSearchNotSupportedException($exception)) {
+                throw $exception;
+            }
         }
 
         return $indexList;
@@ -289,5 +314,11 @@ class Builder extends \Illuminate\Database\Schema\Builder
         }
 
         return $collections;
+    }
+
+    /** @internal */
+    public static function isAtlasSearchNotSupportedException(ServerException $e): bool
+    {
+        return in_array($e->getCode(), [59, 40324, 115, 6047401, 31082], true);
     }
 }
