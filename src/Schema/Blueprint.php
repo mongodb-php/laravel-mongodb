@@ -88,7 +88,7 @@ use function key;
  *     analyzer?: string,
  *     analyzers?: TypeSearchIndexAnalyzer[],
  *     searchAnalyzer?: string,
- *     mappings: array{dynamic: true} | array{dynamic?: bool, fields: array<string, TypeSearchIndexField>},
+ *     mappings: array{dynamic: true} | array{dynamic?: bool, fields: array<string, TypeSearchIndexField|TypeSearchIndexField[]>},
  *     storedSource?: TypeSearchIndexStoredSource,
  *     synonyms?: TypeSearchIndexSynonyms[],
  * }
