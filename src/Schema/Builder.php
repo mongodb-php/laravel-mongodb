@@ -319,6 +319,12 @@ class Builder extends \Illuminate\Database\Schema\Builder
     /** @internal */
     public static function isAtlasSearchNotSupportedException(ServerException $e): bool
     {
-        return in_array($e->getCode(), [59, 40324, 115, 6047401, 31082], true);
+        return in_array($e->getCode(), [
+            59,      // MongoDB 4 to 6, 7-community: no such command: 'createSearchIndexes'
+            40324,   // MongoDB 4 to 6: Unrecognized pipeline stage name: '$listSearchIndexes'
+            115,     // MongoDB 7-ent: Search index commands are only supported with Atlas.
+            6047401, // MongoDB 7: $listSearchIndexes stage is only allowed on MongoDB Atlas
+            31082,   // MongoDB 8: Using Atlas Search Database Commands and the $listSearchIndexes aggregation stage requires additional configuration.
+        ], true);
     }
 }
