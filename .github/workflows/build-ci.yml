@@ -59,7 +59,7 @@ jobs:
             -   name: "Create MongoDB Atlas Local"
                 if: ${{ matrix.mongodb == 'Atlas' }}
                 run: |
-                    docker run --name mongodb -p 27017:27017 -e MONGO_INITDB_DATABASE=unittest --detach mongodb/mongodb-atlas-local:latest
+                    docker run --name mongodb -p 27017:27017 --detach mongodb/mongodb-atlas-local:latest
                     until docker exec --tty mongodb mongosh 127.0.0.1:27017 --eval "db.runCommand({ ping: 1 })"; do
                       sleep 1
                     done
@@ -101,6 +101,10 @@ jobs:
                     $([[ "${{ matrix.mode }}" == low-deps ]] && echo ' --prefer-lowest') \
                     $([[ "${{ matrix.mode }}" == ignore-php-req ]] && echo ' --ignore-platform-req=php+')
             -   name: "Run tests"
-                run: "./vendor/bin/phpunit --coverage-clover coverage.xml"
-                env:
-                    MONGODB_URI: 'mongodb://127.0.0.1/'
+                run: |
+                  if [ "${{ matrix.mongodb }}" = "Atlas" ]; then
+                    export MONGODB_URI="mongodb://127.0.0.1:27017/"
+                  else
+                    export MONGODB_URI="mongodb://127.0.0.1:27017/?replicaSet=rs"
+                  fi
+                  ./vendor/bin/phpunit --coverage-clover coverage.xml
