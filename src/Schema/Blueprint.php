@@ -340,6 +340,16 @@ class Blueprint extends SchemaBlueprint
     }
 
     /**
+     * Drop an Atlas Search or Vector Search index
+     */
+    public function dropSearchIndex(string $name = 'default'): static
+    {
+        $this->collection->dropSearchIndex($name);
+
+        return $this;
+    }
+
+    /**
      * Allow fluent columns.
      *
      * @param string|array $columns
