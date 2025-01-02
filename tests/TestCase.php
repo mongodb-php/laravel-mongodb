@@ -7,6 +7,7 @@ namespace MongoDB\Laravel\Tests;
 use Illuminate\Foundation\Application;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Laravel\MongoDBServiceProvider;
+use MongoDB\Laravel\Schema\Builder;
 use MongoDB\Laravel\Tests\Models\User;
 use MongoDB\Laravel\Validation\ValidationServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -71,16 +72,8 @@ class TestCase extends OrchestraTestCase
         try {
             $this->getConnection('mongodb')->getCollection('test')->listSearchIndexes(['name' => 'just_for_testing']);
         } catch (ServerException $e) {
-            switch ($e->getCode()) {
-                // MongoDB 6: Unrecognized pipeline stage name: '$listSearchIndexes'
-                case 40324:
-                // MongoDB 7: PlanExecutor error during aggregation :: caused by :: Search index commands are only supported with Atlas.
-                case 115:
-                // MongoDB 7: $listSearchIndexes stage is only allowed on MongoDB Atlas
-                case 6047401:
-                // MongoDB 8: Using Atlas Search Database Commands and the $listSearchIndexes aggregation stage requires additional configuration.
-                case 31082:
-                    self::markTestSkipped('Search index management is not supported on this server');
+            if (Builder::isAtlasSearchNotSupportedException($e)) {
+                self::markTestSkipped('Search index management is not supported on this server');
             }
 
             throw $e;

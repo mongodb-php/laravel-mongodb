@@ -7,9 +7,9 @@ namespace MongoDB\Laravel\Tests;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use MongoDB\BSON\Binary;
-use MongoDB\BSON\Document;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
+use MongoDB\Database;
 use MongoDB\Laravel\Schema\Blueprint;
 
 use function assert;
@@ -20,8 +20,10 @@ class SchemaTest extends TestCase
 {
     public function tearDown(): void
     {
-        Schema::drop('newcollection');
-        Schema::drop('newcollection_two');
+        $database = $this->getConnection('mongodb')->getMongoDB();
+        assert($database instanceof Database);
+        $database->dropCollection('newcollection');
+        $database->dropCollection('newcollection_two');
     }
 
     public function testCreate(): void
@@ -477,6 +479,7 @@ class SchemaTest extends TestCase
         $this->assertSame([], $columns);
     }
 
+    /** @see AtlasSearchTest::testGetIndexes() */
     public function testGetIndexes()
     {
         Schema::create('newcollection', function (Blueprint $collection) {
@@ -584,12 +587,12 @@ class SchemaTest extends TestCase
         return false;
     }
 
-    protected function getSearchIndex(string $collection, string $name): ?Document
+    protected function getSearchIndex(string $collection, string $name): ?array
     {
         $collection = DB::getCollection($collection);
         assert($collection instanceof Collection);
 
-        foreach ($collection->listSearchIndexes(['name' => $name, 'typeMap' => ['root' => 'bson']]) as $index) {
+        foreach ($collection->listSearchIndexes(['name' => $name, 'typeMap' => ['root' => 'array', 'array' => 'array', 'document' => 'array']]) as $index) {
             return $index;
         }
 

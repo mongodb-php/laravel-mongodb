@@ -253,6 +253,11 @@ class Builder extends \Illuminate\Database\Schema\Builder
         try {
             $indexes = $collection->listSearchIndexes(['typeMap' => ['root' => 'array', 'array' => 'array', 'document' => 'array']]);
             foreach ($indexes as $index) {
+                // Status 'DOES_NOT_EXIST' means the index has been dropped but is still in the process of being removed
+                if ($index['status'] === 'DOES_NOT_EXIST') {
+                    continue;
+                }
+
                 $indexList[] = [
                     'name' => $index['name'],
                     'columns' => match ($index['type']) {
