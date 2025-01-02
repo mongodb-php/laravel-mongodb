@@ -482,20 +482,41 @@ class SchemaTest extends TestCase
             $collection->string('mykey3')->index();
         });
         $indexes = Schema::getIndexes('newcollection');
-        $this->assertIsArray($indexes);
-        $this->assertCount(4, $indexes);
+        self::assertIsArray($indexes);
+        self::assertCount(4, $indexes);
 
-        $indexes = collect($indexes)->keyBy('name');
+        $expected = [
+            [
+                'name' => '_id_',
+                'columns' => ['_id'],
+                'primary' => true,
+                'type' => null,
+                'unique' => false,
+            ],
+            [
+                'name' => 'mykey1_1',
+                'columns' => ['mykey1'],
+                'primary' => false,
+                'type' => null,
+                'unique' => false,
+            ],
+            [
+                'name' => 'unique_index_1',
+                'columns' => ['unique_index'],
+                'primary' => false,
+                'type' => null,
+                'unique' => true,
+            ],
+            [
+                'name' => 'mykey3_1',
+                'columns' => ['mykey3'],
+                'primary' => false,
+                'type' => null,
+                'unique' => false,
+            ],
+        ];
 
-        $indexes->each(function ($index) {
-            $this->assertIsString($index['name']);
-            $this->assertIsString($index['type']);
-            $this->assertIsArray($index['columns']);
-            $this->assertIsBool($index['unique']);
-            $this->assertIsBool($index['primary']);
-        });
-        $this->assertTrue($indexes->get('_id_')['primary']);
-        $this->assertTrue($indexes->get('unique_index_1')['unique']);
+        self::assertSame($expected, $indexes);
 
         // Non-existent collection
         $indexes = Schema::getIndexes('missing');

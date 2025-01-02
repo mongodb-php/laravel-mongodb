@@ -15,6 +15,7 @@ use function array_fill_keys;
 use function array_filter;
 use function array_keys;
 use function array_map;
+use function array_merge;
 use function assert;
 use function count;
 use function current;
@@ -243,7 +244,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
                     $index->isText() => 'text',
                     $index->is2dSphere() => '2dsphere',
                     $index->isTtl() => 'ttl',
-                    default => 'default',
+                    default => null,
                 },
                 'unique' => $index->isUnique(),
             ];
@@ -255,7 +256,10 @@ class Builder extends \Illuminate\Database\Schema\Builder
                 $indexList[] = [
                     'name' => $index['name'],
                     'columns' => match ($index['type']) {
-                        'search' => array_keys($index['latestDefinition']['mappings']['fields'] ?? []),
+                        'search' => array_merge(
+                            $index['latestDefinition']['mappings']['dynamic'] ? ['dynamic'] : [],
+                            array_keys($index['latestDefinition']['mappings']['fields'] ?? []),
+                        ),
                         'vectorSearch' => array_column($index['latestDefinition']['fields'], 'path'),
                     },
                     'type' => $index['type'],

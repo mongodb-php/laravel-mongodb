@@ -10,6 +10,7 @@ use MongoDB\Laravel\Tests\Models\Book;
 
 use function assert;
 use function usleep;
+use function usort;
 
 class AtlasSearchTest extends TestCase
 {
@@ -55,6 +56,10 @@ class AtlasSearchTest extends TestCase
             ]);
 
             $collection->createSearchIndex([
+                'mappings' => ['dynamic' => true],
+            ], ['name' => 'dynamic_search']);
+
+            $collection->createSearchIndex([
                 'fields' => [
                     ['type' => 'vector', 'numDimensions' => 16, 'path' => 'vector16', 'similarity' => 'cosine'],
                     ['type' => 'vector', 'numDimensions' => 32, 'path' => 'vector32', 'similarity' => 'euclidean'],
@@ -91,19 +96,30 @@ class AtlasSearchTest extends TestCase
     {
         $indexes = Schema::getIndexes('books');
 
-        self::assertCount(3, $indexes);
+        self::assertIsArray($indexes);
+        self::assertCount(4, $indexes);
+
+        // Order of indexes is not guaranteed
+        usort($indexes, fn ($a, $b) => $a['name'] <=> $b['name']);
 
         $expected = [
             [
                 'name' => '_id_',
                 'columns' => ['_id'],
                 'primary' => true,
-                'type' => 'default',
+                'type' => null,
                 'unique' => false,
             ],
             [
                 'name' => 'default',
                 'columns' => ['title'],
+                'type' => 'search',
+                'primary' => false,
+                'unique' => false,
+            ],
+            [
+                'name' => 'dynamic_search',
+                'columns' => ['dynamic'],
                 'type' => 'search',
                 'primary' => false,
                 'unique' => false,
