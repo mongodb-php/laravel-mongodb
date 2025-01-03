@@ -54,6 +54,7 @@ class AtlasSearchTest extends TestCase
                         'title' => [
                             ['type' => 'string', 'analyzer' => 'lucene.english'],
                             ['type' => 'autocomplete', 'analyzer' => 'lucene.english'],
+                            ['type' => 'token'],
                         ],
                     ],
                 ],
@@ -142,48 +143,33 @@ class AtlasSearchTest extends TestCase
 
     public function testEloquentBuilderSearch()
     {
-        $results = Book::search(Search::text('title', 'systems'));
-
-        self::assertInstanceOf(EloquentCollection::class, $results);
-        self::assertCount(3, $results);
-        self::assertInstanceOf(Book::class, $results->first());
-        self::assertSame([
-            'Operating System Concepts',
-            'Database System Concepts',
-            'Modern Operating Systems',
-        ], $results->pluck('title')->all());
-    }
-
-    public function testEloquentBuilderWithAdvancedParameters()
-    {
         $results = Book::search(
-            concurrent: true,
+            sort: ['title' => 1],
             operator: Search::text('title', 'systems'),
-            sort: ['title' => -1],
         );
 
         self::assertInstanceOf(EloquentCollection::class, $results);
         self::assertCount(3, $results);
         self::assertInstanceOf(Book::class, $results->first());
         self::assertSame([
-            'Operating System Concepts',
             'Database System Concepts',
             'Modern Operating Systems',
+            'Operating System Concepts',
         ], $results->pluck('title')->all());
     }
 
     public function testDatabaseBuilderSearch()
     {
         $results = $this->getConnection('mongodb')->table('books')
-            ->search(Search::text('title', 'systems'));
+            ->search(Search::text('title', 'systems'), sort: ['title' => 1]);
 
         self::assertInstanceOf(LaravelCollection::class, $results);
         self::assertCount(3, $results);
         self::assertIsArray($results->first());
         self::assertSame([
-            'Operating System Concepts',
             'Database System Concepts',
             'Modern Operating Systems',
+            'Operating System Concepts',
         ], $results->pluck('title')->all());
     }
 
