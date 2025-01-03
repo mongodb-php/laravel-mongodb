@@ -1497,19 +1497,9 @@ class Builder extends BaseBuilder
      * Performs a full-text search of the field or fields in an Atlas collection.
      * NOTE: $search is only available for MongoDB Atlas clusters, and is not available for self-managed deployments.
      *
-     * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/search/
+     * @see https://www.mongodb.com/docs/atlas/atlas-search/aggregation-stages/search/
      *
-     * @param SearchOperatorInterface|array $operator           Operator to search with.  You can provide a specific operator or use the compound operator to run a compound query with multiple operators.
-     * @param ?string                       $index              Name of the Atlas Search index to use. If omitted, defaults to "default".
-     * @param ?array                        $highlight          Specifies the highlighting options for displaying search terms in their original context.
-     * @param ?bool                         $concurrent         Parallelize search across segments on dedicated search nodes.
-     * @param ?string                       $count              Document that specifies the count options for retrieving a count of the results.
-     * @param ?string                       $searchAfter        Reference point for retrieving results. searchAfter returns documents starting immediately following the specified reference point.
-     * @param ?string                       $searchBefore       Reference point for retrieving results. searchBefore returns documents starting immediately before the specified reference point.
-     * @param ?bool                         $scoreDetails       Flag that specifies whether to retrieve a detailed breakdown of the score for the documents in the results. If omitted, defaults to false.
-     * @param ?array                        $sort               Document that specifies the fields to sort the Atlas Search results by in ascending or descending order.
-     * @param ?bool                         $returnStoredSource Flag that specifies whether to perform a full document lookup on the backend database or return only stored source fields directly from Atlas Search.
-     * @param ?array                        $tracking           Document that specifies the tracking option to retrieve analytics information on the search terms.
+     * @return Collection<object|array>
      */
     public function search(
         SearchOperatorInterface|array $operator,
@@ -1524,12 +1514,33 @@ class Builder extends BaseBuilder
         ?bool $returnStoredSource = null,
         ?array $tracking = null,
     ): Collection {
-        $args = array_filter(compact(['operator', 'index', 'highlight', 'concurrent', 'count', 'searchAfter', 'searchBefore', 'scoreDetails', 'sort', 'returnStoredSource', 'tracking']), fn ($arg) => $arg !== null);
+        // Forward named arguments to the search stage, skip null values
+        $args = array_filter([
+            'operator' => $operator,
+            'index' => $index,
+            'highlight' => $highlight,
+            'concurrent' => $concurrent,
+            'count' => $count,
+            'searchAfter' => $searchAfter,
+            'searchBefore' => $searchBefore,
+            'scoreDetails' => $scoreDetails,
+            'sort' => $sort,
+            'returnStoredSource' => $returnStoredSource,
+            'tracking' => $tracking,
+        ], fn ($arg) => $arg !== null);
 
         return $this->aggregate()->search(...$args)->get();
     }
 
-    /** @return Collection<string> */
+    /**
+     * Performs an autocomplete search of the field using an Atlas Search index.
+     * NOTE: $search is only available for MongoDB Atlas clusters, and is not available for self-managed deployments.
+     * You must create an Atlas Search index with an autocomplete configuration before you can use this stage.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-search/autocomplete/
+     *
+     * @return Collection<string>
+     */
     public function autocomplete(string $path, string $query, bool|array $fuzzy = false, string $tokenOrder = 'any'): Collection
     {
         $args = ['path' => $path, 'query' => $query, 'tokenOrder' => $tokenOrder];
