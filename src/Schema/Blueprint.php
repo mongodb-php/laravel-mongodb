@@ -342,7 +342,7 @@ class Blueprint extends SchemaBlueprint
     /**
      * Drop an Atlas Search or Vector Search index
      */
-    public function dropSearchIndex(string $name = 'default'): static
+    public function dropSearchIndex(string $name): static
     {
         $this->collection->dropSearchIndex($name);
 

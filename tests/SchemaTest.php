@@ -540,9 +540,8 @@ class SchemaTest extends TestCase
         self::assertFalse($index['latestDefinition']['mappings']['dynamic']);
         self::assertSame('lucene.whitespace', $index['latestDefinition']['mappings']['fields']['foo']['analyzer']);
 
-        // Drop the index using default name
         Schema::table('newcollection', function (Blueprint $collection) {
-            $collection->dropSearchIndex();
+            $collection->dropSearchIndex('default');
         });
 
         $index = $this->getSearchIndex('newcollection', 'default');
