@@ -154,6 +154,24 @@ class AtlasSearchTest extends TestCase
         ], $results->pluck('title')->all());
     }
 
+    public function testEloquentBuilderWithAdvancedParameters()
+    {
+        $results = Book::search(
+            concurrent: true,
+            operator: Search::text('title', 'systems'),
+            sort: ['title' => -1],
+        );
+
+        self::assertInstanceOf(EloquentCollection::class, $results);
+        self::assertCount(3, $results);
+        self::assertInstanceOf(Book::class, $results->first());
+        self::assertSame([
+            'Operating System Concepts',
+            'Database System Concepts',
+            'Modern Operating Systems',
+        ], $results->pluck('title')->all());
+    }
+
     public function testDatabaseBuilderSearch()
     {
         $results = $this->getConnection('mongodb')->table('books')

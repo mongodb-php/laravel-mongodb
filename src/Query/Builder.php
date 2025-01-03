@@ -1524,7 +1524,9 @@ class Builder extends BaseBuilder
         ?bool $returnStoredSource = null,
         ?array $tracking = null,
     ): Collection {
-        return $this->aggregate()->search(...array_filter(func_get_args(), fn ($arg) => $arg !== null))->get();
+        $args = array_filter(compact(['operator', 'index', 'highlight', 'concurrent', 'count', 'searchAfter', 'searchBefore', 'scoreDetails', 'sort', 'returnStoredSource', 'tracking']), fn ($arg) => $arg !== null);
+
+        return $this->aggregate()->search(...$args)->get();
     }
 
     /** @return Collection<string> */
