@@ -334,15 +334,15 @@ trait HybridRelations
     /**
      * Define a morph-to-many relationship.
      *
-     * @param  string $related
-     * @param    string $name
-     * @param  null   $table
-     * @param  null   $foreignPivotKey
-     * @param  null   $relatedPivotKey
-     * @param  null   $parentKey
-     * @param  null   $relatedKey
-     * @param  null   $relation
-     * @param  bool   $inverse
+     * @param class-string $related
+     * @param string       $name
+     * @param string|null  $table
+     * @param string|null  $foreignPivotKey
+     * @param string|null  $relatedPivotKey
+     * @param string|null  $parentKey
+     * @param string|null  $relatedKey
+     * @param string|null  $relation
+     * @param bool         $inverse
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
@@ -410,13 +410,14 @@ trait HybridRelations
     /**
      * Define a polymorphic, inverse many-to-many relationship.
      *
-     * @param  string $related
-     * @param  string $name
-     * @param  null   $table
-     * @param  null   $foreignPivotKey
-     * @param  null   $relatedPivotKey
-     * @param  null   $parentKey
-     * @param  null   $relatedKey
+     * @param class-string $related
+     * @param string       $name
+     * @param string|null  $table
+     * @param string|null  $foreignPivotKey
+     * @param string|null  $relatedPivotKey
+     * @param string|null  $parentKey
+     * @param string|null  $relatedKey
+     * @param string|null  $relation
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
