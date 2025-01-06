@@ -157,6 +157,7 @@ class HybridRelationsTest extends TestCase
 
     public function testHybridWith()
     {
+        DB::connection('mongodb')->enableQueryLog();
         $user      = new SqlUser();
         $otherUser = new SqlUser();
         $this->assertInstanceOf(SqlUser::class, $user);
@@ -206,6 +207,10 @@ class HybridRelationsTest extends TestCase
             ->each(function ($user) {
                 $this->assertEquals($user->id, $user->books->count());
             });
+        //SqlUser::withCount('books')->get()
+        //    ->each(function ($user) {
+        //        $this->assertEquals($user->id, $user->books_count);
+        //    });
 
         SqlUser::whereHas('sqlBooks', function ($query) {
             return $query->where('title', 'LIKE', 'Harry%');

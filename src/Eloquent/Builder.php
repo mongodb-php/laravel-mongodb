@@ -5,27 +5,38 @@ declare(strict_types=1);
 namespace MongoDB\Laravel\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 use MongoDB\BSON\Document;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\Laravel\Connection;
 use MongoDB\Laravel\Helpers\QueriesRelationships;
 use MongoDB\Laravel\Query\AggregationBuilder;
+use MongoDB\Laravel\Relations\EmbedsOneOrMany;
+use MongoDB\Laravel\Relations\HasMany;
 use MongoDB\Model\BSONDocument;
 
 use function array_key_exists;
 use function array_merge;
 use function collect;
+use function count;
+use function explode;
 use function is_array;
 use function is_object;
 use function iterator_to_array;
 use function property_exists;
+use function sprintf;
 
 /** @method \MongoDB\Laravel\Query\Builder toBase() */
 class Builder extends EloquentBuilder
 {
     private const DUPLICATE_KEY_ERROR = 11000;
     use QueriesRelationships;
+
+    /** @var array{relation: Relation, function: string, constraints: array, column: string, alias: string}[] */
+    private array $withAggregate = [];
 
     /**
      * The methods that should be returned from query builder.
@@ -237,6 +248,85 @@ class Builder extends EloquentBuilder
 
             throw $e;
         }
+    }
+
+    public function withAggregate($relations, $column, $function = null)
+    {
+        if (empty($relations)) {
+            return $this;
+        }
+
+        $relations = is_array($relations) ? $relations : [$relations];
+
+        foreach ($this->parseWithRelations($relations) as $name => $constraints) {
+            // For "count" and "exist" we can use the embedded list of ids
+            // for embedded relations, everything can be computed directly using a projection.
+            $segments = explode(' ', $name);
+
+            $name = $segments[0];
+            $alias = (count($segments) === 3 && Str::lower($segments[1]) === 'as' ? $segments[2] : Str::snake($name) . '_count');
+
+            $relation = $this->getRelationWithoutConstraints($name);
+
+            if ($relation instanceof EmbedsOneOrMany) {
+                switch ($function) {
+                    case 'count':
+                        $this->project([$alias => ['$size' => ['$ifNull' => ['$' . $relation->getQualifiedForeignKeyName(), []]]]]);
+                        break;
+                    case 'exists':
+                        $this->project([$alias => ['$exists' => '$' . $relation->getQualifiedForeignKeyName()]]);
+                        break;
+                    default:
+                        throw new InvalidArgumentException(sprintf('Invalid aggregate function "%s"', $function));
+                }
+            } else {
+                $this->withAggregate[$alias] = [
+                    'relation' => $relation,
+                    'function' => $function,
+                    'constraints' => $constraints,
+                    'column' => $column,
+                    'alias' => $alias,
+                ];
+            }
+
+            // @todo HasMany ?
+
+            // Otherwise, we need to store the aggregate request to run during "eagerLoadRelation"
+            // after the root results are retrieved.
+        }
+
+        return $this;
+    }
+
+    public function eagerLoadRelations(array $models)
+    {
+        if ($this->withAggregate) {
+            $modelIds = collect($models)->pluck($this->model->getKeyName())->all();
+
+            foreach ($this->withAggregate as $withAggregate) {
+                if ($withAggregate['relation'] instanceof HasMany) {
+                    $results = $withAggregate['relation']->newQuery()
+                        ->where($withAggregate['constraints'])
+                        ->whereIn($withAggregate['relation']->getForeignKeyName(), $modelIds)
+                        ->groupBy($withAggregate['relation']->getForeignKeyName())
+                        ->aggregate($withAggregate['function'], [$withAggregate['column']]);
+
+                    foreach ($models as $model) {
+                        $value = $withAggregate['function'] === 'count' ? 0 : null;
+                        foreach ($results as $result) {
+                            if ($model->getKey() === $result->{$withAggregate['relation']->getForeignKeyName()}) {
+                                $value = $result->aggregate;
+                                break;
+                            }
+                        }
+
+                        $model->setAttribute($withAggregate['alias'], $value);
+                    }
+                }
+            }
+        }
+
+        return parent::eagerLoadRelations($models);
     }
 
     /**

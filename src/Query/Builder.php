@@ -28,6 +28,7 @@ use MongoDB\Driver\Cursor;
 use Override;
 use RuntimeException;
 use stdClass;
+use TypeError;
 
 use function array_fill_keys;
 use function array_is_list;
@@ -346,7 +347,7 @@ class Builder extends BaseBuilder
 
                     $aggregations = blank($this->aggregate['columns']) ? [] : $this->aggregate['columns'];
 
-                    if (in_array('*', $aggregations) && $function === 'count') {
+                    if (in_array('*', $aggregations) && $function === 'count' && empty($group['_id'])) {
                         $options = $this->inheritConnectionOptions($this->options);
 
                         return ['countDocuments' => [$wheres, $options]];
@@ -556,6 +557,8 @@ class Builder extends BaseBuilder
     /** @return ($function is null ? AggregationBuilder : mixed) */
     public function aggregate($function = null, $columns = ['*'])
     {
+        assert(is_array($columns), new TypeError(sprintf('Argument #2 ($columns) must be of type array, %s given', get_debug_type($columns))));
+
         if ($function === null) {
             if (! trait_exists(FluentFactoryTrait::class)) {
                 // This error will be unreachable when the mongodb/builder package will be merged into mongodb/mongodb
@@ -587,7 +590,7 @@ class Builder extends BaseBuilder
 
         $this->bindings['select'] = [];
 
-        $results = $this->get($columns);
+        $results = $this->get();
 
         // Once we have executed the query, we will reset the aggregate property so
         // that more select queries can be executed against the database without
@@ -596,11 +599,28 @@ class Builder extends BaseBuilder
         $this->columns            = $previousColumns;
         $this->bindings['select'] = $previousSelectBindings;
 
+        // When the aggregation is per group, we return the results as is.
+        if ($this->groups) {
+            return $results->map(function (object $result) {
+                unset($result->id);
+
+                return $result;
+            });
+        }
+
         if (isset($results[0])) {
             $result = (array) $results[0];
 
             return $result['aggregate'];
         }
+    }
+
+    public function count($columns = '*')
+    {
+        // Can be removed when available in Laravel: https://github.com/laravel/framework/pull/53209
+        $results = $this->aggregate(__FUNCTION__, Arr::wrap($columns));
+
+        return $results instanceof Collection ? $results : (int) $results;
     }
 
     /** @inheritdoc */
