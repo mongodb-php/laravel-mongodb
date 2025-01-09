@@ -25,6 +25,7 @@ use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Builder\Search;
 use MongoDB\Builder\Stage\FluentFactoryTrait;
+use MongoDB\Builder\Type\QueryInterface;
 use MongoDB\Builder\Type\SearchOperatorInterface;
 use MongoDB\Driver\Cursor;
 use Override;
@@ -1530,6 +1531,40 @@ class Builder extends BaseBuilder
         ], fn ($arg) => $arg !== null);
 
         return $this->aggregate()->search(...$args)->get();
+    }
+
+    /**
+     * Performs a semantic search on data in your Atlas Vector Search index.
+     * NOTE: $vectorSearch is only available for MongoDB Atlas clusters, and is not available for self-managed deployments.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/
+     *
+     * @return Collection<object|array>
+     */
+    public function vectorSearch(
+        string $index,
+        array|string $path,
+        array $queryVector,
+        int $limit,
+        bool $exact = false,
+        QueryInterface|array|null $filter = null,
+        int|null $numCandidates = null,
+    ): Collection {
+        // Forward named arguments to the vectorSearch stage, skip null values
+        $args = array_filter([
+            'index' => $index,
+            'limit' => $limit,
+            'path' => $path,
+            'queryVector' => $queryVector,
+            'exact' => $exact,
+            'filter' => $filter,
+            'numCandidates' => $numCandidates,
+        ], fn ($arg) => $arg !== null);
+
+        return $this->aggregate()
+            ->vectorSearch(...$args)
+            ->addFields(vectorSearchScore: ['$meta' => 'vectorSearchScore'])
+            ->get();
     }
 
     /**

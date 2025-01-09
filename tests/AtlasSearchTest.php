@@ -5,23 +5,31 @@ namespace MongoDB\Laravel\Tests;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection as LaravelCollection;
 use Illuminate\Support\Facades\Schema;
+use MongoDB\Builder\Query;
 use MongoDB\Builder\Search;
 use MongoDB\Collection as MongoDBCollection;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Laravel\Schema\Builder;
 use MongoDB\Laravel\Tests\Models\Book;
 
+use function array_map;
 use function assert;
+use function mt_getrandmax;
+use function rand;
+use function range;
+use function srand;
 use function usleep;
 use function usort;
 
 class AtlasSearchTest extends TestCase
 {
+    private array $vectors;
+
     public function setUp(): void
     {
         parent::setUp();
 
-        Book::insert([
+        Book::insert($this->addVector([
             ['title' => 'Introduction to Algorithms'],
             ['title' => 'Clean Code: A Handbook of Agile Software Craftsmanship'],
             ['title' => 'Design Patterns: Elements of Reusable Object-Oriented Software'],
@@ -42,7 +50,7 @@ class AtlasSearchTest extends TestCase
             ['title' => 'Understanding Machine Learning: From Theory to Algorithms'],
             ['title' => 'Deep Learning'],
             ['title' => 'Pattern Recognition and Machine Learning'],
-        ]);
+        ]));
 
         $collection = $this->getConnection('mongodb')->getCollection('books');
         assert($collection instanceof MongoDBCollection);
@@ -66,8 +74,9 @@ class AtlasSearchTest extends TestCase
 
             $collection->createSearchIndex([
                 'fields' => [
-                    ['type' => 'vector', 'numDimensions' => 16, 'path' => 'vector16', 'similarity' => 'cosine'],
+                    ['type' => 'vector', 'numDimensions' => 4, 'path' => 'vector4', 'similarity' => 'cosine'],
                     ['type' => 'vector', 'numDimensions' => 32, 'path' => 'vector32', 'similarity' => 'euclidean'],
+                    ['type' => 'filter', 'path' => 'title'],
                 ],
             ], ['name' => 'vector', 'type' => 'vectorSearch']);
         } catch (ServerException $e) {
@@ -131,7 +140,7 @@ class AtlasSearchTest extends TestCase
             ],
             [
                 'name' => 'vector',
-                'columns' => ['vector16', 'vector32'],
+                'columns' => ['vector4', 'vector32', 'title'],
                 'type' => 'vectorSearch',
                 'primary' => false,
                 'unique' => false,
@@ -180,10 +189,10 @@ class AtlasSearchTest extends TestCase
         self::assertInstanceOf(LaravelCollection::class, $results);
         self::assertCount(3, $results);
         self::assertSame([
-            'Operating System Concepts',
             'Database System Concepts',
             'Modern Operating Systems',
-        ], $results->all());
+            'Operating System Concepts',
+        ], $results->sort()->values()->all());
     }
 
     public function testDatabaseBuilderAutocomplete()
@@ -194,9 +203,62 @@ class AtlasSearchTest extends TestCase
         self::assertInstanceOf(LaravelCollection::class, $results);
         self::assertCount(3, $results);
         self::assertSame([
-            'Operating System Concepts',
             'Database System Concepts',
             'Modern Operating Systems',
-        ], $results->all());
+            'Operating System Concepts',
+        ], $results->sort()->values()->all());
+    }
+
+    public function testDatabaseBuilderVectorSearch()
+    {
+        $results = $this->getConnection('mongodb')->table('books')
+            ->vectorSearch(
+                index: 'vector',
+                path: 'vector4',
+                queryVector: $this->vectors[7], // This is an exact match of the vector
+                limit: 4,
+                exact: true,
+            );
+
+        self::assertInstanceOf(LaravelCollection::class, $results);
+        self::assertCount(4, $results);
+        self::assertSame('The Art of Computer Programming', $results->first()['title']);
+        self::assertSame(1.0, $results->first()['vectorSearchScore']);
+    }
+
+    public function testEloquentBuilderVectorSearch()
+    {
+        $results = Book::vectorSearch(
+            index: 'vector',
+            path: 'vector4',
+            queryVector: $this->vectors[7],
+            limit: 5,
+            numCandidates: 15,
+            // excludes the exact match
+            filter: Query::query(
+                title: Query::ne('The Art of Computer Programming'),
+            ),
+        );
+
+        self::assertInstanceOf(EloquentCollection::class, $results);
+        self::assertCount(5, $results);
+        self::assertInstanceOf(Book::class, $results->first());
+        self::assertNotSame('The Art of Computer Programming', $results->first()->title);
+        self::assertSame('The Mythical Man-Month: Essays on Software Engineering', $results->first()->title);
+        self::assertThat(
+            $results->first()->vectorSearchScore,
+            self::logicalAnd(self::isType('float'), self::greaterThan(0.9), self::lessThan(1.0)),
+        );
+    }
+
+    /** Generate random vectors */
+    private function addVector(array $items): array
+    {
+        srand(1);
+        foreach ($items as &$item) {
+            $this->vectors[] = $item['vector4'] = array_map(fn () => rand() / mt_getrandmax(), range(0, 3));
+        }
+
+        return $items;
     }
 }

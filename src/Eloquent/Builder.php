@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use MongoDB\BSON\Document;
+use MongoDB\Builder\Type\QueryInterface;
 use MongoDB\Builder\Type\SearchOperatorInterface;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\WriteException;
@@ -97,6 +98,28 @@ class Builder extends EloquentBuilder
         ?array $tracking = null,
     ): Collection {
         $results = $this->toBase()->search($operator, $index, $highlight, $concurrent, $count, $searchAfter, $searchBefore, $scoreDetails, $sort, $returnStoredSource, $tracking);
+
+        return $this->model->hydrate($results->all());
+    }
+
+    /**
+     * Performs a semantic search on data in your Atlas Vector Search index.
+     * NOTE: $vectorSearch is only available for MongoDB Atlas clusters, and is not available for self-managed deployments.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/
+     *
+     * @return Collection<int, TModel>
+     */
+    public function vectorSearch(
+        string $index,
+        array|string $path,
+        array $queryVector,
+        int $limit,
+        bool $exact = false,
+        QueryInterface|array $filter = [],
+        int|null $numCandidates = null,
+    ): Collection {
+        $results = $this->toBase()->vectorSearch($index, $path, $queryVector, $limit, $exact, $filter, $numCandidates);
 
         return $this->model->hydrate($results->all());
     }
