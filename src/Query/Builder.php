@@ -30,6 +30,7 @@ use MongoDB\Driver\Cursor;
 use Override;
 use RuntimeException;
 use stdClass;
+use TypeError;
 
 use function array_fill_keys;
 use function array_filter;
@@ -324,8 +325,10 @@ class Builder extends BaseBuilder
                     // this mimics SQL's behaviour a bit.
                     $group[$column] = ['$last' => '$' . $column];
                 }
+            }
 
-                // Do the same for other columns that are selected.
+            // Add the last value of each column when there is no aggregate function.
+            if ($this->groups && ! $this->aggregate) {
                 foreach ($columns as $column) {
                     $key = str_replace('.', '_', $column);
 
@@ -349,7 +352,7 @@ class Builder extends BaseBuilder
 
                     $aggregations = blank($this->aggregate['columns']) ? [] : $this->aggregate['columns'];
 
-                    if (in_array('*', $aggregations) && $function === 'count') {
+                    if (in_array('*', $aggregations) && $function === 'count' && empty($group['_id'])) {
                         $options = $this->inheritConnectionOptions($this->options);
 
                         return ['countDocuments' => [$wheres, $options]];
@@ -559,6 +562,8 @@ class Builder extends BaseBuilder
     /** @return ($function is null ? AggregationBuilder : mixed) */
     public function aggregate($function = null, $columns = ['*'])
     {
+        assert(is_array($columns), new TypeError(sprintf('Argument #2 ($columns) must be of type array, %s given', get_debug_type($columns))));
+
         if ($function === null) {
             if (! trait_exists(FluentFactoryTrait::class)) {
                 // This error will be unreachable when the mongodb/builder package will be merged into mongodb/mongodb
@@ -599,11 +604,30 @@ class Builder extends BaseBuilder
         $this->columns            = $previousColumns;
         $this->bindings['select'] = $previousSelectBindings;
 
+        // When the aggregation is per group, we return the results as is.
+        if ($this->groups) {
+            return $results->map(function (object $result) {
+                unset($result->id);
+
+                return $result;
+            });
+        }
+
         if (isset($results[0])) {
             $result = (array) $results[0];
 
             return $result['aggregate'];
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see \Illuminate\Database\Query\Builder::aggregateByGroup()
+     */
+    public function aggregateByGroup(string $function, array $columns = ['*'])
+    {
+        return $this->aggregate($function, $columns);
     }
 
     /** @inheritdoc */

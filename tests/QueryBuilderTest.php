@@ -7,6 +7,7 @@ namespace MongoDB\Laravel\Tests;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeImmutable;
+use Illuminate\Support\Collection as LaravelCollection;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\LazyCollection;
@@ -32,6 +33,7 @@ use Stringable;
 use function count;
 use function key;
 use function md5;
+use function method_exists;
 use function sort;
 use function strlen;
 
@@ -615,6 +617,43 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals(1, DB::table('items')->min('amount.*.hidden'));
         $this->assertEquals(35, DB::table('items')->max('amount.*.hidden'));
         $this->assertEquals(12, DB::table('items')->avg('amount.*.hidden'));
+    }
+
+    public function testAggregateGroupBy()
+    {
+        DB::table('users')->insert([
+            ['name' => 'John Doe', 'role' => 'admin', 'score' => 1],
+            ['name' => 'Jane Doe', 'role' => 'admin', 'score' => 2],
+            ['name' => 'Robert Roe', 'role' => 'user', 'score' => 4],
+        ]);
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->aggregateByGroup('count');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 2], (object) ['role' => 'user', 'aggregate' => 1]], $results->toArray());
+
+        if (! method_exists(Builder::class, 'countByGroup')) {
+            $this->markTestSkipped('countBy* function require Laravel v11.38+');
+        }
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->countByGroup();
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 2], (object) ['role' => 'user', 'aggregate' => 1]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->maxByGroup('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 2], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->minByGroup('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 1], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->sumByGroup('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 3], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->avgByGroup('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 1.5], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
     }
 
     public function testUpdateWithUpsert()
