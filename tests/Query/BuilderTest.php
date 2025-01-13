@@ -15,6 +15,7 @@ use LogicException;
 use Mockery as m;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Driver\ReadPreference;
 use MongoDB\Laravel\Connection;
 use MongoDB\Laravel\Query\Builder;
 use MongoDB\Laravel\Query\Grammar;
@@ -1415,6 +1416,26 @@ class BuilderTest extends TestCase
         yield 'arrow notation with id' => [
             ['find' => [['embedded._id' => 1], []]],
             fn (Builder $builder) => $builder->where('embedded->id', 1),
+        ];
+
+        yield 'options' => [
+            ['find' => [[], ['comment' => 'hello']]],
+            fn (Builder $builder) => $builder->options(['comment' => 'hello']),
+        ];
+
+        yield 'readPreference' => [
+            ['find' => [[], ['readPreference' => new ReadPreference(ReadPreference::SECONDARY_PREFERRED)]]],
+            fn (Builder $builder) => $builder->readPreference(ReadPreference::SECONDARY_PREFERRED),
+        ];
+
+        yield 'readPreference advanced' => [
+            ['find' => [[], ['readPreference' => new ReadPreference(ReadPreference::NEAREST, [['dc' => 'ny']], ['maxStalenessSeconds' => 120])]]],
+            fn (Builder $builder) => $builder->readPreference(ReadPreference::NEAREST, [['dc' => 'ny']], ['maxStalenessSeconds' => 120]),
+        ];
+
+        yield 'hint' => [
+            ['find' => [[], ['hint' => ['foo' => 1]]]],
+            fn (Builder $builder) => $builder->hint(['foo' => 1]),
         ];
     }
 
