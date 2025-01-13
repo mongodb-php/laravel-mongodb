@@ -315,6 +315,7 @@ class Builder extends BaseBuilder
         if ($this->groups || $this->aggregate) {
             $group   = [];
             $unwinds = [];
+            $set = [];
 
             // Add grouping columns to the $group part of the aggregation pipeline.
             if ($this->groups) {
@@ -352,15 +353,22 @@ class Builder extends BaseBuilder
 
                     $aggregations = blank($this->aggregate['columns']) ? [] : $this->aggregate['columns'];
 
-                    if (in_array('*', $aggregations) && $function === 'count' && empty($group['_id'])) {
+                    if ($column === '*' && $function === 'count' && ! $this->groups) {
                         $options = $this->inheritConnectionOptions($this->options);
 
                         return ['countDocuments' => [$wheres, $options]];
                     }
 
+                    // "aggregate" is the name of the field that will hold the aggregated value.
                     if ($function === 'count') {
-                        // Translate count into sum.
-                        $group['aggregate'] = ['$sum' => 1];
+                        if ($column === '*' || $aggregations === []) {
+                            // Translate count into sum.
+                            $group['aggregate'] = ['$sum' => 1];
+                        } else {
+                            // Count the number of distinct values.
+                            $group['aggregate'] = ['$addToSet' => '$' . $column];
+                            $set['aggregate'] = ['$size' => '$aggregate'];
+                        }
                     } else {
                         $group['aggregate'] = ['$' . $function => '$' . $column];
                     }
@@ -385,6 +393,10 @@ class Builder extends BaseBuilder
 
             if ($group) {
                 $pipeline[] = ['$group' => $group];
+            }
+
+            if ($set) {
+                $pipeline[] = ['$set' => $set];
             }
 
             // Apply order and limit
@@ -627,6 +639,10 @@ class Builder extends BaseBuilder
      */
     public function aggregateByGroup(string $function, array $columns = ['*'])
     {
+        if (count($columns) > 1) {
+            throw new InvalidArgumentException('Aggregating by group requires zero or one columns.');
+        }
+
         return $this->aggregate($function, $columns);
     }
 

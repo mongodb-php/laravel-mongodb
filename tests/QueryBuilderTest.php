@@ -622,8 +622,8 @@ class QueryBuilderTest extends TestCase
     public function testAggregateGroupBy()
     {
         DB::table('users')->insert([
-            ['name' => 'John Doe', 'role' => 'admin', 'score' => 1],
-            ['name' => 'Jane Doe', 'role' => 'admin', 'score' => 2],
+            ['name' => 'John Doe', 'role' => 'admin', 'score' => 1, 'active' => true],
+            ['name' => 'Jane Doe', 'role' => 'admin', 'score' => 2, 'active' => true],
             ['name' => 'Robert Roe', 'role' => 'user', 'score' => 4],
         ]);
 
@@ -631,8 +631,16 @@ class QueryBuilderTest extends TestCase
         $this->assertInstanceOf(LaravelCollection::class, $results);
         $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 2], (object) ['role' => 'user', 'aggregate' => 1]], $results->toArray());
 
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->aggregateByGroup('count', ['active']);
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 1], (object) ['role' => 'user', 'aggregate' => 0]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->aggregateByGroup('max', ['score']);
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 2], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+
         if (! method_exists(Builder::class, 'countByGroup')) {
-            $this->markTestSkipped('countBy* function require Laravel v11.38+');
+            $this->markTestSkipped('*byGroup functions require Laravel v11.38+');
         }
 
         $results = DB::table('users')->groupBy('role')->orderBy('role')->countByGroup();
@@ -654,6 +662,14 @@ class QueryBuilderTest extends TestCase
         $results = DB::table('users')->groupBy('role')->orderBy('role')->avgByGroup('score');
         $this->assertInstanceOf(LaravelCollection::class, $results);
         $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 1.5], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+    }
+
+    public function testAggregateByGroupException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Aggregating by group requires zero or one columns.');
+
+        DB::table('users')->aggregateByGroup('max', ['foo', 'bar']);
     }
 
     public function testUpdateWithUpsert()
