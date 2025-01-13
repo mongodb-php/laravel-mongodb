@@ -103,7 +103,7 @@ class Builder extends BaseBuilder
     /**
      * The maximum amount of seconds to allow the query to run.
      *
-     * @var int
+     * @var int|float
      */
     public $timeout;
 
@@ -214,7 +214,7 @@ class Builder extends BaseBuilder
     /**
      * The maximum amount of seconds to allow the query to run.
      *
-     * @param  int $seconds
+     * @param  int|float $seconds
      *
      * @return $this
      */
@@ -457,7 +457,7 @@ class Builder extends BaseBuilder
 
         // Apply order, offset, limit and projection
         if ($this->timeout) {
-            $options['maxTimeMS'] = $this->timeout * 1000;
+            $options['maxTimeMS'] = (int) ($this->timeout * 1000);
         }
 
         if ($this->orders) {
@@ -1551,13 +1551,6 @@ class Builder extends BaseBuilder
     public function readPreference(string $mode, ?array $tagSets = null, ?array $options = null): static
     {
         $this->readPreference = new ReadPreference($mode, $tagSets, $options);
-
-        return $this;
-    }
-
-    public function typeMap(array $typeMap): static
-    {
-        $this->options['typeMap'] = $typeMap;
 
         return $this;
     }

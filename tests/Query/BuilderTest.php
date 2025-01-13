@@ -1437,6 +1437,11 @@ class BuilderTest extends TestCase
             ['find' => [[], ['hint' => ['foo' => 1]]]],
             fn (Builder $builder) => $builder->hint(['foo' => 1]),
         ];
+
+        yield 'timeout' => [
+            ['find' => [[], ['maxTimeMS' => 2345]]],
+            fn (Builder $builder) => $builder->timeout(2.3456),
+        ];
     }
 
     #[DataProvider('provideExceptions')]
