@@ -251,7 +251,7 @@ class AtlasSearchTest extends TestCase
         );
     }
 
-    /** Generate random vectors */
+    /** Generate random vectors using fixed seed to make tests deterministic */
     private function addVector(array $items): array
     {
         srand(1);
