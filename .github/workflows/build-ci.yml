@@ -11,6 +11,8 @@ jobs:
         name: "PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} MongoDB ${{ matrix.mongodb }} ${{ matrix.mode }}"
 
         strategy:
+            # Tests with Atlas fail randomly
+            fail-fast: false
             matrix:
                 os:
                     - "ubuntu-latest"
