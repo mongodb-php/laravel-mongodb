@@ -21,6 +21,7 @@ use MongoDB\Driver\CursorInterface;
 use MongoDB\Exception\RuntimeException as MongoDBRuntimeException;
 use MongoDB\Laravel\Connection;
 use Override;
+use stdClass;
 use Traversable;
 use TypeError;
 
@@ -212,6 +213,13 @@ final class ScoutEngine extends Engine
             return $cursor->toArray();
         }
 
+        // Using compound to combine search operators
+        // https://www.mongodb.com/docs/atlas/atlas-search/compound/#options
+        // "should" specifies conditions that contribute to the relevance score
+        // at least one of them must match,
+        // - "text" search for the text including fuzzy matching
+        // - "wildcard" allows special characters like * and ?, similar to LIKE in SQL
+        // These are the only search operators to accept wildcard path.
         $compound = [
             'should' => [
                 [
@@ -236,7 +244,6 @@ final class ScoutEngine extends Engine
         // "filter" specifies conditions on exact values to match
         // "mustNot" specifies conditions on exact values that must not match
         // They don't contribute to the relevance score
-        // https://www.mongodb.com/docs/atlas/atlas-search/compound/#options
         foreach ($builder->wheres as $field => $value) {
             if ($field === '__soft_deleted') {
                 $value = (bool) $value;
@@ -378,8 +385,9 @@ final class ScoutEngine extends Engine
      * This is an estimate if the count is larger than 1000.
      *
      * @see Engine::getTotalCount()
+     * @see https://www.mongodb.com/docs/atlas/atlas-search/counting/
      *
-     * @param mixed $results
+     * @param stdClass[] $results
      */
     #[Override]
     public function getTotalCount($results): int
@@ -388,6 +396,8 @@ final class ScoutEngine extends Engine
             return 0;
         }
 
+        // __count field is added by the aggregation pipeline in performSearch()
+        // using the count.lowerBound in the $search stage
         return $results[0]->__count;
     }
 
