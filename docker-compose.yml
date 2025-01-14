@@ -18,7 +18,8 @@ services:
         ports:
             - "27017:27017"
         healthcheck:
-            test: mongosh mongodb:27017 --quiet --eval 'db.runCommand("ping").ok'
+            test: mongosh --quiet --eval 'db.runCommand("ping").ok'
             interval: 10s
             timeout: 10s
             retries: 5
+s

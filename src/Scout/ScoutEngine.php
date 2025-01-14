@@ -84,6 +84,8 @@ final class ScoutEngine extends Engine
     #[Override]
     public function update($models)
     {
+        assert($models instanceof EloquentCollection, new TypeError(sprintf('Argument #1 ($models) must be of type %s, %s given', EloquentCollection::class, get_debug_type($models))));
+
         if ($models->isEmpty()) {
             return;
         }
