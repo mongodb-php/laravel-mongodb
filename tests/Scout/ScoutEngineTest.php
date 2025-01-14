@@ -5,22 +5,24 @@ namespace MongoDB\Laravel\Tests\Scout;
 use Closure;
 use DateTimeImmutable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Collection as IlluminateCollection;
+use Illuminate\Support\Collection as LaravelCollection;
+use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Jobs\RemoveFromSearch;
 use Mockery as m;
-use MongoDB\BSON\Document;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\CursorInterface;
+use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Scout\ScoutEngine;
+use MongoDB\Laravel\Tests\Scout\Models\ScoutUser;
 use MongoDB\Laravel\Tests\Scout\Models\SearchableModel;
 use MongoDB\Laravel\Tests\TestCase;
-use MongoDB\Model\BSONDocument;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 use function array_replace_recursive;
+use function count;
 use function serialize;
 use function unserialize;
 
@@ -402,46 +404,71 @@ class ScoutEngineTest extends TestCase
         $engine->paginate($builder, $perPage, $page);
     }
 
-    #[DataProvider('provideResultsForMapIds')]
-    public function testLazyMapIds(array $results): void
+    public function testMapMethodRespectsOrder()
     {
-        $engine = new ScoutEngine(m::mock(Database::class), softDelete: false);
+        $database = m::mock(Database::class);
+        $engine = new ScoutEngine($database, false);
 
-        $ids = $engine->lazyMap($results);
+        $model = m::mock(Model::class);
+        $model->shouldReceive(['getScoutKeyName' => 'id']);
+        $model->shouldReceive('queryScoutModelsByIds->get')
+            ->andReturn(LaravelCollection::make([
+                new ScoutUser(['id' => 1]),
+                new ScoutUser(['id' => 2]),
+                new ScoutUser(['id' => 3]),
+                new ScoutUser(['id' => 4]),
+            ]));
 
-        $this->assertInstanceOf(IlluminateCollection::class, $ids);
-        $this->assertEquals(['key_1', 'key_2'], $ids->all());
+        $builder = m::mock(Builder::class);
+
+        $results = $engine->map($builder, [
+            ['_id' => 1, '__count' => 4],
+            ['_id' => 2, '__count' => 4],
+            ['_id' => 4, '__count' => 4],
+            ['_id' => 3, '__count' => 4],
+        ], $model);
+
+        $this->assertEquals(4, count($results));
+        $this->assertEquals([
+            0 => ['id' => 1],
+            1 => ['id' => 2],
+            2 => ['id' => 4],
+            3 => ['id' => 3],
+        ], $results->toArray());
     }
 
-    public static function provideResultsForMapIds(): iterable
+    public function testLazyMapMethodRespectsOrder()
     {
-        yield 'array' => [
-            [
-                ['_id' => 'key_1', 'foo' => 'bar'],
-                ['_id' => 'key_2', 'foo' => 'bar'],
-            ],
-        ];
+        $lazy = false;
+        $database = m::mock(Database::class);
+        $engine = new ScoutEngine($database, false);
 
-        yield 'object' => [
-            [
-                (object) ['_id' => 'key_1', 'foo' => 'bar'],
-                (object) ['_id' => 'key_2', 'foo' => 'bar'],
-            ],
-        ];
+        $model = m::mock(Model::class);
+        $model->shouldReceive(['getScoutKeyName' => 'id']);
+        $model->shouldReceive('queryScoutModelsByIds->cursor')
+            ->andReturn(LazyCollection::make([
+                new ScoutUser(['id' => 1]),
+                new ScoutUser(['id' => 2]),
+                new ScoutUser(['id' => 3]),
+                new ScoutUser(['id' => 4]),
+            ]));
 
-        yield Document::class => [
-            [
-                Document::fromPHP(['_id' => 'key_1', 'foo' => 'bar']),
-                Document::fromPHP(['_id' => 'key_2', 'foo' => 'bar']),
-            ],
-        ];
+        $builder = m::mock(Builder::class);
 
-        yield BSONDocument::class => [
-            [
-                new BSONDocument(['_id' => 'key_1', 'foo' => 'bar']),
-                new BSONDocument(['_id' => 'key_2', 'foo' => 'bar']),
-            ],
-        ];
+        $results = $engine->lazyMap($builder, [
+            ['_id' => 1, '__count' => 4],
+            ['_id' => 2, '__count' => 4],
+            ['_id' => 4, '__count' => 4],
+            ['_id' => 3, '__count' => 4],
+        ], $model);
+
+        $this->assertEquals(4, count($results));
+        $this->assertEquals([
+            0 => ['id' => 1],
+            1 => ['id' => 2],
+            2 => ['id' => 4],
+            3 => ['id' => 3],
+        ], $results->toArray());
     }
 
     public function testUpdate(): void
