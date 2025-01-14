@@ -42,6 +42,8 @@ class ScoutIntegrationTest extends TestCase
     {
         parent::setUp();
 
+        $this->skipIfSearchIndexManagementIsNotSupported();
+
         // Init the SQL database with some objects that will be indexed
         // Test data copied from Laravel Scout tests
         // https://github.com/laravel/scout/blob/10.x/tests/Integration/SearchableTests.php
@@ -88,8 +90,6 @@ class ScoutIntegrationTest extends TestCase
     /** This test create the search index for tests performing search */
     public function testItCanCreateTheCollection()
     {
-        $this->skipIfSearchIndexManagementIsNotSupported();
-
         $collection = DB::connection('mongodb')->getCollection('prefix_scout_users');
         $collection->drop();
 
@@ -111,7 +111,7 @@ class ScoutIntegrationTest extends TestCase
                 ['$search' => ['index' => 'scout', 'exists' => ['path' => 'name']]],
             ])->toArray();
 
-            if (count($indexedDocuments) > 0) {
+            if (count($indexedDocuments) >= 44) {
                 break;
             }
 

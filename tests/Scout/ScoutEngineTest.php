@@ -266,7 +266,7 @@ class ScoutEngineTest extends TestCase
                     '$search' => [
                         'compound' => [
                             'filter' => [
-                                ['equals' => ['path' => '__soft_deleted', 'value' => 0]],
+                                ['equals' => ['path' => '__soft_deleted', 'value' => false]],
                             ],
                         ],
                     ],
@@ -286,7 +286,7 @@ class ScoutEngineTest extends TestCase
                     '$search' => [
                         'compound' => [
                             'filter' => [
-                                ['equals' => ['path' => '__soft_deleted', 'value' => 1]],
+                                ['equals' => ['path' => '__soft_deleted', 'value' => true]],
                             ],
                         ],
                     ],
@@ -493,20 +493,24 @@ class ScoutEngineTest extends TestCase
             ->andReturn($collection);
         $collection->shouldReceive('bulkWrite')
             ->once()
-            ->with([
-                [
-                    'updateOne' => [
-                        ['_id' => 'key_1'],
-                        ['$setOnInsert' => ['_id' => 'key_1'], '$set' => ['id' => 1]],
-                        ['upsert' => true],
+            ->withArgs(function ($pipeline) {
+                $this->assertSame([
+                    [
+                        'updateOne' => [
+                            ['_id' => 'key_1'],
+                            ['$setOnInsert' => ['_id' => 'key_1'], '$set' => ['id' => 1, '__soft_deleted' => false]],
+                            ['upsert' => true],
+                        ],
                     ],
-                ],
-            ]);
+                ], $pipeline);
+
+                return true;
+            });
 
         $model = new SearchableModel(['id' => 1]);
         $model->delete();
 
-        $engine = new ScoutEngine($database, softDelete: false);
+        $engine = new ScoutEngine($database, softDelete: true);
         $engine->update(EloquentCollection::make([$model]));
     }
 

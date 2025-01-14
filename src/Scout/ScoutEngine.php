@@ -17,7 +17,6 @@ use MongoDB\BSON\Serializable;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection as MongoDBCollection;
 use MongoDB\Database;
-use MongoDB\Driver\Cursor;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Exception\RuntimeException as MongoDBRuntimeException;
 use MongoDB\Laravel\Connection;
@@ -311,9 +310,9 @@ final class ScoutEngine extends Engine
      *
      * @see Engine::map()
      *
-     * @param Builder      $builder
-     * @param array|Cursor $results
-     * @param Model        $model
+     * @param Builder $builder
+     * @param array   $results
+     * @param Model   $model
      *
      * @return Collection
      */
@@ -328,9 +327,9 @@ final class ScoutEngine extends Engine
      *
      * @see Engine::lazyMap()
      *
-     * @param Builder      $builder
-     * @param array|Cursor $results
-     * @param Model        $model
+     * @param Builder $builder
+     * @param array   $results
+     * @param Model   $model
      *
      * @return LazyCollection
      */
