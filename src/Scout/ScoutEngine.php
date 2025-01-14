@@ -126,7 +126,8 @@ final class ScoutEngine extends Engine
                 'updateOne' => [
                     ['_id' => $model->getScoutKey()],
                     [
-                        '$setOnInsert' => ['_id' => $model->getScoutKey()],
+                        // The _id field is added automatically when the document is inserted
+                        // Update all other fields
                         '$set' => $searchableData,
                     ],
                     ['upsert' => true],

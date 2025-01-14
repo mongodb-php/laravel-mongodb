@@ -485,14 +485,14 @@ class ScoutEngineTest extends TestCase
                 [
                     'updateOne' => [
                         ['_id' => 'key_1'],
-                        ['$setOnInsert' => ['_id' => 'key_1'], '$set' => ['id' => 1, 'date' => new UTCDateTime($date)]],
+                        ['$set' => ['id' => 1, 'date' => new UTCDateTime($date)]],
                         ['upsert' => true],
                     ],
                 ],
                 [
                     'updateOne' => [
                         ['_id' => 'key_2'],
-                        ['$setOnInsert' => ['_id' => 'key_2'], '$set' => ['id' => 2]],
+                        ['$set' => ['id' => 2]],
                         ['upsert' => true],
                     ],
                 ],
@@ -525,7 +525,7 @@ class ScoutEngineTest extends TestCase
                     [
                         'updateOne' => [
                             ['_id' => 'key_1'],
-                            ['$setOnInsert' => ['_id' => 'key_1'], '$set' => ['id' => 1, '__soft_deleted' => false]],
+                            ['$set' => ['id' => 1, '__soft_deleted' => false]],
                             ['upsert' => true],
                         ],
                     ],
