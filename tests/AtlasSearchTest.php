@@ -14,12 +14,11 @@ use MongoDB\Laravel\Tests\Models\Book;
 
 use function array_map;
 use function assert;
-
 use function mt_getrandmax;
 use function rand;
 use function range;
-use function srand;
 use function sort;
+use function srand;
 use function usleep;
 use function usort;
 

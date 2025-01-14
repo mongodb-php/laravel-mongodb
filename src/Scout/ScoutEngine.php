@@ -66,6 +66,8 @@ final class ScoutEngine extends Engine
         ],
     ];
 
+    private const TYPEMAP = ['root' => 'object', 'document' => 'bson', 'array' => 'bson'];
+
     public function __construct(
         private Database $database,
         private bool $softDelete,
@@ -96,28 +98,42 @@ final class ScoutEngine extends Engine
 
         $bulk = [];
         foreach ($models as $model) {
+            assert($model instanceof Model && method_exists($model, 'toSearchableArray'), new LogicException(sprintf('Model "%s" must use "%s" trait', $model::class, Searchable::class)));
+
             $searchableData = $model->toSearchableArray();
             $searchableData = self::serialize($searchableData);
 
-            if ($searchableData) {
-                unset($searchableData['_id']);
-
-                $searchableData = array_merge($searchableData, $model->scoutMetadata());
-                if (isset($searchableData['__soft_deleted'])) {
-                    $searchableData['__soft_deleted'] = (bool) $searchableData['__soft_deleted'];
-                }
-
+            // Skip/remove the model if it doesn't provide any searchable data
+            if (! $searchableData) {
                 $bulk[] = [
-                    'updateOne' => [
+                    'deleteOne' => [
                         ['_id' => $model->getScoutKey()],
-                        [
-                            '$setOnInsert' => ['_id' => $model->getScoutKey()],
-                            '$set' => $searchableData,
-                        ],
-                        ['upsert' => true],
                     ],
                 ];
+
+                continue;
             }
+
+            unset($searchableData['_id']);
+
+            $searchableData = array_merge($searchableData, $model->scoutMetadata());
+
+            /** Convert the __soft_deleted set by {@see Searchable::pushSoftDeleteMetadata()}
+             * into a boolean for efficient storage and indexing. */
+            if (isset($searchableData['__soft_deleted'])) {
+                $searchableData['__soft_deleted'] = (bool) $searchableData['__soft_deleted'];
+            }
+
+            $bulk[] = [
+                'updateOne' => [
+                    ['_id' => $model->getScoutKey()],
+                    [
+                        '$setOnInsert' => ['_id' => $model->getScoutKey()],
+                        '$set' => $searchableData,
+                    ],
+                    ['upsert' => true],
+                ],
+            ];
         }
 
         $this->getIndexableCollection($models)->bulkWrite($bulk);
@@ -133,7 +149,7 @@ final class ScoutEngine extends Engine
     #[Override]
     public function delete($models): void
     {
-        assert($models instanceof Collection, new TypeError(sprintf('Argument #1 ($models) must be of type %s, %s given', Collection::class, get_debug_type($models))));
+        assert($models instanceof EloquentCollection, new TypeError(sprintf('Argument #1 ($models) must be of type %s, %s given', Collection::class, get_debug_type($models))));
 
         if ($models->isEmpty()) {
             return;
@@ -149,7 +165,7 @@ final class ScoutEngine extends Engine
      *
      * @see Engine::search()
      *
-     * @return mixed
+     * @return array
      */
     #[Override]
     public function search(Builder $builder)
@@ -158,14 +174,14 @@ final class ScoutEngine extends Engine
     }
 
     /**
-     * Perform the given search on the engine.
+     * Perform the given search on the engine with pagination.
      *
      * @see Engine::paginate()
      *
      * @param int $perPage
      * @param int $page
      *
-     * @return mixed
+     * @return array
      */
     #[Override]
     public function paginate(Builder $builder, $perPage, $page)
@@ -182,20 +198,21 @@ final class ScoutEngine extends Engine
     /**
      * Perform the given search on the engine.
      */
-    protected function performSearch(Builder $builder, ?int $offset = null): array
+    private function performSearch(Builder $builder, ?int $offset = null): array
     {
         $collection = $this->getSearchableCollection($builder->model);
 
         if ($builder->callback) {
-            $result = call_user_func(
+            $cursor = call_user_func(
                 $builder->callback,
                 $collection,
                 $builder->query,
                 $offset,
             );
-            assert($result instanceof CursorInterface, new LogicException(sprintf('The search builder closure must return a MongoDB cursor, %s returned', get_debug_type($result))));
+            assert($cursor instanceof CursorInterface, new LogicException(sprintf('The search builder closure must return a MongoDB cursor, %s returned', get_debug_type($cursor))));
+            $cursor->setTypeMap(self::TYPEMAP);
 
-            return $result->toArray();
+            return $cursor->toArray();
         }
 
         $compound = [
@@ -270,11 +287,10 @@ final class ScoutEngine extends Engine
             $pipeline[] = ['$limit' => $builder->limit];
         }
 
-        $options = [
-            'typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array'],
-        ];
+        $cursor = $collection->aggregate($pipeline);
+        $cursor->setTypeMap(self::TYPEMAP);
 
-        return $collection->aggregate($pipeline, $options)->toArray();
+        return $cursor->toArray();
     }
 
     /**
@@ -539,6 +555,6 @@ final class ScoutEngine extends Engine
             sleep(1);
         }
 
-        throw new MongoDBRuntimeException('Atlas search index operation time out');
+        throw new MongoDBRuntimeException(sprintf('Atlas search index operation time out after %s seconds', self::WAIT_TIMEOUT_SEC));
     }
 }

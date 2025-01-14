@@ -27,7 +27,7 @@ use function unserialize;
 /** Unit tests that do not require an Atlas Search cluster */
 class ScoutEngineTest extends TestCase
 {
-    private const EXPECTED_SEARCH_OPTIONS = ['typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']];
+    private const EXPECTED_TYPEMAP = ['root' => 'object', 'document' => 'bson', 'array' => 'bson'];
 
     /** @param callable(): Builder $builder  */
     #[DataProvider('provideSearchPipelines')]
@@ -40,13 +40,16 @@ class ScoutEngineTest extends TestCase
             ->with('collection_searchable')
             ->andReturn($collection);
         $cursor = m::mock(CursorInterface::class);
+        $cursor->shouldReceive('setTypeMap')->once()->with(self::EXPECTED_TYPEMAP);
         $cursor->shouldReceive('toArray')->once()->with()->andReturn($data);
 
+        $collection->shouldReceive('getCollectionName')
+            ->zeroOrMoreTimes()
+            ->andReturn('collection_searchable');
         $collection->shouldReceive('aggregate')
             ->once()
-            ->withArgs(function ($pipeline, $options) use ($expectedPipeline) {
+            ->withArgs(function ($pipeline) use ($expectedPipeline) {
                 self::assertEquals($expectedPipeline, $pipeline);
-                self::assertEquals(self::EXPECTED_SEARCH_OPTIONS, $options);
 
                 return true;
             })
@@ -295,10 +298,11 @@ class ScoutEngineTest extends TestCase
             fn () => new Builder(new SearchableModel(), 'query', callback: function (...$args) {
                 $this->assertCount(3, $args);
                 $this->assertInstanceOf(Collection::class, $args[0]);
+                $this->assertSame('collection_searchable', $args[0]->getCollectionName());
                 $this->assertSame('query', $args[1]);
                 $this->assertNull($args[2]);
 
-                return $args[0]->aggregate(['pipeline'], self::EXPECTED_SEARCH_OPTIONS);
+                return $args[0]->aggregate(['pipeline']);
             }),
             ['pipeline'],
         ];
@@ -383,11 +387,10 @@ class ScoutEngineTest extends TestCase
                     ],
                 ], $args[0]);
 
-                $this->assertSame(self::EXPECTED_SEARCH_OPTIONS, $args[1]);
-
                 return true;
             })
             ->andReturn($cursor);
+        $cursor->shouldReceive('setTypeMap')->once()->with(self::EXPECTED_TYPEMAP);
         $cursor->shouldReceive('toArray')
             ->once()
             ->with()
