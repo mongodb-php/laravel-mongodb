@@ -146,6 +146,26 @@ class ScoutIntegrationTest extends TestCase
     }
 
     #[Depends('testItCanCreateTheCollection')]
+    public function testItCanUseBasicSearchCursor()
+    {
+        // All the search queries use "sort" option to ensure the results are deterministic
+        $results = ScoutUser::search('lar')->take(10)->orderBy('id')->cursor();
+
+        self::assertSame([
+            1 => 'Laravel Framework',
+            11 => 'Larry Casper',
+            12 => 'Reta Larkin',
+            20 => 'Prof. Larry Prosacco DVM',
+            39 => 'Linkwood Larkin',
+            40 => 'Otis Larson MD',
+            41 => 'Gudrun Larkin',
+            42 => 'Dax Larkin',
+            43 => 'Dana Larson Sr.',
+            44 => 'Amos Larson Sr.',
+        ], $results->pluck('name', 'id')->all());
+    }
+
+    #[Depends('testItCanCreateTheCollection')]
     public function testItCanUseBasicSearchWithQueryCallback()
     {
         $results = ScoutUser::search('lar')->take(10)->orderBy('id')->query(function ($query) {

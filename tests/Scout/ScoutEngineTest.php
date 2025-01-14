@@ -403,11 +403,11 @@ class ScoutEngineTest extends TestCase
     }
 
     #[DataProvider('provideResultsForMapIds')]
-    public function testMapIds(array $results): void
+    public function testLazyMapIds(array $results): void
     {
         $engine = new ScoutEngine(m::mock(Database::class), softDelete: false);
 
-        $ids = $engine->mapIds($results);
+        $ids = $engine->lazyMap($results);
 
         $this->assertInstanceOf(IlluminateCollection::class, $ids);
         $this->assertEquals(['key_1', 'key_2'], $ids->all());

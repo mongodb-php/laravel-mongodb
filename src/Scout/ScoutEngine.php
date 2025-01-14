@@ -27,7 +27,6 @@ use TypeError;
 
 use function array_column;
 use function array_flip;
-use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function assert;
@@ -44,7 +43,6 @@ use function iterator_to_array;
 use function method_exists;
 use function sleep;
 use function sprintf;
-use function substr;
 use function time;
 
 /**
@@ -313,40 +311,67 @@ final class ScoutEngine extends Engine
      *
      * @see Engine::map()
      *
-     * @param array $results
-     * @param Model $model
+     * @param Builder      $builder
+     * @param array|Cursor $results
+     * @param Model        $model
+     *
+     * @return Collection
      */
     #[Override]
     public function map(Builder $builder, $results, $model): Collection
     {
-        assert(is_array($results), new TypeError(sprintf('Argument #2 ($results) must be of type array, %s given', get_debug_type($results))));
-        assert($model instanceof Model, new TypeError(sprintf('Argument #3 ($model) must be of type %s, %s given', Model::class, get_debug_type($model))));
+        return $this->performMap($builder, $results, $model, false);
+    }
 
+    /**
+     * Map the given results to instances of the given model via a lazy collection.
+     *
+     * @see Engine::lazyMap()
+     *
+     * @param Builder      $builder
+     * @param array|Cursor $results
+     * @param Model        $model
+     *
+     * @return LazyCollection
+     */
+    #[Override]
+    public function lazyMap(Builder $builder, $results, $model): LazyCollection
+    {
+        return $this->performMap($builder, $results, $model, true);
+    }
+
+    /** @return ($lazy is true ? LazyCollection : Collection)<mixed> */
+    private function performMap(Builder $builder, array $results, Model $model, bool $lazy): Collection|LazyCollection
+    {
         if (! $results) {
-            return $model->newCollection();
+            $collection = $model->newCollection();
+
+            return $lazy ? LazyCollection::make($collection) : $collection;
         }
 
         $objectIds = array_column($results, '_id');
         $objectIdPositions = array_flip($objectIds);
 
-        return $model->getScoutModelsByIds(
-            $builder,
-            $objectIds,
-        )->filter(function ($model) use ($objectIdPositions) {
-            return array_key_exists($model->getScoutKey(), $objectIdPositions);
-        })->map(function ($model) use ($results, $objectIdPositions) {
-            $result = $results[$objectIdPositions[$model->getScoutKey()]] ?? [];
+        return $model->queryScoutModelsByIds($builder, $objectIds)
+            ->{$lazy ? 'cursor' : 'get'}()
+            ->filter(function ($model) use ($objectIds) {
+                return in_array($model->getScoutKey(), $objectIds);
+            })
+            ->map(function ($model) use ($results, $objectIdPositions) {
+                $result = $results[$objectIdPositions[$model->getScoutKey()]] ?? [];
 
-            foreach ($result as $key => $value) {
-                if ($key[0] === '_') {
-                    $model->withScoutMetadata($key, $value);
+                foreach ($result as $key => $value) {
+                    if ($key[0] === '_' && $key !== '_id') {
+                        $model->withScoutMetadata($key, $value);
+                    }
                 }
-            }
 
-            return $model;
-        })->sortBy(function ($model) use ($objectIdPositions) {
-            return $objectIdPositions[$model->getScoutKey()];
-        })->values();
+                return $model;
+            })
+            ->sortBy(function ($model) use ($objectIdPositions) {
+                return $objectIdPositions[$model->getScoutKey()];
+            })
+            ->values();
     }
 
     /**
@@ -364,7 +389,7 @@ final class ScoutEngine extends Engine
             return 0;
         }
 
-        return $results[0]['__count'];
+        return $results[0]->__count;
     }
 
     /**
@@ -382,50 +407,6 @@ final class ScoutEngine extends Engine
         $collection = $this->getIndexableCollection($model);
 
         $collection->deleteMany([]);
-    }
-
-    /**
-     * Map the given results to instances of the given model via a lazy collection.
-     *
-     * @see Engine::lazyMap()
-     *
-     * @param Builder      $builder
-     * @param array|Cursor $results
-     * @param Model        $model
-     *
-     * @return LazyCollection
-     */
-    #[Override]
-    public function lazyMap(Builder $builder, $results, $model): LazyCollection
-    {
-        assert($results instanceof Cursor || is_array($results), new TypeError(sprintf('Argument #2 ($results) must be of type %s|array, %s given', Cursor::class, get_debug_type($results))));
-        assert($model instanceof Model, new TypeError(sprintf('Argument #3 ($model) must be of type %s, %s given', Model::class, get_debug_type($model))));
-
-        if (! $results) {
-            return LazyCollection::make($model->newCollection());
-        }
-
-        $objectIds = array_column($results, '_id');
-        $objectIdPositions = array_flip($objectIds);
-
-        return $model->queryScoutModelsByIds(
-            $builder,
-            $objectIds,
-        )->cursor()->filter(function ($model) use ($objectIds) {
-            return in_array($model->getScoutKey(), $objectIds);
-        })->map(function ($model) use ($results, $objectIdPositions) {
-            $result = $results[$objectIdPositions[$model->getScoutKey()]] ?? [];
-
-            foreach ($result as $key => $value) {
-                if (substr($key, 0, 1) === '_') {
-                    $model->withScoutMetadata($key, $value);
-                }
-            }
-
-            return $model;
-        })->sortBy(function ($model) use ($objectIdPositions) {
-            return $objectIdPositions[$model->getScoutKey()];
-        })->values();
     }
 
     /**
@@ -475,7 +456,7 @@ final class ScoutEngine extends Engine
     {
         assert(is_string($name), new TypeError(sprintf('Argument #1 ($name) must be of type string, %s given', get_debug_type($name))));
 
-        $this->database->selectCollection($name)->drop();
+        $this->database->dropCollection($name);
     }
 
     /** Get the MongoDB collection used to search for the provided model */

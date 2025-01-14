@@ -39,7 +39,7 @@ class SearchableModel extends Model
 
     /**
      * This method must be overridden when the `getScoutKey` method is also overridden,
-     * to support model serialization for async indexation jobs.
+     * to support model serialization for async indexing jobs.
      *
      * @see Searchable::getScoutKeyName()
      */
