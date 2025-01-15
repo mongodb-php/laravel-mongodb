@@ -11,6 +11,7 @@ use MongoDB\Collection as MongoDBCollection;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Laravel\Schema\Builder;
 use MongoDB\Laravel\Tests\Models\Book;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_map;
 use function assert;
@@ -21,6 +22,7 @@ use function srand;
 use function usleep;
 use function usort;
 
+#[Group('atlas-search')]
 class AtlasSearchTest extends TestCase
 {
     private array $vectors;
