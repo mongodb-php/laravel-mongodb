@@ -12,6 +12,7 @@ use MongoDB\Laravel\Tests\Scout\Models\SearchableInSameNamespace;
 use MongoDB\Laravel\Tests\TestCase;
 use Override;
 use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_merge;
 use function count;
@@ -21,6 +22,7 @@ use function range;
 use function sprintf;
 use function usleep;
 
+#[Group('atlas-search')]
 class ScoutIntegrationTest extends TestCase
 {
     #[Override]
