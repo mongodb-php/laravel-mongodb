@@ -3,56 +3,86 @@
 namespace MongoDB\Laravel\Tests\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Tests\TestCase;
 
 use function count;
+use function ksort;
 
 class EloquentWithAggregateTest extends TestCase
 {
     protected function tearDown(): void
     {
-        EloquentWithCountModel1::truncate();
-        EloquentWithCountModel2::truncate();
-        EloquentWithCountModel3::truncate();
-        EloquentWithCountModel4::truncate();
+        EloquentWithAggregateModel1::truncate();
+        EloquentWithAggregateModel2::truncate();
+        EloquentWithAggregateModel3::truncate();
+        EloquentWithAggregateModel4::truncate();
 
         parent::tearDown();
     }
 
     public function testWithAggregate()
     {
-        EloquentWithCountModel1::create(['id' => 1]);
-        $one = EloquentWithCountModel1::create(['id' => 2]);
+        EloquentWithAggregateModel1::create(['id' => 1]);
+        $one = EloquentWithAggregateModel1::create(['id' => 2]);
         $one->twos()->create(['value' => 4]);
         $one->twos()->create(['value' => 6]);
 
-        $results = EloquentWithCountModel1::withCount('twos')->where('id', 2);
-        $this->assertSame([
+        $results = EloquentWithAggregateModel1::withCount('twos')->where('id', 2);
+        self::assertSameResults([
             ['id' => 2, 'twos_count' => 2],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $results = EloquentWithCountModel1::withMax('twos', 'value')->where('id', 2);
-        $this->assertSame([
+        $results = EloquentWithAggregateModel1::withMax('twos', 'value')->where('id', 2);
+        self::assertSameResults([
             ['id' => 2, 'twos_max' => 6],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $results = EloquentWithCountModel1::withMin('twos', 'value')->where('id', 2);
-        $this->assertSame([
+        $results = EloquentWithAggregateModel1::withMin('twos', 'value')->where('id', 2);
+        self::assertSameResults([
             ['id' => 2, 'twos_min' => 4],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $results = EloquentWithCountModel1::withAvg('twos', 'value')->where('id', 2);
-        $this->assertSame([
+        $results = EloquentWithAggregateModel1::withAvg('twos', 'value')->where('id', 2);
+        self::assertSameResults([
             ['id' => 2, 'twos_avg' => 5.0],
-        ], $results->get()->toArray());
+        ], $results->get());
+    }
+
+    public function testWithAggregateEmbed()
+    {
+        EloquentWithAggregateModel1::create(['id' => 1]);
+        $one = EloquentWithAggregateModel1::create(['id' => 2]);
+        $one->embeddeds()->create(['value' => 4]);
+        $one->embeddeds()->create(['value' => 6]);
+
+        $results = EloquentWithAggregateModel1::withCount('embeddeds')->select('id')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'embeddeds_count' => 2],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withMax('embeddeds', 'value')->select('id')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'embeddeds_max' => 6],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withMin('embeddeds', 'value')->select('id')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'embeddeds_min' => 4],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withAvg('embeddeds', 'value')->select('id')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'embeddeds_avg' => 5.0],
+        ], $results->get());
     }
 
     public function testWithAggregateFiltered()
     {
-        EloquentWithCountModel1::create(['id' => 1]);
-        $one = EloquentWithCountModel1::create(['id' => 2]);
+        EloquentWithAggregateModel1::create(['id' => 1]);
+        $one = EloquentWithAggregateModel1::create(['id' => 2]);
         $one->twos()->create(['value' => 4]);
         $one->twos()->create(['value' => 6]);
         $one->twos()->create(['value' => 8]);
@@ -60,35 +90,69 @@ class EloquentWithAggregateTest extends TestCase
             $query->where('value', '<=', 6);
         };
 
-        $results = EloquentWithCountModel1::withCount(['twos' => $filter])->where('id', 2);
-        $this->assertSame([
+        $results = EloquentWithAggregateModel1::withCount(['twos' => $filter])->where('id', 2);
+        self::assertSameResults([
             ['id' => 2, 'twos_count' => 2],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $results = EloquentWithCountModel1::withMax(['twos' => $filter], 'value')->where('id', 2);
-        $this->assertSame([
+        $results = EloquentWithAggregateModel1::withMax(['twos' => $filter], 'value')->where('id', 2);
+        self::assertSameResults([
             ['id' => 2, 'twos_max' => 6],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $results = EloquentWithCountModel1::withMin(['twos' => $filter], 'value')->where('id', 2);
-        $this->assertSame([
+        $results = EloquentWithAggregateModel1::withMin(['twos' => $filter], 'value')->where('id', 2);
+        self::assertSameResults([
             ['id' => 2, 'twos_min' => 4],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $results = EloquentWithCountModel1::withAvg(['twos' => $filter], 'value')->where('id', 2);
-        $this->assertSame([
+        $results = EloquentWithAggregateModel1::withAvg(['twos' => $filter], 'value')->where('id', 2);
+        self::assertSameResults([
             ['id' => 2, 'twos_avg' => 5.0],
-        ], $results->get()->toArray());
+        ], $results->get());
+    }
+
+    public function testWithAggregateEmbedFiltered()
+    {
+        self::markTestSkipped('EmbedsMany does not support filtering. $filter requires an expression but the Query Builder generates query predicates.');
+
+        EloquentWithAggregateModel1::create(['id' => 1]);
+        $one = EloquentWithAggregateModel1::create(['id' => 2]);
+        $one->embeddeds()->create(['value' => 4]);
+        $one->embeddeds()->create(['value' => 6]);
+        $one->embeddeds()->create(['value' => 8]);
+        $filter = static function (Builder $query) {
+            $query->where('value', '<=', 6);
+        };
+
+        $results = EloquentWithAggregateModel1::withCount(['embeddeds' => $filter])->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'embeddeds_count' => 2],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withMax(['embeddeds' => $filter], 'value')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'embeddeds_max' => 6],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withMin(['embeddeds' => $filter], 'value')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'embeddeds_min' => 4],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withAvg(['embeddeds' => $filter], 'value')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'embeddeds_avg' => 5.0],
+        ], $results->get());
     }
 
     public function testWithAggregateMultipleResults()
     {
         $connection = DB::connection('mongodb');
         $ones = [
-            EloquentWithCountModel1::create(['id' => 1]),
-            EloquentWithCountModel1::create(['id' => 2]),
-            EloquentWithCountModel1::create(['id' => 3]),
-            EloquentWithCountModel1::create(['id' => 4]),
+            EloquentWithAggregateModel1::create(['id' => 1]),
+            EloquentWithAggregateModel1::create(['id' => 2]),
+            EloquentWithAggregateModel1::create(['id' => 3]),
+            EloquentWithAggregateModel1::create(['id' => 4]),
         ];
 
         $ones[0]->twos()->create(['value' => 1]);
@@ -101,88 +165,103 @@ class EloquentWithAggregateTest extends TestCase
         $connection->enableQueryLog();
 
         // Count
-        $results = EloquentWithCountModel1::withCount([
+        $results = EloquentWithAggregateModel1::withCount([
             'twos' => function ($query) {
                 $query->where('value', '>=', 2);
             },
         ]);
 
-        $this->assertSame([
+        self::assertSameResults([
             ['id' => 1, 'twos_count' => 2],
             ['id' => 2, 'twos_count' => 0],
             ['id' => 3, 'twos_count' => 1],
             ['id' => 4, 'twos_count' => 0],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $this->assertSame(2, count($connection->getQueryLog()));
+        self::assertSame(2, count($connection->getQueryLog()));
         $connection->flushQueryLog();
 
         // Max
-        $results = EloquentWithCountModel1::withMax([
+        $results = EloquentWithAggregateModel1::withMax([
             'twos' => function ($query) {
                 $query->where('value', '>=', 2);
             },
         ], 'value');
 
-        $this->assertSame([
+        self::assertSameResults([
             ['id' => 1, 'twos_max' => 3],
             ['id' => 2, 'twos_max' => null],
             ['id' => 3, 'twos_max' => 2],
             ['id' => 4, 'twos_max' => null],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $this->assertSame(2, count($connection->getQueryLog()));
+        self::assertSame(2, count($connection->getQueryLog()));
         $connection->flushQueryLog();
 
         // Min
-        $results = EloquentWithCountModel1::withMin([
+        $results = EloquentWithAggregateModel1::withMin([
             'twos' => function ($query) {
                 $query->where('value', '>=', 2);
             },
         ], 'value');
 
-        $this->assertSame([
+        self::assertSameResults([
             ['id' => 1, 'twos_min' => 2],
             ['id' => 2, 'twos_min' => null],
             ['id' => 3, 'twos_min' => 2],
             ['id' => 4, 'twos_min' => null],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $this->assertSame(2, count($connection->getQueryLog()));
+        self::assertSame(2, count($connection->getQueryLog()));
         $connection->flushQueryLog();
 
         // Avg
-        $results = EloquentWithCountModel1::withAvg([
+        $results = EloquentWithAggregateModel1::withAvg([
             'twos' => function ($query) {
                 $query->where('value', '>=', 2);
             },
         ], 'value');
 
-        $this->assertSame([
+        self::assertSameResults([
             ['id' => 1, 'twos_avg' => 2.5],
             ['id' => 2, 'twos_avg' => null],
             ['id' => 3, 'twos_avg' => 2.0],
             ['id' => 4, 'twos_avg' => null],
-        ], $results->get()->toArray());
+        ], $results->get());
 
-        $this->assertSame(2, count($connection->getQueryLog()));
+        self::assertSame(2, count($connection->getQueryLog()));
         $connection->flushQueryLog();
     }
 
     public function testGlobalScopes()
     {
-        $one = EloquentWithCountModel1::create();
+        $one = EloquentWithAggregateModel1::create();
         $one->fours()->create();
 
-        $result = EloquentWithCountModel1::withCount('fours')->first();
-        $this->assertSame(0, $result->fours_count);
+        $result = EloquentWithAggregateModel1::withCount('fours')->first();
+        self::assertSame(0, $result->fours_count);
 
-        $result = EloquentWithCountModel1::withCount('allFours')->first();
-        $this->assertSame(1, $result->all_fours_count);
+        $result = EloquentWithAggregateModel1::withCount('allFours')->first();
+        self::assertSame(1, $result->all_fours_count);
+    }
+
+    private static function assertSameResults(array $expected, Collection $collection)
+    {
+        $actual = $collection->toArray();
+
+        foreach ($actual as &$item) {
+            ksort($item);
+        }
+
+        foreach ($expected as &$item) {
+            ksort($item);
+        }
+
+        self::assertSame($expected, $actual);
     }
 }
 
-class EloquentWithCountModel1 extends Model
+class EloquentWithAggregateModel1 extends Model
 {
     protected $connection = 'mongodb';
     public $table = 'one';
@@ -191,21 +270,26 @@ class EloquentWithCountModel1 extends Model
 
     public function twos()
     {
-        return $this->hasMany(EloquentWithCountModel2::class, 'one_id');
+        return $this->hasMany(EloquentWithAggregateModel2::class, 'one_id');
     }
 
     public function fours()
     {
-        return $this->hasMany(EloquentWithCountModel4::class, 'one_id');
+        return $this->hasMany(EloquentWithAggregateModel4::class, 'one_id');
     }
 
     public function allFours()
     {
         return $this->fours()->withoutGlobalScopes();
     }
+
+    public function embeddeds()
+    {
+        return $this->embedsMany(EloquentWithAggregateEmbeddedModel::class);
+    }
 }
 
-class EloquentWithCountModel2 extends Model
+class EloquentWithAggregateModel2 extends Model
 {
     protected $connection = 'mongodb';
     public $table = 'two';
@@ -224,11 +308,11 @@ class EloquentWithCountModel2 extends Model
 
     public function threes()
     {
-        return $this->hasMany(EloquentWithCountModel3::class, 'two_id');
+        return $this->hasMany(EloquentWithAggregateModel3::class, 'two_id');
     }
 }
 
-class EloquentWithCountModel3 extends Model
+class EloquentWithAggregateModel3 extends Model
 {
     protected $connection = 'mongodb';
     public $table = 'three';
@@ -245,7 +329,7 @@ class EloquentWithCountModel3 extends Model
     }
 }
 
-class EloquentWithCountModel4 extends Model
+class EloquentWithAggregateModel4 extends Model
 {
     protected $connection = 'mongodb';
     public $table = 'four';
@@ -260,4 +344,11 @@ class EloquentWithCountModel4 extends Model
             $builder->where('id', '>', 1);
         });
     }
+}
+
+class EloquentWithAggregateEmbeddedModel extends Model
+{
+    protected $connection = 'mongodb';
+    public $timestamps = false;
+    protected $guarded = [];
 }

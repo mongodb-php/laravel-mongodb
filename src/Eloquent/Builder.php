@@ -326,10 +326,12 @@ class Builder extends EloquentBuilder
             if ($relation instanceof EmbedsOneOrMany) {
                 switch ($function) {
                     case 'count':
-                        $this->project([$alias => ['$size' => ['$ifNull' => ['$' . $relation->getQualifiedForeignKeyName(), []]]]]);
+                        $this->project([$alias => ['$size' => ['$ifNull' => ['$' . $name, []]]]]);
                         break;
-                    case 'exists':
-                        $this->project([$alias => ['$exists' => '$' . $relation->getQualifiedForeignKeyName()]]);
+                    case 'min':
+                    case 'max':
+                    case 'avg':
+                        $this->project([$alias => ['$' . $function => '$' . $name . '.' . $column]]);
                         break;
                     default:
                         throw new InvalidArgumentException(sprintf('Invalid aggregate function "%s"', $function));
