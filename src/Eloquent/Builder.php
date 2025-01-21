@@ -319,7 +319,7 @@ class Builder extends EloquentBuilder
             $segments = explode(' ', $name);
 
             $name = $segments[0];
-            $alias = (count($segments) === 3 && Str::lower($segments[1]) === 'as' ? $segments[2] : Str::snake($name) . '_count');
+            $alias = (count($segments) === 3 && Str::lower($segments[1]) === 'as' ? $segments[2] : Str::snake($name) . '_' . $function);
 
             $relation = $this->getRelationWithoutConstraints($name);
 
@@ -335,6 +335,7 @@ class Builder extends EloquentBuilder
                         throw new InvalidArgumentException(sprintf('Invalid aggregate function "%s"', $function));
                 }
             } else {
+                // @todo support "exists"
                 $this->withAggregate[$alias] = [
                     'relation' => $relation,
                     'function' => $function,
