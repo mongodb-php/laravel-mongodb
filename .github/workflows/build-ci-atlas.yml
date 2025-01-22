@@ -13,7 +13,7 @@ jobs:
         strategy:
             matrix:
                 os:
-                    - "ubuntu-latest"
+                    - "ubuntu-24.04-arm"
                 php:
                     - "8.2"
                     - "8.3"
