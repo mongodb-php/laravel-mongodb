@@ -5,7 +5,10 @@ namespace MongoDB\Laravel\Tests\Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel1;
+use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel2;
+use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel3;
+use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel4;
 use MongoDB\Laravel\Tests\TestCase;
 
 use function count;
@@ -259,96 +262,4 @@ class EloquentWithAggregateTest extends TestCase
 
         self::assertSame($expected, $actual);
     }
-}
-
-class EloquentWithAggregateModel1 extends Model
-{
-    protected $connection = 'mongodb';
-    public $table = 'one';
-    public $timestamps = false;
-    protected $guarded = [];
-
-    public function twos()
-    {
-        return $this->hasMany(EloquentWithAggregateModel2::class, 'one_id');
-    }
-
-    public function fours()
-    {
-        return $this->hasMany(EloquentWithAggregateModel4::class, 'one_id');
-    }
-
-    public function allFours()
-    {
-        return $this->fours()->withoutGlobalScopes();
-    }
-
-    public function embeddeds()
-    {
-        return $this->embedsMany(EloquentWithAggregateEmbeddedModel::class);
-    }
-}
-
-class EloquentWithAggregateModel2 extends Model
-{
-    protected $connection = 'mongodb';
-    public $table = 'two';
-    public $timestamps = false;
-    protected $guarded = [];
-    protected $withCount = ['threes'];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope('app', function ($builder) {
-            $builder->latest();
-        });
-    }
-
-    public function threes()
-    {
-        return $this->hasMany(EloquentWithAggregateModel3::class, 'two_id');
-    }
-}
-
-class EloquentWithAggregateModel3 extends Model
-{
-    protected $connection = 'mongodb';
-    public $table = 'three';
-    public $timestamps = false;
-    protected $guarded = [];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope('app', function ($builder) {
-            $builder->where('id', '>', 0);
-        });
-    }
-}
-
-class EloquentWithAggregateModel4 extends Model
-{
-    protected $connection = 'mongodb';
-    public $table = 'four';
-    public $timestamps = false;
-    protected $guarded = [];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope('app', function ($builder) {
-            $builder->where('id', '>', 1);
-        });
-    }
-}
-
-class EloquentWithAggregateEmbeddedModel extends Model
-{
-    protected $connection = 'mongodb';
-    public $timestamps = false;
-    protected $guarded = [];
 }
