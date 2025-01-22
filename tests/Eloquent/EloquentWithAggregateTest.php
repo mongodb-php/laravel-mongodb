@@ -5,6 +5,7 @@ namespace MongoDB\Laravel\Tests\Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel1;
 use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel2;
 use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel3;
@@ -116,36 +117,16 @@ class EloquentWithAggregateTest extends TestCase
 
     public function testWithAggregateEmbedFiltered()
     {
-        self::markTestSkipped('EmbedsMany does not support filtering. $filter requires an expression but the Query Builder generates query predicates.');
-
-        EloquentWithAggregateModel1::create(['id' => 1]);
-        $one = EloquentWithAggregateModel1::create(['id' => 2]);
-        $one->embeddeds()->create(['value' => 4]);
-        $one->embeddeds()->create(['value' => 6]);
-        $one->embeddeds()->create(['value' => 8]);
+        EloquentWithAggregateModel1::create(['id' => 2]);
         $filter = static function (Builder $query) {
             $query->where('value', '<=', 6);
         };
 
-        $results = EloquentWithAggregateModel1::withCount(['embeddeds' => $filter])->where('id', 2);
-        self::assertSameResults([
-            ['id' => 2, 'embeddeds_count' => 2],
-        ], $results->get());
+        // @see https://jira.mongodb.org/browse/PHPORM-292
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Constraints are not supported for embedded relations');
 
-        $results = EloquentWithAggregateModel1::withMax(['embeddeds' => $filter], 'value')->where('id', 2);
-        self::assertSameResults([
-            ['id' => 2, 'embeddeds_max' => 6],
-        ], $results->get());
-
-        $results = EloquentWithAggregateModel1::withMin(['embeddeds' => $filter], 'value')->where('id', 2);
-        self::assertSameResults([
-            ['id' => 2, 'embeddeds_min' => 4],
-        ], $results->get());
-
-        $results = EloquentWithAggregateModel1::withAvg(['embeddeds' => $filter], 'value')->where('id', 2);
-        self::assertSameResults([
-            ['id' => 2, 'embeddeds_avg' => 5.0],
-        ], $results->get());
+        EloquentWithAggregateModel1::withCount(['embeddeds' => $filter])->where('id', 2)->get();
     }
 
     public function testWithAggregateMultipleResults()
@@ -246,6 +227,17 @@ class EloquentWithAggregateTest extends TestCase
 
         $result = EloquentWithAggregateModel1::withCount('allFours')->first();
         self::assertSame(1, $result->all_fours_count);
+    }
+
+    public function testHybridNotSupported()
+    {
+        EloquentWithAggregateModel1::create(['id' => 2]);
+
+        // @see https://jira.mongodb.org/browse/PHPORM-292
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('WithAggregate does not support hybrid relations');
+
+        EloquentWithAggregateModel1::withCount('hybrids')->where('id', 2)->get();
     }
 
     private static function assertSameResults(array $expected, Collection $collection)

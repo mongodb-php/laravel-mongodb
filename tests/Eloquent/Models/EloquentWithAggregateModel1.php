@@ -30,4 +30,9 @@ class EloquentWithAggregateModel1 extends Model
     {
         return $this->embedsMany(EloquentWithAggregateEmbeddedModel::class);
     }
+
+    public function hybrids()
+    {
+        return $this->hasMany(EloquentWithAggregateHybridModel::class, 'one_id');
+    }
 }

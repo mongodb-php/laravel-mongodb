@@ -16,6 +16,7 @@ use MongoDB\Builder\Type\SearchOperatorInterface;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\Laravel\Connection;
+use MongoDB\Laravel\Eloquent\Model as DocumentModel;
 use MongoDB\Laravel\Helpers\QueriesRelationships;
 use MongoDB\Laravel\Query\AggregationBuilder;
 use MongoDB\Laravel\Relations\EmbedsOneOrMany;
@@ -314,8 +315,6 @@ class Builder extends EloquentBuilder
         $relations = is_array($relations) ? $relations : [$relations];
 
         foreach ($this->parseWithRelations($relations) as $name => $constraints) {
-            // For "count" and "exist" we can use the embedded list of ids
-            // for embedded relations, everything can be computed directly using a projection.
             $segments = explode(' ', $name);
 
             $name = $segments[0];
@@ -323,7 +322,18 @@ class Builder extends EloquentBuilder
 
             $relation = $this->getRelationWithoutConstraints($name);
 
+            if (! DocumentModel::isDocumentModel($relation->getRelated())) {
+                throw new InvalidArgumentException('WithAggregate does not support hybrid relations');
+            }
+
             if ($relation instanceof EmbedsOneOrMany) {
+                $subQuery = $this->newQuery();
+                $constraints($subQuery);
+                if ($subQuery->getQuery()->wheres) {
+                    // @see https://jira.mongodb.org/browse/PHPORM-292
+                    throw new InvalidArgumentException('Constraints are not supported for embedded relations');
+                }
+
                 switch ($function) {
                     case 'count':
                         $this->getQuery()->project([$alias => ['$size' => ['$ifNull' => ['$' . $name, []]]]]);
@@ -337,7 +347,6 @@ class Builder extends EloquentBuilder
                         throw new InvalidArgumentException(sprintf('Invalid aggregate function "%s"', $function));
                 }
             } else {
-                // @todo support "exists"
                 $this->withAggregate[$alias] = [
                     'relation' => $relation,
                     'function' => $function,
@@ -346,11 +355,6 @@ class Builder extends EloquentBuilder
                     'alias' => $alias,
                 ];
             }
-
-            // @todo HasMany ?
-
-            // Otherwise, we need to store the aggregate request to run during "eagerLoadRelation"
-            // after the root results are retrieved.
         }
 
         return $this;
