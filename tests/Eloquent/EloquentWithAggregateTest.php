@@ -162,6 +162,7 @@ class EloquentWithAggregateTest extends TestCase
             ['id' => 4, 'twos_count' => 0],
         ], $results->get());
 
+        // Only 2 queries should be executed: the main query and the aggregate grouped by foreign id
         self::assertSame(2, count($connection->getQueryLog()));
         $connection->flushQueryLog();
 

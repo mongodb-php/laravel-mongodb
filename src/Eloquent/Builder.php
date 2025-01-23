@@ -22,14 +22,19 @@ use MongoDB\Laravel\Query\AggregationBuilder;
 use MongoDB\Laravel\Relations\EmbedsOneOrMany;
 use MongoDB\Laravel\Relations\HasMany;
 use MongoDB\Model\BSONDocument;
+use RuntimeException;
+use TypeError;
 
 use function array_key_exists;
 use function array_merge;
+use function assert;
 use function collect;
 use function count;
 use function explode;
+use function get_debug_type;
 use function is_array;
 use function is_object;
+use function is_string;
 use function iterator_to_array;
 use function property_exists;
 use function sprintf;
@@ -43,7 +48,11 @@ class Builder extends EloquentBuilder
     private const DUPLICATE_KEY_ERROR = 11000;
     use QueriesRelationships;
 
-    /** @var array{relation: Relation, function: string, constraints: array, column: string, alias: string}[] */
+    /**
+     * List of aggregations on the related models after the main query.
+     *
+     * @var array{relation: Relation, function: string, constraints: array, column: string, alias: string}[]
+     */
     private array $withAggregate = [];
 
     /**
@@ -306,19 +315,37 @@ class Builder extends EloquentBuilder
         }
     }
 
+    /**
+     * Add subsequent queries to include an aggregate value for a relationship.
+     * For embedded relations, a projection is used to calculate the aggregate.
+     *
+     * @see \Illuminate\Database\Eloquent\Concerns\QueriesRelationships::withAggregate()
+     *
+     * @param  mixed  $relations Name of the relationship or an array of relationships to closure for constraint
+     * @param  string $column    Name of the field to aggregate
+     * @param  string $function  Required aggregation function name (count, min, max, avg)
+     *
+     * @return $this
+     */
     public function withAggregate($relations, $column, $function = null)
     {
         if (empty($relations)) {
             return $this;
         }
 
+        assert(is_string($function), new TypeError('Argument 3 ($function) passed to withAggregate must be of the type string, ' . get_debug_type($function) . ' given'));
+
         $relations = is_array($relations) ? $relations : [$relations];
 
         foreach ($this->parseWithRelations($relations) as $name => $constraints) {
             $segments = explode(' ', $name);
 
+            $alias = match (true) {
+                count($segments) === 1 => Str::snake($segments[0]) . '_' . $function,
+                count($segments) === 3 && Str::lower($segments[1]) => $segments[2],
+                default => throw new InvalidArgumentException(sprintf('Invalid relation name format. Expected "relation as alias" or "relation", got "%s"', $name)),
+            };
             $name = $segments[0];
-            $alias = (count($segments) === 3 && Str::lower($segments[1]) === 'as' ? $segments[2] : Str::snake($name) . '_' . $function);
 
             $relation = $this->getRelationWithoutConstraints($name);
 
@@ -347,6 +374,7 @@ class Builder extends EloquentBuilder
                         throw new InvalidArgumentException(sprintf('Invalid aggregate function "%s"', $function));
                 }
             } else {
+                // The aggregation will be performed after the main query, during eager loading.
                 $this->withAggregate[$alias] = [
                     'relation' => $relation,
                     'function' => $function,
@@ -384,6 +412,8 @@ class Builder extends EloquentBuilder
 
                         $model->setAttribute($withAggregate['alias'], $value);
                     }
+                } else {
+                    throw new RuntimeException(sprintf('Unsupported relation type for aggregation', $withAggregate['relation']::class));
                 }
             }
         }
