@@ -24,7 +24,7 @@ In this guide, you can learn how to perform a **transaction** in MongoDB by
 using {+odm-long+}. Transactions let you run a sequence of write operations
 that update the data only after the transaction is committed.
 
-If the transaction fails, {+php-library+}, which manages MongoDB operations
+If the transaction fails, the {+php-library+}, which manages MongoDB operations
 for the {+odm-short+}, ensures that MongoDB discards all the changes made within
 the transaction before they become visible. This property of transactions
 that ensures that all changes within a transaction are either applied or
