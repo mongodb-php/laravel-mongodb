@@ -24,8 +24,8 @@ In this guide, you can learn how to perform a **transaction** in MongoDB by
 using {+odm-long+}. Transactions let you run a sequence of write operations
 that update the data only after the transaction is committed.
 
-If the transaction fails, the {+php-library+} that manages MongoDB operations
-for the {+odm-short+} ensures that MongoDB discards all the changes made within
+If the transaction fails, the {+php-library+}, which manages MongoDB operations
+for the {+odm-short+}, ensures that MongoDB discards all the changes made within
 the transaction before they become visible. This property of transactions
 that ensures that all changes within a transaction are either applied or
 discarded is called **atomicity**.
@@ -74,14 +74,19 @@ MongoDB Server and the {+odm-short+} have the following limitations:
   you perform write operations in a transaction. To learn more about this
   limitation, see :manual:`Create Collections and Indexes in a Transaction </core/transactions/#create-collections-and-indexes-in-a-transaction>`
   in the {+server-docs-name+}.
+
 - MongoDB does not support nested transactions. If you attempt to start a
   transaction within another one, the extension raises a ``RuntimeException``.
   To learn more about this limitation, see :manual:`Transactions and Sessions </core/transactions/#transactions-and-sessions>`
   in the {+server-docs-name+}.
+
 - {+odm-long+} does not support the database testing traits
   ``Illuminate\Foundation\Testing\DatabaseTransactions`` and ``Illuminate\Foundation\Testing\RefreshDatabase``.
   As a workaround, you can create migrations with the ``Illuminate\Foundation\Testing\DatabaseMigrations``
   trait to reset the database after each test.
+
+- {+odm-long+} does not support running parallel operations within a
+  single transaction.
 
 .. _laravel-transaction-callback:
 
