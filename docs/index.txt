@@ -21,6 +21,7 @@
    Query Builder </query-builder>
    User Authentication </user-authentication>
    Cache & Locks </cache>
+   HTTP Sessions </sessions>
    Queues </queues>
    Transactions </transactions>
    GridFS Filesystems </filesystems>
@@ -84,6 +85,7 @@ see the following content:
 - :ref:`laravel-aggregation-builder`
 - :ref:`laravel-user-authentication`
 - :ref:`laravel-cache`
+- :ref:`laravel-sessions`
 - :ref:`laravel-queues`
 - :ref:`laravel-transactions`
 - :ref:`laravel-filesystems`

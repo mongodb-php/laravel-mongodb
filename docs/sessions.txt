@@ -1,0 +1,98 @@
+.. _laravel-sessions:
+
+=============
+HTTP Sessions
+=============
+
+.. facet::
+   :name: genre
+   :values: reference
+
+.. meta::
+   :keywords: php framework, odm, cookies, multiple requests
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Overview
+--------
+
+In this guide, you can learn how to set up HTTP sessions by
+using {+odm-long+}. Sessions allow your application to store information
+about a user across multiple requests. Your application stores this
+information in a specified location that it can access in future
+requests that the user makes. The {+odm-long+} session driver uses the
+``MongoDbSessionHandler`` class from the Symfony framework to store the
+sessions.
+
+To learn more about support for sessions, see `HTTP Session
+<https://laravel.com/docs/{+laravel-docs-version+}/session>`__ in the
+Laravel documentation.
+
+Register a Session
+------------------
+
+Before you can register a session, you must configure your connection to
+MongoDB in your application's ``config/database.php`` file. To learn how
+to set up this connection, see the
+:ref:`laravel-quick-start-connect-to-mongodb` step of the Quick Start
+guide.
+
+Next, you can select the session driver and connection in one of the
+following ways:
+
+1. In an ``.env`` file, by setting the following variables:
+
+   .. code-block:: ini
+      :caption: .env
+
+      SESSION_DRIVER=mongodb
+      # Optional, this is the default value
+      SESSION_CONNECTION=mongodb
+
+#. In the ``config/session.php`` file, as shown in the following code:
+
+   .. code-block:: php
+      :caption: config/session.php
+
+      <?php return [
+          'driver' => 'mongodb',     // Required
+          'connection' => 'mongodb', // Database connection name, default is "mongodb"
+          'table' => 'sessions',     // Collection name, default is "sessions"
+          'lifetime' => null,        // TTL of session in minutes, default is 120
+          'options' => []            // Other driver options
+      ];
+
+The following list describes other driver options that you can set in
+the ``options`` array:
+
+- ``id_field``: Field name for storing the session ID (default: ``_id``)
+- ``data_field``: Field name for storing the session data (default: ``data``)
+- ``time_field``: Field name for storing the timestamp (default: ``time``)
+- ``expiry_field``: Field name for storing the expiry-timestamp (default: ``expires_at``)
+- ``ttl``: Time to live in seconds.
+
+We recommend that you create an index on the ``expiry_field`` field for
+garbage collection. You can also automatically expire sessions in the
+database by creating a TTL index on the collection that stores session
+information.
+
+The shell command to create a TTL index resembles the following command:
+
+.. code-block:: sh
+
+   db.sessions.createIndex(
+      { "expiry_field": 1 },
+      { expireAfterSeconds: 0 }
+   )
+
+Setting the ``expireAfterSeconds`` value to ``0`` in the index
+definition instructs MongoDB to expire documents at the clock time
+specified in the ``expiry_field`` field.
+
+To learn more about TTL indexes, see :manual:`Expire Data from
+Collections by Setting TTL </tutorial/expire-data/>` in the
+{+server-docs-name+}.
