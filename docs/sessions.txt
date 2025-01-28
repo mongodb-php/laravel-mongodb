@@ -22,11 +22,11 @@ Overview
 
 In this guide, you can learn how to set up HTTP sessions by
 using {+odm-long+}. Sessions allow your application to store information
-about a user across multiple requests. Your application stores this
+about a user across multiple server requests. Your application stores this
 information in a specified location that it can access in future
-requests that the user makes. The {+odm-long+} session driver uses the
-``MongoDbSessionHandler`` class from the Symfony framework to store the
-sessions.
+requests that the user makes. The session driver in {+odm-long+} uses
+the ``MongoDbSessionHandler`` class from the Symfony framework to store
+session information.
 
 To learn more about support for sessions, see `HTTP Session
 <https://laravel.com/docs/{+laravel-docs-version+}/session>`__ in the
@@ -44,7 +44,7 @@ guide.
 Next, you can select the session driver and connection in one of the
 following ways:
 
-1. In an ``.env`` file, by setting the following variables:
+1. In an ``.env`` file, by setting the following environment variables:
 
    .. code-block:: ini
       :caption: .env
@@ -73,7 +73,7 @@ the ``options`` array:
 - ``data_field``: Field name for storing the session data (default: ``data``)
 - ``time_field``: Field name for storing the timestamp (default: ``time``)
 - ``expiry_field``: Field name for storing the expiry-timestamp (default: ``expires_at``)
-- ``ttl``: Time to live in seconds.
+- ``ttl``: Time to live in seconds
 
 We recommend that you create an index on the ``expiry_field`` field for
 garbage collection. You can also automatically expire sessions in the
