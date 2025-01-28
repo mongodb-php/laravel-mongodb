@@ -1,0 +1,186 @@
+.. _laravel-atlas-search-avs:
+
+============================
+Atlas Search & Vector Search
+============================
+
+.. facet::
+   :name: genre
+   :values: reference
+
+.. meta::
+   :keywords: code example, semantic, embeddings
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Overview
+--------
+
+In this guide, you can learn how to perform searches on your documents
+by using the Atlas Search and Vector Search features. {+odm-long+}
+provides an API to use these features directly with your models.
+
+To learn more about these features, see the following pages in the Atlas
+documentation:
+
+- :atlas:`Atlas Search Overview </atlas-search/atlas-search-overview/>`
+- :atlas:`Atlas Vector Search Overview </atlas/atlas-vector-search/vector-search-overview/>`
+
+.. note:: Deployment Compatibility
+
+   You can use the Atlas Search and Vector Search features only when
+   connecting to MongoDB Atlas clusters. These features are not available for
+   self-managed deployments.
+
+This page describes how to create the appropriate indexes for each type
+of search and provides examples of how to use the {+odm-short+} to
+perform searches.
+
+Atlas Search
+------------
+
+In this section, you can learn how to create Atlas Search indexes
+and perform searches in the {+odm-short+}. The Atlas Search API
+internally uses the ``$search`` aggregation operator to perform queries.
+To learn more about this operator, see the :atlas:`$search
+</atlas-search/aggregation-stages/search/>` reference in the Atlas documentation.
+
+.. _laravel-as-index:
+
+Create an Atlas Search Index
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. TODO in DOCSP-46230
+
+Perform Queries
+~~~~~~~~~~~~~~~
+
+In this section, you can learn how to use the Atlas Search API in the
+{+odm-short+}.
+
+General Queries
+```````````````
+
+The {+odm-short+} provides the ``search()`` method as a query
+builder method and as an Eloquent model method. You can use the
+``search()`` method to run Atlas Search queries on documents in your
+collections.
+
+You must pass an ``operator`` parameter to the ``search()`` method that
+is an instance of ``SearchOperatorInterface`` or an array. You can
+create an instance of ``SearchOperatorInterface`` by calling the
+``Search::text()`` method and passing the field you are
+querying and your search term or phrase.
+
+You must include the following import statement in your application to
+create a ``SearchOperatorInterface`` instance:
+
+.. code-block:: php
+
+   use MongoDB\Builder\Search;
+
+The following code uses the index created in the preceding
+:ref:`laravel-as-index` section to perform an Atlas Search query on the
+``movies`` collection:
+
+.. io-code-block::
+   :copyable: true
+
+   .. input:: /includes/fundamentals/as-avs/AtlasSearchTest.php
+      :language: php
+      :dedent:
+      :start-after: start-search-query
+      :end-before: end-search-query
+
+   .. output::
+      :language: json
+      :visible: false
+
+      [
+         { "title": "Dreaming of Jakarta",
+           "year": 1990
+         },
+         { "title": "See You in My Dreams",
+           "year": 1996
+         }
+      ]
+
+You can use the ``search()`` method to perform many types of Atlas
+Search queries. Depending on your desired query, you can pass the
+following optional parameters to ``search()``:
+
+- ``index``: ``string``
+- ``highlight``: ``array``
+- ``concurrent``: ``bool``
+- ``count``: ``string``
+- ``searchAfter``: ``string``
+- ``searchBefore`: ``string```
+- ``scoreDetails``: ``bool``
+- ``sort``: ``array``
+- ``returnStoredSource``: ``bool``
+- ``tracking``: ``array``
+
+To learn more about these parameters, see the :atlas:`Fields
+</atlas-search/aggregation-stages/search/#fields>` section of the
+``$search`` operator reference in the Atlas documentation.
+
+Autocomplete Queries
+````````````````````
+
+The {+odm-short+} provides the ``autocomplete()`` method as a query
+builder method and as an Eloquent model method. You can use the
+``autocomplete()`` method to run autocomplete searches on documents in your
+collections.
+
+To learn more about this type of Atlas Search query, see the
+:atlas:`autocomplete </atlas-search/autocomplete/>` reference in the
+Atlas documentation.
+
+.. note::
+
+   You must create an Atlas Search index with an autocomplete configuration
+   on your collection before you can perform autocomplete searches. See the
+   :ref:`laravel-as-index` section of this guide to learn more about
+   creating Search indexes.
+
+The following code performs an Atlas Search autocomplete query on the
+``movies`` collection:
+
+.. io-code-block::
+   :copyable: true
+
+   .. input:: /includes/fundamentals/as-avs/AtlasSearchTest.php
+      :language: php
+      :dedent:
+      :start-after: start-auto-query
+      :end-before: end-auto-query
+
+   .. output::
+      :language: json
+      :visible: false
+
+      [
+         { "title": "Dreaming of Jakarta",
+           "year": 1990
+         },
+         { "title": "Jakob the Liar",
+           "year": 1999
+         },
+         { "title": "Emily Calling Jake",
+           "year": 2001
+         }
+      ]
+
+You can also pass the following parameters to the ``autocomplete()``
+method to customize the query:
+
+- ``fuzzy``: ``bool`` or ``array`` (default: ``false``)
+- ``tokenOrder``: ``string`` (default: ``'any'``)
+
+To learn more about these parameters, see the :atlas:`Options
+</atlas-search/autocomplete/#options>` section of the
+``autocomplete`` operator reference in the Atlas documentation.
