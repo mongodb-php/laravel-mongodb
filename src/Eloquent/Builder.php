@@ -342,7 +342,7 @@ class Builder extends EloquentBuilder
 
             $alias = match (true) {
                 count($segments) === 1 => Str::snake($segments[0]) . '_' . $function,
-                count($segments) === 3 && Str::lower($segments[1]) => $segments[2],
+                count($segments) === 3 && Str::lower($segments[1]) === 'as' => $segments[2],
                 default => throw new InvalidArgumentException(sprintf('Invalid relation name format. Expected "relation as alias" or "relation", got "%s"', $name)),
             };
             $name = $segments[0];
@@ -413,7 +413,7 @@ class Builder extends EloquentBuilder
                         $model->setAttribute($withAggregate['alias'], $value);
                     }
                 } else {
-                    throw new RuntimeException(sprintf('Unsupported relation type for aggregation', $withAggregate['relation']::class));
+                    throw new RuntimeException(sprintf('Unsupported relation type for aggregation: %s', $withAggregate['relation']::class));
                 }
             }
         }

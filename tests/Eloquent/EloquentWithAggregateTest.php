@@ -11,6 +11,7 @@ use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel2;
 use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel3;
 use MongoDB\Laravel\Tests\Eloquent\Models\EloquentWithAggregateModel4;
 use MongoDB\Laravel\Tests\TestCase;
+use PHPUnit\Framework\Attributes\TestWith;
 
 use function count;
 use function ksort;
@@ -53,6 +54,45 @@ class EloquentWithAggregateTest extends TestCase
         self::assertSameResults([
             ['id' => 2, 'twos_avg' => 5.0],
         ], $results->get());
+    }
+
+    public function testWithAggregateAlias()
+    {
+        EloquentWithAggregateModel1::create(['id' => 1]);
+        $one = EloquentWithAggregateModel1::create(['id' => 2]);
+        $one->twos()->create(['value' => 4]);
+        $one->twos()->create(['value' => 6]);
+
+        $results = EloquentWithAggregateModel1::withCount('twos as result')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'result' => 2],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withMax('twos as result', 'value')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'result' => 6],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withMin('twos as result', 'value')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'result' => 4],
+        ], $results->get());
+
+        $results = EloquentWithAggregateModel1::withAvg('twos as result', 'value')->where('id', 2);
+        self::assertSameResults([
+            ['id' => 2, 'result' => 5.0],
+        ], $results->get());
+    }
+
+    #[TestWith(['withCount'])]
+    #[TestWith(['withMax'])]
+    #[TestWith(['withMin'])]
+    #[TestWith(['withAvg'])]
+    public function testWithAggregateInvalidAlias(string $method)
+    {
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Expected "relation as alias" or "relation", got "twos foo result"');
+        EloquentWithAggregateModel1::{$method}('twos foo result', 'value')->get();
     }
 
     public function testWithAggregateEmbed()
