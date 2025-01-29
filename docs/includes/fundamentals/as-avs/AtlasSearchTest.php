@@ -86,22 +86,12 @@ class AtlasSearchTest extends TestCase
      */
     public function vectorSearchTest(): void
     {
-        // start-vs-query
-        $movies = Book::vectorSearch(
-            index: 'vector',
-            path: 'vector_embeddings',
-            // Vector representation of the query "coming of age"
-            queryVector: [-0.0016261312, -0.028070757, ...],
-            limit: 3,
-        );
-        // end-vs-query
-
         $results = Book::vectorSearch(
             index: 'vector',
             path: 'vector4',
             queryVector: $this->vectors[0],
-            limit: 5,
-            numCandidates: 15,
+            limit: 3,
+            numCandidates: 10,
             filter: Query::query(
                 title: Query::ne('A'),
             ),

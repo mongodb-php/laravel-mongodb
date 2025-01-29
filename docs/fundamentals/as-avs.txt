@@ -225,11 +225,16 @@ The following code uses the index created in the preceding
 .. io-code-block::
    :copyable: true
 
-   .. input:: /includes/fundamentals/as-avs/AtlasSearchTest.php
+   .. input::
       :language: php
-      :dedent:
-      :start-after: start-vs-query
-      :end-before: end-vs-query
+
+      $movies = Book::vectorSearch(
+          index: 'vector',
+          path: 'vector_embeddings',
+          // Vector representation of the query "coming of age"
+          queryVector: [-0.0016261312, -0.028070757, ...],
+          limit: 3,
+      );
 
    .. output::
       :language: json
