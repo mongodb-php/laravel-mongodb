@@ -682,7 +682,7 @@ each group:
   values for each group
 
 countByGroup() Example
-``````````````````````
+^^^^^^^^^^^^^^^^^^^^^^
 
 The following example groups documents in the ``movies``
 collection by their ``imdb.rating`` values and returns
@@ -696,7 +696,7 @@ the number of documents that have each distinct
    :end-before: end count by group
 
 sumByGroup() Example
-````````````````````
+^^^^^^^^^^^^^^^^^^^^
 
 The following example groups documents in the ``movies``
 collection by their ``year`` values and returns
