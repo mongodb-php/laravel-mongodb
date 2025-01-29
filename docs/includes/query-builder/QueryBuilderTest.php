@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\AbstractPaginator;
-use Illuminate\Support\Collection as LaravelCollection;
 use Illuminate\Support\Facades\DB;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
