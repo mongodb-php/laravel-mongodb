@@ -20,7 +20,7 @@ Fundamentals
    Read Operations </fundamentals/read-operations>
    Write Operations </fundamentals/write-operations>
    Aggregation Builder </fundamentals/aggregation-builder>
-   Atlas Search & Vector Search </fundamentals/as-avs>
+   Atlas Search & Vector Search </fundamentals/atlas-search-vector-search>
 
 Learn more about the following concepts related to {+odm-long+}:
 
