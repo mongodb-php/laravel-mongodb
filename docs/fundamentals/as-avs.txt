@@ -118,7 +118,7 @@ following optional parameters to ``search()``:
 - ``concurrent``: ``bool``
 - ``count``: ``string``
 - ``searchAfter``: ``string``
-- ``searchBefore`: ``string```
+- ``searchBefore`` ``string``
 - ``scoreDetails``: ``bool``
 - ``sort``: ``array``
 - ``returnStoredSource``: ``bool``
@@ -184,3 +184,79 @@ method to customize the query:
 To learn more about these parameters, see the :atlas:`Options
 </atlas-search/autocomplete/#options>` section of the
 ``autocomplete`` operator reference in the Atlas documentation.
+
+Atlas Vector Search
+-------------------
+
+In this section, you can learn how to create Atlas Vector Search indexes
+and perform searches in the {+odm-short+}. The Atlas Vector Search API
+internally uses the ``$vectorSearch`` aggregation operator to perform queries.
+To learn more about this operator, see the :atlas:`$vectorSearch
+</atlas-vector-search/vector-search-stage/#mongodb-pipeline-pipe.-vectorSearch>`
+reference in the Atlas documentation.
+
+.. _laravel-avs-index:
+
+Create an Atlas Vector Search Index
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. TODO in DOCSP-46230
+
+Perform Queries
+~~~~~~~~~~~~~~~
+
+In this section, you can learn how to use the Atlas Vector Search API in
+the {+odm-short+}. The {+odm-short+} provides the ``vectorSearch()``
+method as a query builder method and as an Eloquent model method. You
+can use the ``vectorSearch()`` method to run Atlas Vector Search queries
+on documents in your collections.
+
+You must pass the following parameters to the ``search()`` method:
+
+- ``index``: Name of the vector search index (type: ``string``)
+- ``path``: Field that stores vector embeddings (type: ``array`` or ``string``)
+- ``queryVector``: Vector representation of your query (type: ``array``)
+- ``limit``: Number of results to return (type: ``int``)
+
+The following code uses the index created in the preceding
+:ref:`laravel-avs-index` section to perform an Atlas Vector Search query on the
+``movies`` collection:
+
+.. io-code-block::
+   :copyable: true
+
+   .. input:: /includes/fundamentals/as-avs/AtlasSearchTest.php
+      :language: php
+      :dedent:
+      :start-after: start-vs-query
+      :end-before: end-vs-query
+
+   .. output::
+      :language: json
+      :visible: false
+
+      [
+         { "title": "Sunrising",
+           "plot": "A shy teenager discovers confidence and new friendships during a transformative summer camp experience."
+         },
+         { "title": "Last Semester",
+           "plot": "High school friends navigate love, identity, and unexpected challenges before graduating together."
+         }
+      ]
+
+You can use the ``vector()`` method to perform many types of Atlas
+Search queries. Depending on your desired query, you can pass the
+following optional parameters to ``search()``:
+
+- ``exact``: ``bool`` (default: ``false``)
+- ``filter``: ``QueryInterface`` or ``array``
+- ``numCandidates``: ``int`` or ``null`` (default: ``null``)
+
+.. tip::
+
+   To construct a ``QueryInterface`` instance, you must import the
+   ``MongoDB\Builder\Query`` class into your application.
+
+To learn more about these parameters, see the :atlas:`Fields
+</atlas-vector-search/vector-search-stage/#fields>` section of the
+``$vectorSearch`` operator reference in the Atlas documentation.

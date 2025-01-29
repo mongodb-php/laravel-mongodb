@@ -6,11 +6,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Support\Facades\DB;
-use MongoDB\Laravel\Tests\TestCase;
+use MongoDB\Builder\Query;
 use MongoDB\Builder\Search;
+use MongoDB\Laravel\Tests\TestCase;
+
+use function array_map;
+use function mt_getrandmax;
+use function rand;
+use function range;
+use function srand;
 
 class AtlasSearchTest extends TestCase
 {
+    private array $vectors;
+
     protected function setUp(): void
     {
         require_once __DIR__ . '/Movie.php';
@@ -30,6 +39,13 @@ class AtlasSearchTest extends TestCase
             ['title' => 'Jakob the Liar', 'year' => 1999],
             ['title' => 'Emily Calling Jake', 'year' => 2001],
         ]);
+
+        Movie::insert($this->addVector([
+            ['title' => 'A', 'plot' => 'A shy teenager discovers confidence and new friendships during a transformative summer camp experience.'],
+            ['title' => 'B', 'plot' => 'A detective teams up with a hacker to unravel a global conspiracy threatening personal freedoms.'],
+            ['title' => 'C', 'plot' => 'High school friends navigate love, identity, and unexpected challenges before graduating together.'],
+            ['title' => 'D', 'plot' => 'Stranded on a distant planet, astronauts must repair their ship before supplies run out.'],
+        ]));
     }
 
     /**
@@ -62,5 +78,47 @@ class AtlasSearchTest extends TestCase
 
         $this->assertNotNull($movies);
         $this->assertCount(3, $movies);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function vectorSearchTest(): void
+    {
+        // start-vs-query
+        $movies = Book::vectorSearch(
+            index: 'vector',
+            path: 'vector_embeddings',
+            // Vector representation of the query "coming of age"
+            queryVector: [-0.0016261312, -0.028070757, ...],
+            limit: 3,
+        );
+        // end-vs-query
+
+        $results = Book::vectorSearch(
+            index: 'vector',
+            path: 'vector4',
+            queryVector: $this->vectors[0],
+            limit: 5,
+            numCandidates: 15,
+            filter: Query::query(
+                title: Query::ne('A'),
+            ),
+        );
+
+        $this->assertNotNull($results);
+        $this->assertSame('C', $results->first()->title);
+    }
+
+    /** Generate random vectors using fixed seed to make tests deterministic */
+    private function addVector(array $items): array
+    {
+        srand(1);
+        foreach ($items as &$item) {
+            $this->vectors[] = $item['vector4'] = array_map(fn () => rand() / mt_getrandmax(), range(0, 3));
+        }
+
+        return $items;
     }
 }
