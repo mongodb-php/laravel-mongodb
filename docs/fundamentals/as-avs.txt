@@ -164,15 +164,9 @@ The following code performs an Atlas Search autocomplete query on the
       :visible: false
 
       [
-         { "title": "Dreaming of Jakarta",
-           "year": 1990
-         },
-         { "title": "Jakob the Liar",
-           "year": 1999
-         },
-         { "title": "Emily Calling Jake",
-           "year": 2001
-         }
+         "Dreaming of Jakarta",
+         "Jakob the Liar",
+         "title": "Emily Calling Jake"
       ]
 
 You can also pass the following parameters to the ``autocomplete()``
