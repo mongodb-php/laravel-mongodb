@@ -658,6 +658,56 @@ value of ``imdb.rating`` of those matches by using the
    :start-after: begin aggregation with filter
    :end-before: end aggregation with filter
 
+Aggregate By Group Examples 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can perform an aggregation operation on a group
+of documents by using the following query builder 
+methods, which return a single aggregated value for
+each group:
+
+- ``countByGroup()``: Retrieves a count of the given field's 
+  distinct values for each group
+
+- ``minByGroup()``: Retrieves the minimum value of the 
+  given field for each group
+
+- ``maxByGroup()``: Retrieves the maximum value of the 
+  given field for each group
+
+- ``sumByGroup()``: Retrieves the sum of a given field's
+  values for each group
+
+- ``avgByGroup()``: Retrieves the average of a given field's
+  values for each group
+
+countByGroup() Example
+``````````````````````
+
+The following example groups documents in the ``movies``
+collection by their ``imdb.rating`` values and returns
+the number of documents that have each distinct 
+``imdb.rating`` value:
+
+.. literalinclude:: /includes/query-builder/QueryBuilderTest.php
+   :language: php
+   :dedent:
+   :start-after: begin count by group
+   :end-before: end count by group
+
+sumByGroup() Example
+````````````````````
+
+The following example groups documents in the ``movies``
+collection by their ``year`` values and returns
+a sum of ``awards.wins`` values for each year:
+
+.. literalinclude:: /includes/query-builder/QueryBuilderTest.php
+   :language: php
+   :dedent:
+   :start-after: begin sum by group
+   :end-before: end sum by group
+
 .. _laravel-options-query-builder:
 
 Set Query-Level Options
