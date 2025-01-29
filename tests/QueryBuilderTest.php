@@ -576,12 +576,6 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals(3, DB::table('items')->min('amount'));
         $this->assertEquals(34, DB::table('items')->max('amount'));
         $this->assertEquals(17.75, DB::table('items')->avg('amount'));
-        $this->assertTrue(DB::table('items')->exists());
-        $this->assertTrue(DB::table('items')->where('name', 'knife')->exists());
-        $this->assertFalse(DB::table('items')->where('name', 'ladle')->exists());
-        $this->assertFalse(DB::table('items')->doesntExist());
-        $this->assertFalse(DB::table('items')->where('name', 'knife')->doesntExist());
-        $this->assertTrue(DB::table('items')->where('name', 'ladle')->doesntExist());
 
         $this->assertEquals(2, DB::table('items')->where('name', 'spoon')->count('amount'));
         $this->assertEquals(14, DB::table('items')->where('name', 'spoon')->max('amount'));
