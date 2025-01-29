@@ -80,7 +80,7 @@ class AtlasSearchTest extends TestCase
             throw $e;
         }
 
-        // Wait for the index to be ready
+        // Waits for the index to be ready
         do {
             $ready = true;
             usleep(10_000);
@@ -145,7 +145,8 @@ class AtlasSearchTest extends TestCase
         $this->assertSame('C', $results->first()->title);
     }
 
-    /** Generate random vectors using fixed seed to make tests deterministic */
+    /** Generates random vectors using fixed seed to make tests
+     * deterministic */
     private function addVector(array $items): array
     {
         srand(1);

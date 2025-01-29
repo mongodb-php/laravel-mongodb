@@ -9,7 +9,7 @@ Atlas Search & Vector Search
    :values: reference
 
 .. meta::
-   :keywords: code example, semantic, embeddings
+   :keywords: code example, semantic, embeddings, text
 
 .. contents:: On this page
    :local:
@@ -33,8 +33,8 @@ documentation:
 .. note:: Deployment Compatibility
 
    You can use the Atlas Search and Vector Search features only when
-   connecting to MongoDB Atlas clusters. These features are not available for
-   self-managed deployments.
+   you connect to MongoDB Atlas clusters. These features are not
+   available for self-managed deployments.
 
 This page describes how to create the appropriate indexes for each type
 of search and provides examples of how to use the {+odm-short+} to
@@ -71,7 +71,8 @@ builder method and as an Eloquent model method. You can use the
 collections.
 
 You must pass an ``operator`` parameter to the ``search()`` method that
-is an instance of ``SearchOperatorInterface`` or an array. You can
+is an instance of ``SearchOperatorInterface`` or an array that contains
+the operator type, field name, and query value. You can
 create an instance of ``SearchOperatorInterface`` by calling the
 ``Search::text()`` method and passing the field you are
 querying and your search term or phrase.
@@ -83,8 +84,8 @@ create a ``SearchOperatorInterface`` instance:
 
    use MongoDB\Builder\Search;
 
-The following code uses the index created in the preceding
-:ref:`laravel-as-index` section to perform an Atlas Search query on the
+The following code performs an Atlas Search query that searches for the
+term ``'dream'`` in the ``title`` field values of documents in the
 ``movies`` collection:
 
 .. io-code-block::
@@ -113,16 +114,41 @@ You can use the ``search()`` method to perform many types of Atlas
 Search queries. Depending on your desired query, you can pass the
 following optional parameters to ``search()``:
 
-- ``index``: ``string``
-- ``highlight``: ``array``
-- ``concurrent``: ``bool``
-- ``count``: ``string``
-- ``searchAfter``: ``string``
-- ``searchBefore`` ``string``
-- ``scoreDetails``: ``bool``
-- ``sort``: ``array``
-- ``returnStoredSource``: ``bool``
-- ``tracking``: ``array``
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Type
+
+   * - ``index``
+     - ``string``
+
+   * - ``highlight``
+     - ``array``
+
+   * - ``concurrent``
+     - ``bool``
+
+   * - ``count``
+     - ``string``
+
+   * - ``searchAfter``
+     - ``string``
+   
+   * - ``searchBefore``
+     - ``string``
+   
+   * - ``scoreDetails``
+     - ``bool``
+   
+   * - ``sort``
+     - ``array``
+   
+   * - ``returnStoredSource``
+     - ``bool``
+   
+   * - ``tracking``
+     - ``array``
 
 To learn more about these parameters, see the :atlas:`Fields
 </atlas-search/aggregation-stages/search/#fields>` section of the
@@ -170,11 +196,23 @@ string ``"jak"`` on the ``title`` field:
          "Emily Calling Jake"
       ]
 
-You can also pass the following parameters to the ``autocomplete()``
+You can also pass the following optional parameters to the ``autocomplete()``
 method to customize the query:
 
-- ``fuzzy``: ``bool`` or ``array`` (default: ``false``)
-- ``tokenOrder``: ``string`` (default: ``'any'``)
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Type
+     - Default Value
+
+   * - ``fuzzy``
+     - ``bool`` or ``array``
+     - ``false``
+
+   * - ``tokenOrder``
+     - ``string``
+     - ``'any'``
 
 To learn more about these parameters, see the :atlas:`Options
 </atlas-search/autocomplete/#options>` section of the
@@ -208,12 +246,30 @@ on documents in your collections.
 
 You must pass the following parameters to the ``vectorSearch()`` method:
 
-- ``index``: Name of the vector search index (type: ``string``)
-- ``path``: Field that stores vector embeddings (type: ``array`` or ``string``)
-- ``queryVector``: Vector representation of your query (type: ``array``)
-- ``limit``: Number of results to return (type: ``int``)
+.. list-table::
+   :header-rows: 1
 
-The following code uses the index created in the preceding
+   * - Parameter
+     - Type
+     - Description
+
+   * - ``index``
+     - ``string``
+     - Name of the vector search index
+
+   * - ``path``
+     - ``array`` or ``string``
+     - Field that stores vector embeddings
+   
+   * - ``queryVector``
+     - ``array``
+     - Vector representation of your query
+   
+   * - ``limit``
+     - ``int``
+     - Number of results to return
+
+The following code uses the ``vector`` index created in the preceding
 :ref:`laravel-avs-index` section to perform an Atlas Vector Search query on the
 ``movies`` collection:
 
@@ -248,11 +304,26 @@ You can use the ``vector()`` method to perform many types of Atlas
 Search queries. Depending on your desired query, you can pass the
 following optional parameters to ``search()``:
 
-- ``exact``: ``bool`` (default: ``false``)
-- ``filter``: ``QueryInterface`` or ``array`` (default: no filtering)
-- ``numCandidates``: ``int`` or ``null`` (default: ``null``)
+.. list-table::
+   :header-rows: 1
 
-.. tip::
+   * - Parameter
+     - Type
+     - Default Value
+
+   * - ``exact``
+     - ``bool``
+     - ``false``
+
+   * - ``filter``
+     - ``QueryInterface`` or ``array``
+     - no filtering
+
+   * - ``numCandidates``
+     - ``int`` or ``null``
+     - ``null``
+
+.. note::
 
    To construct a ``QueryInterface`` instance, you must import the
    ``MongoDB\Builder\Query`` class into your application.
