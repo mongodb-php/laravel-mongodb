@@ -8,6 +8,8 @@ use App\Models\Movie;
 use Illuminate\Support\Facades\DB;
 use MongoDB\Builder\Query;
 use MongoDB\Builder\Search;
+use MongoDB\Driver\Exception\ServerException;
+use MongoDB\Laravel\Schema\Builder;
 use MongoDB\Laravel\Tests\TestCase;
 
 use function array_map;
@@ -15,6 +17,7 @@ use function mt_getrandmax;
 use function rand;
 use function range;
 use function srand;
+use function usleep;
 
 class AtlasSearchTest extends TestCase
 {
@@ -28,9 +31,6 @@ class AtlasSearchTest extends TestCase
 
         $moviesCollection = DB::connection('mongodb')->getCollection('movies');
         $moviesCollection->drop();
-        $moviesCollection->createSearchIndex([
-            'mappings' => ['dynamic' => true],
-        ], ['name' => 'simple_search']);
 
         Movie::insert([
             ['title' => 'Dreaming of Jakarta', 'year' => 1990],
@@ -46,6 +46,50 @@ class AtlasSearchTest extends TestCase
             ['title' => 'C', 'plot' => 'High school friends navigate love, identity, and unexpected challenges before graduating together.'],
             ['title' => 'D', 'plot' => 'Stranded on a distant planet, astronauts must repair their ship before supplies run out.'],
         ]));
+
+        $moviesCollection = DB::connection('mongodb')->getCollection('movies');
+
+        try {
+            $moviesCollection->createSearchIndex([
+                'mappings' => [
+                    'fields' => [
+                        'title' => [
+                            ['type' => 'string', 'analyzer' => 'lucene.english'],
+                            ['type' => 'autocomplete', 'analyzer' => 'lucene.english'],
+                            ['type' => 'token'],
+                        ],
+                    ],
+                ],
+            ]);
+
+            $moviesCollection->createSearchIndex([
+                'mappings' => ['dynamic' => true],
+            ], ['name' => 'dynamic_search']);
+
+            $moviesCollection->createSearchIndex([
+                'fields' => [
+                    ['type' => 'vector', 'numDimensions' => 4, 'path' => 'vector4', 'similarity' => 'cosine'],
+                    ['type' => 'filter', 'path' => 'title'],
+                ],
+            ], ['name' => 'vector', 'type' => 'vectorSearch']);
+        } catch (ServerException $e) {
+            if (Builder::isAtlasSearchNotSupportedException($e)) {
+                self::markTestSkipped('Atlas Search not supported. ' . $e->getMessage());
+            }
+
+            throw $e;
+        }
+
+        // Wait for the index to be ready
+        do {
+            $ready = true;
+            usleep(10_000);
+            foreach ($collection->listSearchIndexes() as $index) {
+                if ($index['status'] !== 'READY') {
+                    $ready = false;
+                }
+            }
+        } while (! $ready);
     }
 
     /**
