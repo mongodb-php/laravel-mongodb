@@ -28,7 +28,7 @@ To learn more about these features, see the following pages in the Atlas
 documentation:
 
 - :atlas:`Atlas Search Overview </atlas-search/atlas-search-overview/>`
-- :atlas:`Atlas Vector Search Overview </atlas/atlas-vector-search/vector-search-overview/>`
+- :atlas:`Atlas Vector Search Overview </atlas-vector-search/vector-search-overview/>`
 
 .. note:: Deployment Compatibility
 
