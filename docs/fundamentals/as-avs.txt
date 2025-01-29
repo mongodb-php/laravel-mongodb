@@ -206,7 +206,7 @@ method as a query builder method and as an Eloquent model method. You
 can use the ``vectorSearch()`` method to run Atlas Vector Search queries
 on documents in your collections.
 
-You must pass the following parameters to the ``search()`` method:
+You must pass the following parameters to the ``vectorSearch()`` method:
 
 - ``index``: Name of the vector search index (type: ``string``)
 - ``path``: Field that stores vector embeddings (type: ``array`` or ``string``)
@@ -226,7 +226,7 @@ The following code uses the index created in the preceding
       $movies = Book::vectorSearch(
           index: 'vector',
           path: 'vector_embeddings',
-          // Vector representation of the query "coming of age"
+          // Vector representation of the query `coming of age`
           queryVector: [-0.0016261312, -0.028070757, ...],
           limit: 3,
       );
