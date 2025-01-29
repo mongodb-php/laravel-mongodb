@@ -69,10 +69,10 @@ following ways:
 The following list describes other driver options that you can set in
 the ``options`` array:
 
-- ``id_field``: Field name for storing the session ID (default: ``_id``)
-- ``data_field``: Field name for storing the session data (default: ``data``)
-- ``time_field``: Field name for storing the timestamp (default: ``time``)
-- ``expiry_field``: Field name for storing the expiry-timestamp (default: ``expires_at``)
+- ``id_field``: Custom field name for storing the session ID (default: ``_id``)
+- ``data_field``: Custom field name for storing the session data (default: ``data``)
+- ``time_field``: Custom field name for storing the timestamp (default: ``time``)
+- ``expiry_field``: Custom field name for storing the expiry timestamp (default: ``expires_at``)
 - ``ttl``: Time to live in seconds
 
 We recommend that you create an index on the ``expiry_field`` field for
@@ -86,12 +86,12 @@ the following code:
 .. code-block:: php
 
    Schema::create('sessions', function (Blueprint $collection) {
-       $collection->expire('expiry_field', 0);
+       $collection->expire('expires_at', 0);
    });
 
-Setting the time value to ``0`` in the index
-definition instructs MongoDB to expire documents at the clock time
-specified in the ``expiry_field`` field.
+Setting the time value to ``0`` in the index definition instructs
+MongoDB to expire documents at the clock time specified in the
+``expires_at`` field.
 
 To learn more about using the ``Schema`` builder to create indexes, see
 the :ref:`laravel-schema-builder-special-idx` section of the Schema
