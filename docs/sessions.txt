@@ -80,18 +80,22 @@ garbage collection. You can also automatically expire sessions in the
 database by creating a TTL index on the collection that stores session
 information.
 
-The shell command to create a TTL index resembles the following command:
+You can use the ``Schema`` builder to create a TTL index, as shown in
+the following code:
 
-.. code-block:: sh
+.. code-block:: php
 
-   db.sessions.createIndex(
-      { "expiry_field": 1 },
-      { expireAfterSeconds: 0 }
-   )
+   Schema::create('sessions', function (Blueprint $collection) {
+       $collection->expire('expiry_field', 0);
+   });
 
-Setting the ``expireAfterSeconds`` value to ``0`` in the index
+Setting the time value to ``0`` in the index
 definition instructs MongoDB to expire documents at the clock time
 specified in the ``expiry_field`` field.
+
+To learn more about using the ``Schema`` builder to create indexes, see
+the :ref:`laravel-schema-builder-special-idx` section of the Schema
+Builder guide.
 
 To learn more about TTL indexes, see :manual:`Expire Data from
 Collections by Setting TTL </tutorial/expire-data/>` in the

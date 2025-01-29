@@ -248,6 +248,8 @@ field:
 To learn more about index options, see :manual:`Options for All Index Types </reference/method/db.collection.createIndex/#options-for-all-index-types>`
 in the {+server-docs-name+}.
 
+.. _laravel-schema-builder-special-idx:
+
 Create Sparse, TTL, and Unique Indexes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
