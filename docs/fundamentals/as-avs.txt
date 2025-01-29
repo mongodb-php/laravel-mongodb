@@ -134,7 +134,8 @@ Autocomplete Queries
 The {+odm-short+} provides the ``autocomplete()`` method as a query
 builder method and as an Eloquent model method. You can use the
 ``autocomplete()`` method to run autocomplete searches on documents in your
-collections.
+collections. This method returns only the values of the field you
+specify as the query path.
 
 To learn more about this type of Atlas Search query, see the
 :atlas:`autocomplete </atlas-search/autocomplete/>` reference in the
@@ -147,8 +148,8 @@ Atlas documentation.
    :ref:`laravel-as-index` section of this guide to learn more about
    creating Search indexes.
 
-The following code performs an Atlas Search autocomplete query on the
-``movies`` collection:
+The following code performs an Atlas Search autocomplete query for the
+string ``"jak"`` on the ``title`` field:
 
 .. io-code-block::
    :copyable: true
@@ -166,7 +167,7 @@ The following code performs an Atlas Search autocomplete query on the
       [
          "Dreaming of Jakarta",
          "Jakob the Liar",
-         "title": "Emily Calling Jake"
+         "Emily Calling Jake"
       ]
 
 You can also pass the following parameters to the ``autocomplete()``
@@ -248,7 +249,7 @@ Search queries. Depending on your desired query, you can pass the
 following optional parameters to ``search()``:
 
 - ``exact``: ``bool`` (default: ``false``)
-- ``filter``: ``QueryInterface`` or ``array``
+- ``filter``: ``QueryInterface`` or ``array`` (default: no filtering)
 - ``numCandidates``: ``int`` or ``null`` (default: ``null``)
 
 .. tip::
