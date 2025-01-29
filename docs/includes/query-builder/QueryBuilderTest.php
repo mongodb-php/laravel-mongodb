@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\AbstractPaginator;
-use Illuminate\Support\Collection as LaravelCollection;
 use Illuminate\Support\Facades\DB;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
@@ -291,7 +290,7 @@ class QueryBuilderTest extends TestCase
             ->countByGroup();
         // end count by group
 
-        $this->assertIsArray($result);
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
     }
 
     public function testSumByGroup(): void
@@ -303,7 +302,7 @@ class QueryBuilderTest extends TestCase
             ->sumByGroup('awards.wins');
         // end sum by group
 
-        $this->assertIsArray($result);
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
     }
 
     public function testOrderBy(): void
