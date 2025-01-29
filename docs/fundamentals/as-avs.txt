@@ -40,6 +40,13 @@ This page describes how to create the appropriate indexes for each type
 of search and provides examples of how to use the {+odm-short+} to
 perform searches.
 
+.. note:: Aggregation Builder
+   
+   You might not be able to use the methods described in
+   this guide for every type of Atlas Search or Vector Search query.
+   For more complex use cases, create an aggregation pipeline by using
+   the :ref:`laravel-aggregation-builder`.
+
 Atlas Search
 ------------
 
