@@ -1053,6 +1053,11 @@ the query to secondary replica set members:
    :start-after: begin query read pref
    :end-before: end query read pref
 
+.. tip::
+
+   To learn more about read preferences, see :manual:`Read Preference
+   </core/read-preference/>` in the MongoDB {+server-docs-name+}.
+
 .. _laravel-query-builder-geospatial:
 
 Match Locations by Using Geospatial Operations
