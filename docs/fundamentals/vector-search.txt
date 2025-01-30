@@ -22,11 +22,9 @@ Overview
 
 In this guide, you can learn how to perform searches on your documents
 by using the Atlas Vector Search feature. {+odm-long+} provides an API to
-perform Atlas Vector Search queries directly with your models.
-
-To learn more about Atlas Vector Search, see the :atlas:`Overview
-</atlas-vector-search/vector-search-overview/>` in the 
-Atlas documentation.
+perform Atlas Vector Search queries directly with your models. This guide
+describes how to create Atlas Vector Search indexes and provides
+examples of how to use the {+odm-short+} to perform searches.
 
 .. note:: Deployment Compatibility
 
@@ -34,32 +32,24 @@ Atlas documentation.
    you connect to MongoDB Atlas clusters. This feature is not
    available for self-managed deployments.
 
-This page describes how to create Atlas Vector Search indexes and provides
-examples of how to use the {+odm-short+} to perform searches.
+To learn more about Atlas Vector Search, see the :atlas:`Overview
+</atlas-vector-search/vector-search-overview/>` in the 
+Atlas documentation. The Atlas Vector Search API internally uses the
+``$search`` aggregation operator to perform queries. To learn more about
+this operator, see the :atlas:`$search
+</atlas-search/aggregation-stages/search/>` reference in the Atlas
+documentation.
 
-.. note:: Aggregation Builder
+.. note::
    
    You might not be able to use the methods described in
    this guide for every type of Atlas Vector Search query.
    For more complex use cases, create an aggregation pipeline by using
    the :ref:`laravel-aggregation-builder`.
-
-The Atlas Vector Search API internally uses the ``$search`` aggregation
-operator to perform queries. To learn more about this operator, see the
-:atlas:`$search </atlas-search/aggregation-stages/search/>` reference in
-the Atlas documentation.
-
-.. tip:: Atlas Search
    
    To perform advanced text on your documents, you can use the
    {+odm-long+} Atlas Search API. To learn about this feature, see
    the :ref:`laravel-atlas-search` guide.
-
-The Atlas Vector Search API internally uses the ``$vectorSearch``
-aggregation operator to perform queries. To learn more about this
-operator, see the :atlas:`$vectorSearch 
-</atlas-vector-search/vector-search-stage/#mongodb-pipeline-pipe.-vectorSearch>`
-reference in the Atlas documentation.
 
 .. _laravel-avs-index:
 
