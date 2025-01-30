@@ -175,7 +175,7 @@ class ReadOperationsTest extends TestCase
     {
         // start-read-pref
         $movies = Movie::where('title', 'Carrie')
-            ->readPreference('primaryPreferred')
+            ->readPreference('secondaryPreferred')
             ->get();
         // end-read-pref
 
