@@ -40,7 +40,7 @@ class FindOneTest extends TestCase
           ->orderBy('_id')
           ->first();
 
-        echo $movie;
+        echo $movie[0]->toJson();
         // end-qb-find-one
     }
 }
