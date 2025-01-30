@@ -8,6 +8,8 @@ use App\Models\Movie;
 use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
 
+use function print_r;
+
 class FindOneTest extends TestCase
 {
     /**

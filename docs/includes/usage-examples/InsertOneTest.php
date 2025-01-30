@@ -36,7 +36,7 @@ class InsertOneTest extends TestCase
                 'title' => 'Marriage Story',
                 'year' => 2019,
                 'runtime' => 136,
-        ]);
+            ]);
 
         echo 'Insert operation success: ' . ($success ? 'yes' : 'no');
         // end-qb-insert-one
