@@ -20,7 +20,8 @@ Fundamentals
    Read Operations </fundamentals/read-operations>
    Write Operations </fundamentals/write-operations>
    Aggregation Builder </fundamentals/aggregation-builder>
-   Atlas Search & Vector Search </fundamentals/atlas-search-vector-search>
+   Atlas Search </fundamentals/atlas-search>
+   Atlas Vector Search </fundamentals/vector-search>
 
 Learn more about the following concepts related to {+odm-long+}:
 
@@ -30,3 +31,4 @@ Learn more about the following concepts related to {+odm-long+}:
 - :ref:`laravel-fundamentals-write-ops`
 - :ref:`laravel-aggregation-builder`
 - :ref:`laravel-atlas-search-avs`
+- :ref:`laravel-vector-search`
