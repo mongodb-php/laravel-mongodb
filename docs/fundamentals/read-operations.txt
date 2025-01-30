@@ -614,7 +614,7 @@ field.
 Set a Read Preference
 ~~~~~~~~~~~~~~~~~~~~~
 
-To specify which replica set members receive your read operation,
+To specify which replica set members receive your read operations,
 set a read preference by using the ``readPreference()`` method.
 
 The ``readPreference()`` method accepts the following parameters:
@@ -634,7 +634,8 @@ The ``readPreference()`` method accepts the following parameters:
    in the MongoDB PHP extension documentation.
 
 The following example queries for documents in which the value of the ``title``
-field is ``"Carrie"`` and retrieves the results from secondary replica set
+field is ``"Carrie"`` and sets the read preference to ``"secondaryPreferred"``.
+As a result, the query retrieves the results from secondary replica set
 members or the primary member if no secondaries are available:
 
 .. tabs::
