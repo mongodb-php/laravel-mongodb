@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
 
 class UpdateOneTest extends TestCase
@@ -28,7 +29,7 @@ class UpdateOneTest extends TestCase
             ],
         ]);
 
-        // begin-update-one
+        // begin-eloquent-update-one
         $updates = Movie::where('title', 'Carol')
             ->orderBy('_id')
             ->first()
@@ -40,9 +41,25 @@ class UpdateOneTest extends TestCase
             ]);
 
         echo 'Updated documents: ' . $updates;
-        // end-update-one
+        // end-eloquent-update-one
 
         $this->assertTrue($updates);
-        $this->expectOutputString('Updated documents: 1');
+
+        // begin-qb-update-one
+        $updates = DB::table('movies')
+            ->where('title', 'Carol')
+            ->orderBy('_id')
+            ->first()
+            ->update([
+                'imdb' => [
+                    'rating' => 7.3,
+                    'votes' => 142000,
+                ],
+            ]);
+
+        echo 'Updated documents: ' . $updates;
+        // end-qb-update-one
+
+        $this->expectOutputString('Updated documents: 1Updated documents: 0');
     }
 }

@@ -24,43 +24,89 @@ Pass a query filter to the ``where()`` method, sort the matching documents, and 
 ``first()`` method to retrieve only the first document. Then, update this matching document
 by passing your intended document changes to the ``update()`` method.
 
-Example
--------
-
-This usage example performs the following actions:
-
-- Uses the ``Movie`` Eloquent model to represent the ``movies`` collection in the
-  ``sample_mflix`` database
-- Updates a document from the ``movies`` collection that matches the query filter
-- Prints the number of updated documents
-
-The example calls the following methods on the ``Movie`` model:
-
-- ``where()``: matches documents in which the value of the ``title`` field is ``"Carol"``.
-- ``orderBy()``: sorts matched documents by their ascending ``_id`` values.
-- ``first()``: retrieves only the first matching document.
-- ``update()``: updates the value of the ``imdb.rating`` nested field to from ``6.9`` to
-  ``7.3`` and the value of the ``imdb.votes`` nested field from ``493`` to ``142000``.
-
-.. io-code-block::
-   :copyable: true
-
-   .. input:: ../includes/usage-examples/UpdateOneTest.php
-      :start-after: begin-update-one
-      :end-before: end-update-one
-      :language: php
-      :dedent:
-
-   .. output::
-      :language: console
-      :visible: false
-
-      Updated documents: 1
-
-.. include:: /includes/usage-examples/fact-edit-laravel-app.rst
-
 .. tip::
 
    To learn more about updating data with the {+odm-short+}, see the :ref:`laravel-fundamentals-modify-documents`
    section of the Write Operations guide.
 
+Example
+-------
+
+Select from the following :guilabel:`Eloquent` and :guilabel:`Query
+Builder` tabs to view usage examples for the same operation that use
+each corresponding query syntax:
+
+.. tabs::
+
+   .. tab:: Eloquent
+      :tabid: eloquent-model-count
+
+      This example performs the following actions:
+      
+      - Uses the ``Movie`` Eloquent model to represent the ``movies``
+        collection in the ``sample_mflix`` database 
+      - Updates a document from the ``movies`` collection that matches
+        the query filter
+      - Prints the number of updated documents
+      
+      The example calls the following methods on the ``Movie`` model:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``title`` field is ``"Carol"``
+      - ``orderBy()``: Sorts matched documents by their ascending ``_id`` values
+      - ``first()``: Retrieves only the first matching document.
+      - ``update()``: Updates the value of the ``imdb.rating`` nested
+        field to from ``6.9`` to ``7.3`` and the value of the
+        ``imdb.votes`` nested field from ``493`` to ``142000``
+      
+      .. io-code-block::
+         :copyable: true
+      
+         .. input:: ../includes/usage-examples/UpdateOneTest.php
+            :start-after: begin-eloquent-update-one
+            :end-before: end-eloquent-update-one
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            Updated documents: 1
+
+   .. tab:: Query Builder
+      :tabid: query-builder-count
+
+      This example performs the following actions:
+      
+      - Accesses the ``movies`` collection by calling the ``table()``
+        method from the ``DB`` facade
+      - Updates a document from the ``movies`` collection that matches
+        the query filter
+      - Prints the number of updated documents
+
+      The example calls the following query builder methods:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``title`` field is ``"Carol"``
+      - ``orderBy()``: Sorts matched documents by their ascending ``_id`` values
+      - ``first()``: Retrieves only the first matching document.
+      - ``update()``: Updates the value of the ``imdb.rating`` nested
+        field to from ``6.9`` to ``7.3`` and the value of the
+        ``imdb.votes`` nested field from ``493`` to ``142000``
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/UpdateOneTest.php
+            :start-after: begin-qb-update-one
+            :end-before: end-qb-update-one
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+
+            Updated documents: 1
+
+.. include:: /includes/usage-examples/fact-edit-laravel-app.rst

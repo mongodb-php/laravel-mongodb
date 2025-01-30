@@ -23,50 +23,88 @@ an Eloquent model or query builder.
 To insert a document, pass the data you need to insert as a document containing
 the fields and values to the ``create()`` method.
 
+.. tip::
+
+   You can also use the ``save()`` or ``insert()`` methods to insert a
+   document into a collection. To learn more about insert operations,
+   see the :ref:`laravel-fundamentals-insert-documents` section of the
+   Write Operations guide.
+
 Example
 -------
 
-This usage example performs the following actions:
+Select from the following :guilabel:`Eloquent` and :guilabel:`Query
+Builder` tabs to view usage examples for the same operation that use
+each corresponding query syntax:
 
-- Uses the ``Movie`` Eloquent model to represent the ``movies`` collection in the
-  ``sample_mflix`` database
-- Inserts a document into the ``movies`` collection
+.. tabs::
 
-The example calls the ``create()`` method to insert a document that contains the following
-information:
+   .. tab:: Eloquent
+      :tabid: eloquent-model-count
 
-- ``title`` value of ``"Marriage Story"``
-- ``year`` value of ``2019``
-- ``runtime`` value of ``136``
+      This example performs the following actions:
+      
+      - Uses the ``Movie`` Eloquent model to represent the ``movies``
+        collection in the ``sample_mflix`` database 
+      - Inserts a document into the ``movies`` collection
+      
+      The example calls the ``create()`` method to insert a document
+      that contains the following fields and values:
 
-.. io-code-block::
-   :copyable: true
+      - ``title`` value of ``"Marriage Story"``
+      - ``year`` value of ``2019``
+      - ``runtime`` value of ``136``
+      
+      .. io-code-block::
+         :copyable: true
+      
+         .. input:: ../includes/usage-examples/InsertOneTest.php
+            :start-after: begin-eloquent-insert-one
+            :end-before: end-eloquent-insert-one
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            {
+                "title": "Marriage Story",
+                "year": 2019,
+                "runtime": 136,
+                "updated_at": "...",
+                "created_at": "...",
+                "_id": "..."
+            }
 
-   .. input:: ../includes/usage-examples/InsertOneTest.php
-      :start-after: begin-insert-one
-      :end-before: end-insert-one
-      :language: php
-      :dedent:
+   .. tab:: Query Builder
+      :tabid: query-builder-count
 
-   .. output::
-      :language: json
-      :visible: false
+      This example performs the following actions:
+      
+      - Accesses the ``movies`` collection by calling the ``table()``
+        method from the ``DB`` facade
+      - Inserts a document into the ``movies`` collection
 
-      {
-          "title": "Marriage Story",
-          "year": 2019,
-          "runtime": 136,
-          "updated_at": "...",
-          "created_at": "...",
-          "_id": "..."
-      }
+      The example calls the ``create()`` method to insert a document
+      that contains the following fields and values:
+
+      - ``title`` value of ``"Marriage Story"``
+      - ``year`` value of ``2019``
+      - ``runtime`` value of ``136``
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/InsertOneTest.php
+            :start-after: begin-qb-insert-one
+            :end-before: end-qb-insert-one
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+
+            Insert operation success: yes
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst
-
-.. tip::
-
-   You can also use the ``save()`` or ``insert()`` methods to insert a document into a collection.
-   To learn more about insert operations, see the :ref:`laravel-fundamentals-insert-documents` section
-   of the Write Operations guide.
-
-

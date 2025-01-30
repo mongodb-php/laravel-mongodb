@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
 
 class UpdateManyTest extends TestCase
@@ -35,14 +36,23 @@ class UpdateManyTest extends TestCase
             ],
         ]);
 
-        // begin-update-many
+        // begin-eloquent-update-many
         $updates = Movie::where('imdb.rating', '>', 9.0)
             ->update(['acclaimed' => true]);
 
         echo 'Updated documents: ' . $updates;
-        // end-update-many
+        // end-eloquent-update-many
 
         $this->assertEquals(2, $updates);
-        $this->expectOutputString('Updated documents: 2');
+
+        // begin-qb-update-many
+        $updates = DB::table('movies')
+            ->where('imdb.rating', '>', 9.0)
+            ->update(['acclaimed' => true]);
+
+        echo 'Updated documents: ' . $updates;
+        // end-qb-update-many
+
+        $this->expectOutputString('Updated documents: 2Updated documents: 0');
     }
 }

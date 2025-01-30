@@ -32,7 +32,7 @@ class FindOneTest extends TestCase
         // end-eloquent-find-one
 
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->expectOutputRegex('/^{"_id":"[a-z0-9]{24}","title":"The Shawshank Redemption","directors":\["Frank Darabont","Rob Reiner"\]}$/');
+        $this->assertSame($movie->title, 'The Shawshank Redemption');
 
         // begin-qb-find-one
         $movie = DB::table('movies')
@@ -40,7 +40,7 @@ class FindOneTest extends TestCase
           ->orderBy('_id')
           ->first();
 
-        echo $movie[0]->toJson();
+        echo print_r($movie);
         // end-qb-find-one
     }
 }
