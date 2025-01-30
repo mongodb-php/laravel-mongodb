@@ -840,6 +840,7 @@ to use the following MongoDB-specific query operations:
 - :ref:`Run MongoDB Query API operations <laravel-query-builder-whereRaw>`
 - :ref:`Match documents that contain array elements <laravel-query-builder-elemMatch>`
 - :ref:`Specify a cursor timeout <laravel-query-builder-cursor-timeout>`
+- :ref:`Specify a read preference <>`
 - :ref:`Match locations by using geospatial searches <laravel-query-builder-geospatial>`
 
 .. _laravel-query-builder-exists:
@@ -1033,6 +1034,25 @@ to specify a maximum duration to wait for cursor operations to complete.
    `MongoDB\Collection::find() <https://www.mongodb.com/docs/php-library/current/reference/method/MongoDBCollection-find/>`__
    in the PHP Library documentation.
 
+.. _laravel-query-builder-read-pref:
+
+Specify a Read Preference Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can control how the {+odm-short+} directs read operations to replica
+set members by setting a read preference. 
+
+The following example queries the ``movie`` collection for documents
+in which the ``runtime`` value is greater than ``240``. The example passes a
+value of ``'secondary'`` to the ``readPreference()`` method, which sends 
+the query to secondary replica set members:
+
+.. literalinclude:: /includes/query-builder/QueryBuilderTest.php
+   :language: php
+   :dedent:
+   :start-after: begin query read pref
+   :end-before: end query read pref
+
 .. _laravel-query-builder-geospatial:
 
 Match Locations by Using Geospatial Operations
@@ -1061,7 +1081,7 @@ in the {+server-docs-name+}.
 .. _laravel-query-builder-geospatial-near:
 
 Near a Position Example
-~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The following example shows how to use the ``near`` query operator
 with the ``where()`` query builder method to match documents that
@@ -1081,7 +1101,7 @@ in the {+server-docs-name+}.
 .. _laravel-query-builder-geospatial-geoWithin:
 
 Within an Area Example
-~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^
 
 The following example shows how to use the ``geoWithin``
 query operator with the ``where()``
@@ -1098,7 +1118,7 @@ GeoJSON object:
 .. _laravel-query-builder-geospatial-geoIntersects:
 
 Intersecting a Geometry Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following example shows how to use the ``geoInstersects``
 query operator with the ``where()`` query builder method to
@@ -1114,7 +1134,7 @@ the specified ``LineString`` GeoJSON object:
 .. _laravel-query-builder-geospatial-geoNear:
 
 Proximity Data for Nearby Matches Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following example shows how to use the ``geoNear`` aggregation operator
 with the ``raw()`` query builder method to perform an aggregation that returns

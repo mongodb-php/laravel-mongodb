@@ -359,6 +359,8 @@ method:
   results in a specified order based on field values
 - :ref:`laravel-retrieve-one` uses the ``first()`` method to return the first document
   that matches the query filter
+- :ref:`laravel-read-pref` uses the ``readPreference()`` method to direct the query
+  to specific replica set members
 
 .. _laravel-skip-limit:
 
@@ -606,3 +608,109 @@ field.
 
    To learn more about the ``orderBy()`` method, see the
    :ref:`laravel-sort` section of this guide.
+
+.. _laravel-read-pref:
+
+Set a Read Preference
+~~~~~~~~~~~~~~~~~~~~~
+
+To specify which replica set members receive your read operation,
+set a read preference by using the ``readPreference()`` method.
+
+The ``readPreference()`` method accepts the following parameters:
+ 
+- ``mode``: (Required) A string value specifying the read preference
+  mode.
+
+- ``tagSets``: (Optional) An array value specifying key-value tags that correspond to 
+  the target replica set members.
+
+- ``options``: (Optional) An array value specifying additional read preference options.
+
+.. tip::
+
+   To view a full list of available read preference modes and options, see
+   :php:`MongoDB\Driver\ReadPreference::__construct </manual/en/mongodb-driver-readpreference.construct.php>`
+   in the MongoDB PHP extension documentation.
+
+The following example queries for documents in which the value of the ``title``
+field is ``"Carrie"`` and retrieves the results from secondary replica set
+members, or the primary member if no secondaries are available:
+
+.. tabs::
+
+   .. tab:: Query Syntax
+      :tabid: query-syntax
+
+      Use the following syntax to specify the query:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-read-pref
+         :end-before: end-read-pref
+
+   .. tab:: Controller Method
+      :tabid: controller
+
+      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
+      in the ``MovieController.php`` file to resemble the following code:
+
+      .. io-code-block::
+         :copyable: true
+
+         .. input::
+            :language: php
+
+            class MovieController
+            {
+                public function show()
+                {
+                   $movies = Movie::where('title', 'Carrie')
+                        ->readPreference('secondaryPreferred')
+                        ->get();
+
+                    return view('browse_movies', [
+                        'movies' => $movies
+                    ]);
+                }
+            }
+
+         .. output::
+            :language: none
+            :visible: false
+
+            Title: Carrie
+            Year: 1952
+            Runtime: 118
+            IMDB Rating: 7.5
+            IMDB Votes: 1458
+            Plot: Carrie boards the train to Chicago with big ambitions. She gets a
+            job stitching shoes and her sister's husband takes almost all of her pay
+            for room and board. Then she injures a finger and ...
+
+            Title: Carrie
+            Year: 1976
+            Runtime: 98
+            IMDB Rating: 7.4
+            IMDB Votes: 115528
+            Plot: A shy, outcast 17-year old girl is humiliated by her classmates for the
+            last time.
+
+            Title: Carrie
+            Year: 2002
+            Runtime: 132
+            IMDB Rating: 5.5
+            IMDB Votes: 7412
+            Plot: Carrie White is a lonely and painfully shy teenage girl with telekinetic
+            powers who is slowly pushed to the edge of insanity by frequent bullying from
+            both her classmates and her domineering, religious mother.
+
+            Title: Carrie
+            Year: 2013
+            Runtime: 100
+            IMDB Rating: 6
+            IMDB Votes: 98171
+            Plot: A reimagining of the classic horror tale about Carrie White, a shy girl
+            outcast by her peers and sheltered by her deeply religious mother, who unleashes
+            telekinetic terror on her small town after being pushed too far at her senior prom.

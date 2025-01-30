@@ -164,4 +164,20 @@ class ReadOperationsTest extends TestCase
         $this->assertNotNull($movies);
         $this->assertCount(2, $movies);
     }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testReadPreference(): void
+    {
+        // start-read-pref
+        $movies = Movie::where('title', 'Carrie')
+            ->readPreference('secondaryPreferred')
+            ->get();
+        // end-read-pref
+
+        $this->assertNotNull($movies);
+        $this->assertCount(4, $movies);
+    }
 }

@@ -452,6 +452,18 @@ class QueryBuilderTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
     }
 
+    public function testReadPreference(): void
+    {
+        // begin query read pref
+        $result = DB::table('movies')
+            ->where('runtime', '>', 240)
+            ->readPreference('secondary')
+            ->get();
+        // end query read pref
+
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
+    }
+
     public function testNear(): void
     {
         $this->importTheaters();
