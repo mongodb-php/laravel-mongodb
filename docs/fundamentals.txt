@@ -30,5 +30,5 @@ Learn more about the following concepts related to {+odm-long+}:
 - :ref:`laravel-fundamentals-read-ops`
 - :ref:`laravel-fundamentals-write-ops`
 - :ref:`laravel-aggregation-builder`
-- :ref:`laravel-atlas-search-avs`
+- :ref:`laravel-atlas-search`
 - :ref:`laravel-vector-search`
