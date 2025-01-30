@@ -33,6 +33,8 @@ class ReadOperationsTest extends TestCase
             ['title' => 'movie_a', 'plot' => 'this is a love story'],
             ['title' => 'movie_b', 'plot' => 'love is a long story'],
             ['title' => 'movie_c', 'plot' => 'went on a trip'],
+            ['title' => 'Carrie', 'year' => 1976],
+            ['title' => 'Carrie', 'year' => 2002],
         ]);
     }
 
@@ -178,6 +180,6 @@ class ReadOperationsTest extends TestCase
         // end-read-pref
 
         $this->assertNotNull($movies);
-        $this->assertCount(4, $movies);
+        $this->assertCount(2, $movies);
     }
 }
