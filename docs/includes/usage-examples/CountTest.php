@@ -46,6 +46,6 @@ class CountTest extends TestCase
         // end-qb-count
 
         $this->assertEquals(2, $count);
-        $this->expectOutputString('Number of documents: 2');
+        $this->expectOutputString('Number of documents: 2Number of documents: 2');
     }
 }

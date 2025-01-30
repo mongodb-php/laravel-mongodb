@@ -65,6 +65,6 @@ class DistinctTest extends TestCase
         echo $ratings;
         // end-qb-distinct
 
-        $this->expectOutputString('[[6.4],[7.8]]');
+        $this->expectOutputString('[[6.4],[7.8]][6.4,7.8]');
     }
 }

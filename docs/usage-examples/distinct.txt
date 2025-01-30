@@ -110,6 +110,6 @@ each corresponding query syntax:
             :language: console
             :visible: false
 
-            [[5.6],[6.4],[7.2],[7.8]]
+            [5.6,6.4,7.2,7.8]
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst

@@ -36,7 +36,7 @@ class DeleteOneTest extends TestCase
         // end-eloquent-delete-one
 
         $this->assertEquals(1, $deleted);
-        $this->expectOutputString('Deleted documents: 1');
+        $this->expectOutputString('Deleted documents: 1Deleted documents: 0');
 
         // begin-qb-delete-one
         $deleted = DB::table('movies')

@@ -38,7 +38,7 @@ class DeleteManyTest extends TestCase
         // end-eloquent-delete-many
 
         $this->assertEquals(2, $deleted);
-        $this->expectOutputString('Deleted documents: 2');
+        $this->expectOutputString('Deleted documents: 2Deleted documents: 0');
 
         // begin-qb-delete-many
         $deleted = DB::table('movies')

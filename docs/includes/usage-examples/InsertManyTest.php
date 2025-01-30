@@ -62,6 +62,6 @@ class InsertManyTest extends TestCase
         // end-qb-insert-many
 
         $this->assertTrue($success);
-        $this->expectOutputString('Insert operation success: yes');
+        $this->expectOutputString('Insert operation success: yesInsert operation success: yes');
     }
 }
