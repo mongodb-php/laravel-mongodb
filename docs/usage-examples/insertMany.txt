@@ -24,40 +24,78 @@ To insert multiple documents, call the ``insert()`` method and specify the new d
 as an array inside the method call. Each array entry contains a single document's field
 values.
 
+.. tip::
+
+   To learn more about insert operations, see the
+   :ref:`laravel-fundamentals-insert-documents` section 
+   of the Write Operations guide.
+
 Example
 -------
 
-This usage example performs the following actions:
+Select from the following :guilabel:`Eloquent` and :guilabel:`Query
+Builder` tabs to view usage examples for the same operation that use
+each corresponding query syntax:
 
-- Uses the ``Movie`` Eloquent model to represent the ``movies`` collection in the
-  ``sample_mflix`` database
-- Inserts documents into the ``movies`` collection
-- Prints whether the insert operation succeeds
+.. tabs::
 
-The example calls the ``insert()`` method to insert documents that contain
-information about movies released in ``2023``. If the insert operation is
-successful, it returns a value of ``1``. If the operation fails, it throws
-an exception.
+   .. tab:: Eloquent
+      :tabid: eloquent-model-count
 
-.. io-code-block::
-   :copyable: true
+      This example performs the following actions:
+      
+      - Uses the ``Movie`` Eloquent model to represent the ``movies``
+        collection in the ``sample_mflix`` database 
+      - Inserts documents into the ``movies`` collection
+      - Prints whether the insert operation succeeds
+      
+      The example calls the ``insert()`` method to insert documents that model
+      movies released in ``2023``. If the insert operation is
+      successful, it returns a value of ``1``. If the operation fails, it throws
+      an exception.
+      
+      .. io-code-block::
+         :copyable: true
+      
+         .. input:: ../includes/usage-examples/InsertManyTest.php
+            :start-after: begin-eloquent-insert-many
+            :end-before: end-eloquent-insert-many
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            Insert operation success: yes
 
-   .. input:: ../includes/usage-examples/InsertManyTest.php
-      :start-after: begin-insert-many
-      :end-before: end-insert-many
-      :language: php
-      :dedent:
+   .. tab:: Query Builder
+      :tabid: query-builder-count
 
-   .. output::
-      :language: console
-      :visible: false
+      This example performs the following actions:
+      
+      - Accesses the ``movies`` collection by calling the ``table()``
+        method from the ``DB`` facade
+      - Inserts documents into the ``movies`` collection
+      - Prints whether the insert operation succeeds
 
-      Insert operation success: yes
+      The example calls the ``insert()`` method to insert documents that model
+      movies released in ``2023``. If the insert operation is
+      successful, it returns a value of ``1``. If the operation fails, it throws
+      an exception.
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/InsertManyTest.php
+            :start-after: begin-qb-insert-many
+            :end-before: end-qb-insert-many
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+
+            Insert operation success: yes
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst
-
-.. tip::
-
-   To learn more about insert operations, see the :ref:`laravel-fundamentals-insert-documents` section
-   of the Write Operations guide.
-

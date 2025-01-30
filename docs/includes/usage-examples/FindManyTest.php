@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
 
 class FindManyTest extends TestCase
@@ -33,11 +34,18 @@ class FindManyTest extends TestCase
             ],
         ]);
 
-        // begin-find
+        // begin-eloquent-find
         $movies = Movie::where('runtime', '>', 900)
             ->orderBy('_id')
             ->get();
-        // end-find
+        // end-eloquent-find
+
+        // begin-qb-find
+        $movies = DB::table('movies')
+            ->where('runtime', '>', 900)
+            ->orderBy('_id')
+            ->get();
+        // end-qb-find
 
         $this->assertEquals(2, $movies->count());
     }

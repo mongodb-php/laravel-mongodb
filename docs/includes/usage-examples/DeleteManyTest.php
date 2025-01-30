@@ -37,6 +37,9 @@ class DeleteManyTest extends TestCase
         echo 'Deleted documents: ' . $deleted;
         // end-eloquent-delete-many
 
+        $this->assertEquals(2, $deleted);
+        $this->expectOutputString('Deleted documents: 2');
+
         // begin-qb-delete-many
         $deleted = DB::table('movies')
             ->where('year', '<=', 1910)
@@ -44,8 +47,5 @@ class DeleteManyTest extends TestCase
 
         echo 'Deleted documents: ' . $deleted;
         // end-qb-delete-many
-
-        $this->assertEquals(2, $deleted);
-        $this->expectOutputString('Deleted documents: 2');
     }
 }

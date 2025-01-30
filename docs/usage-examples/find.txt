@@ -29,62 +29,121 @@ Find Multiple Documents
 
 Pass a query filter to the ``where()`` method to retrieve documents that meet a
 set of criteria. When you call the ``get()`` method, MongoDB returns the
-matching documents according to their :term:`natural order` in the database or
+matching documents according to their :term:`natural order` in the collection or
 according to the sort order that you can specify by using the ``orderBy()``
 method.
 
-To learn more about query builder methods, see the :ref:`laravel-query-builder`
-guide.
+.. tip::
+
+   To learn about other ways to retrieve documents with the
+   {+odm-short+}, see the :ref:`laravel-fundamentals-retrieve` guide.
 
 Example
 -------
 
-This usage example performs the following actions:
+Select from the following :guilabel:`Eloquent` and :guilabel:`Query
+Builder` tabs to view usage examples for the same operation that use
+each corresponding query syntax:
 
-- Uses the ``Movie`` Eloquent model to represent the ``movies`` collection in the
-  ``sample_mflix`` database
-- Retrieves and prints documents from the ``movies`` collection that match a query filter
+.. tabs::
 
-The example calls the following methods on the ``Movie`` model:
+   .. tab:: Eloquent
+      :tabid: eloquent-model-count
 
-- ``where()``: matches documents in which the value of the ``runtime`` field is greater than ``900``
-- ``orderBy()``: sorts matched documents by their ascending ``_id`` values
-- ``get()``: retrieves the query results as a Laravel collection object
+      This example performs the following actions:
+      
+      - Uses the ``Movie`` Eloquent model to represent the ``movies``
+        collection in the ``sample_mflix`` database 
+      - Retrieves and prints documents from the ``movies`` collection
+        that match a query filter
+      
+      The example calls the following methods on the ``Movie`` model:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``runtime`` field is greater than ``900``
+      - ``orderBy()``: Sorts matched documents by their ascending
+        ``_id`` values
+      - ``get()``: Retrieves the query results as a Laravel collection
+        object
+            
+      .. io-code-block::
+         :copyable: true
+      
+         .. input:: ../includes/usage-examples/FindManyTest.php
+            :start-after: begin-eloquent-find
+            :end-before: end-eloquent-find
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            // Results are truncated
+      
+            [
+              {
+                "_id": ...,
+                "runtime": 1256,
+                "title": "Centennial",
+                ...,
+              },
+              {
+                "_id": ...,
+                "runtime": 1140,
+                "title": "Baseball",
+                ...,
+              },
+              ...
+            ]
 
-.. io-code-block::
-   :copyable: true
+   .. tab:: Query Builder
+      :tabid: query-builder-count
 
-   .. input:: ../includes/usage-examples/FindManyTest.php
-      :start-after: begin-find
-      :end-before: end-find
-      :language: php
-      :dedent:
+      This example performs the following actions:
+      
+      - Accesses the ``movies`` collection by calling the ``table()``
+        method from the ``DB`` facade
+      - Retrieves and prints documents from the ``movies`` collection
+        that match a query filter
 
-   .. output::
-      :language:  json
-      :visible: false
+      The example calls the following query builder methods:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``runtime`` field is greater than ``900``
+      - ``orderBy()``: Sorts matched documents by their ascending
+        ``_id`` values
+      - ``get()``: Retrieves the query results as a Laravel collection
+        object
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/FindManyTest.php
+            :start-after: begin-qb-find
+            :end-before: end-qb-find
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
 
-      // Results are truncated
-
-      [
-        {
-          "_id": ...,
-          "runtime": 1256,
-          "title": "Centennial",
-          ...,
-        },
-        {
-          "_id": ...,
-          "runtime": 1140,
-          "title": "Baseball",
-          ...,
-        },
-        ...
-      ]
+            // Results are truncated
+      
+            [
+              {
+                "_id": ...,
+                "runtime": 1256,
+                "title": "Centennial",
+                ...,
+              },
+              {
+                "_id": ...,
+                "runtime": 1140,
+                "title": "Baseball",
+                ...,
+              },
+              ...
+            ]
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst
-
-.. tip::
-
-   To learn about other ways to retrieve documents with the {+odm-short+}, see the
-   :ref:`laravel-fundamentals-retrieve` guide.

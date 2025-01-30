@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
 
 class FindOneTest extends TestCase
@@ -22,15 +23,24 @@ class FindOneTest extends TestCase
             ['title' => 'The Shawshank Redemption', 'directors' => ['Frank Darabont', 'Rob Reiner']],
         ]);
 
-        // begin-find-one
+        // begin-eloquent-find-one
         $movie = Movie::where('directors', 'Rob Reiner')
           ->orderBy('_id')
           ->first();
 
         echo $movie->toJson();
-        // end-find-one
+        // end-eloquent-find-one
 
         $this->assertInstanceOf(Movie::class, $movie);
         $this->expectOutputRegex('/^{"_id":"[a-z0-9]{24}","title":"The Shawshank Redemption","directors":\["Frank Darabont","Rob Reiner"\]}$/');
+
+        // begin-qb-find-one
+        $movie = DB::table('movies')
+          ->where('directors', 'Rob Reiner')
+          ->orderBy('_id')
+          ->first();
+
+        echo $movie->toJson();
+        // end-qb-find-one
     }
 }
