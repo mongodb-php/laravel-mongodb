@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use MongoDB\Laravel\Tests\TestCase;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class DeleteManyTest extends TestCase
 {

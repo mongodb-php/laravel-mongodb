@@ -17,12 +17,20 @@ Delete a Document
    :depth: 1
    :class: singlecol
 
-You can delete a document in a collection by retrieving a single Eloquent model and calling
-the ``delete()`` method, or by calling ``delete()`` directly on a query builder.
+You can delete a document in a collection by retrieving a single
+Eloquent model and calling the ``delete()`` method, or by calling
+``delete()`` directly on a query builder.
 
-To delete a document, pass a query filter to the ``where()`` method, sort the matching documents,
-and call the ``limit()`` method to retrieve only the first document. Then, delete this matching
-document by calling the ``delete()`` method.
+To delete a document, pass a query filter to the ``where()`` method,
+sort the matching documents, and call the ``limit()`` method to retrieve
+only the first document. Then, delete this matching document by calling
+the ``delete()`` method.
+
+.. tip::
+
+   To learn more about deleting documents with the {+odm-short+}, see
+   the :ref:`laravel-fundamentals-delete-documents` section of the Write
+   Operations guide.
 
 Example
 -------
@@ -57,10 +65,3 @@ The example calls the following methods on the ``Movie`` model:
       Deleted documents: 1
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst
-
-.. tip::
-
-   To learn more about deleting documents with the {+odm-short+}, see the `Deleting Models
-   <https://laravel.com/docs/{+laravel-docs-version+}/eloquent#deleting-models>`__ section of the
-   Laravel documentation.
-

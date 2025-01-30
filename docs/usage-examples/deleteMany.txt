@@ -26,8 +26,9 @@ method.
 
 .. tip::
 
-   To learn more about deleting documents with the {+odm-short+}, see the :ref:`laravel-fundamentals-delete-documents`
-   section of the Write Operations guide.
+   To learn more about deleting documents with the {+odm-short+}, see
+   the :ref:`laravel-fundamentals-delete-documents` section of the Write
+   Operations guide.
 
 Example
 -------
