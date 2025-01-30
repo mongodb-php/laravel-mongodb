@@ -840,7 +840,7 @@ to use the following MongoDB-specific query operations:
 - :ref:`Run MongoDB Query API operations <laravel-query-builder-whereRaw>`
 - :ref:`Match documents that contain array elements <laravel-query-builder-elemMatch>`
 - :ref:`Specify a cursor timeout <laravel-query-builder-cursor-timeout>`
-- :ref:`Specify a read preference <>`
+- :ref:`Specify a read preference <laravel-query-builder-read-pref>`
 - :ref:`Match locations by using geospatial searches <laravel-query-builder-geospatial>`
 
 .. _laravel-query-builder-exists:
@@ -1042,9 +1042,9 @@ Specify a Read Preference Example
 You can control how the {+odm-short+} directs read operations to replica
 set members by setting a read preference. 
 
-The following example queries the ``movie`` collection for documents
+The following example queries the ``movies`` collection for documents
 in which the ``runtime`` value is greater than ``240``. The example passes a
-value of ``'secondary'`` to the ``readPreference()`` method, which sends 
+value of ``"secondary"`` to the ``readPreference()`` method, which sends 
 the query to secondary replica set members:
 
 .. literalinclude:: /includes/query-builder/QueryBuilderTest.php

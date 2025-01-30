@@ -619,13 +619,13 @@ set a read preference by using the ``readPreference()`` method.
 
 The ``readPreference()`` method accepts the following parameters:
  
-- ``mode``: (Required) A string value specifying the read preference
+- ``mode``: *(Required)* A string value specifying the read preference
   mode.
 
-- ``tagSets``: (Optional) An array value specifying key-value tags that correspond to 
-  the target replica set members.
+- ``tagSets``: *(Optional)* An array value specifying key-value tags that correspond to 
+  certain replica set members.
 
-- ``options``: (Optional) An array value specifying additional read preference options.
+- ``options``: *(Optional)* An array value specifying additional read preference options.
 
 .. tip::
 
@@ -635,7 +635,7 @@ The ``readPreference()`` method accepts the following parameters:
 
 The following example queries for documents in which the value of the ``title``
 field is ``"Carrie"`` and retrieves the results from secondary replica set
-members, or the primary member if no secondaries are available:
+members or the primary member if no secondaries are available:
 
 .. tabs::
 
