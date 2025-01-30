@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
-use MongoDB\Laravel\Tests\TestCase;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use MongoDB\Laravel\Tests\TestCase;
 
 class DeleteOneTest extends TestCase
 {
