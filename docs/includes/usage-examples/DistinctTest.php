@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use MongoDB\Laravel\Tests\TestCase;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class DistinctTest extends TestCase
 {
@@ -45,14 +47,24 @@ class DistinctTest extends TestCase
             ],
         ]);
 
-        // begin-distinct
+        // begin-eloquent-distinct
         $ratings = Movie::where('directors', 'Sofia Coppola')
             ->select('imdb.rating')
             ->distinct()
             ->get();
 
         echo $ratings;
-        // end-distinct
+        // end-eloquent-distinct
+
+        // begin-qb-distinct
+        $ratings = DB::table('movies')
+            ->where('directors', 'Sofia Coppola')
+            ->select('imdb.rating')
+            ->distinct()
+            ->get();
+
+        echo $ratings;
+        // end-qb-distinct
 
         $this->expectOutputString('[[6.4],[7.8]]');
     }

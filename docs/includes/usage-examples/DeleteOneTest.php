@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use MongoDB\Laravel\Tests\TestCase;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class DeleteOneTest extends TestCase
 {
@@ -25,14 +27,24 @@ class DeleteOneTest extends TestCase
             ],
         ]);
 
-        // begin-delete-one
+        // begin-eloquent-delete-one
         $deleted = Movie::where('title', 'Quiz Show')
             ->orderBy('_id')
             ->limit(1)
             ->delete();
 
         echo 'Deleted documents: ' . $deleted;
-        // end-delete-one
+        // end-eloquent-delete-one
+
+        // begin-qb-delete-one
+        $deleted = DB::table('movies')
+            ->where('title', 'Quiz Show')
+            ->orderBy('_id')
+            ->limit(1)
+            ->delete();
+
+        echo 'Deleted documents: ' . $deleted;
+        // end-qb-delete-one
 
         $this->assertEquals(1, $deleted);
         $this->expectOutputString('Deleted documents: 1');

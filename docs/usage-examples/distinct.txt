@@ -17,50 +17,99 @@ Retrieve Distinct Field Values
    :depth: 1
    :class: singlecol
 
-You can retrieve distinct field values of documents in a collection by calling the ``distinct()``
-method on an object collection or a query builder.
+You can retrieve distinct field values of documents in a collection by
+calling the ``distinct()`` method on an object collection or a query
+builder.
 
-To retrieve distinct field values, pass a query filter to the ``where()`` method and a field name
-to the ``select()`` method. Then, call ``distinct()`` to return the unique values of the selected
-field in documents that match the query filter.
+To retrieve distinct field values, pass a query filter to the
+``where()`` method and a field name to the ``select()`` method. Then,
+call ``distinct()`` to return the unique values of the selected field in
+documents that match the query filter.
+
+.. tip::
+
+   For more information about query filters, see the
+   :ref:`laravel-retrieve-matching` section of the Read Operations
+   guide.
 
 Example
 -------
 
-This usage example performs the following actions:
+Select from the following :guilabel:`Eloquent` and :guilabel:`Query
+Builder` tabs to view usage examples for the same operation that use
+each corresponding query syntax:
 
-- Uses the ``Movie`` Eloquent model to represent the ``movies`` collection in the
-  ``sample_mflix`` database
-- Retrieves distinct field values of documents from the ``movies`` collection that match a query filter
-- Prints the distinct values
+.. tabs::
 
-The example calls the following methods on the ``Movie`` model:
+   .. tab:: Eloquent
+      :tabid: eloquent-model-count
 
-- ``where()``: matches documents in which the value of the ``directors`` field includes ``"Sofia Coppola"``.
-- ``select()``: retrieves the matching documents' ``imdb.rating`` field values.
-- ``distinct()``: retrieves the unique values of the selected field and returns
-  the list of values.
-- ``get()``: retrieves the query results.
+      This example performs the following actions:
+      
+      - Uses the ``Movie`` Eloquent model to represent the ``movies``
+        collection in the ``sample_mflix`` database 
+      - Retrieves distinct field values of documents from the ``movies``
+        collection that match a query filter
+      - Prints the distinct values
+      
+      The example calls the following methods on the ``Movie`` model:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``directors`` field includes ``"Sofia Coppola"``
+      - ``select()``: Retrieves the matching documents' ``imdb.rating``
+        field values
+      - ``distinct()``: Retrieves the unique values of the selected
+        field and returns the list of values
+      - ``get()``: Retrieves the query results
+      
+      .. io-code-block::
+         :copyable: true
+      
+         .. input:: ../includes/usage-examples/DistinctTest.php
+            :start-after: begin-eloquent-distinct
+            :end-before: end-eloquent-distinct
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            [[5.6],[6.4],[7.2],[7.8]]
 
-.. io-code-block::
-   :copyable: true
+   .. tab:: Query Builder
+      :tabid: query-builder-count
 
-   .. input:: ../includes/usage-examples/DistinctTest.php
-      :start-after: begin-distinct
-      :end-before: end-distinct
-      :language: php
-      :dedent:
+      This example performs the following actions:
+      
+      - Accesses the ``movies`` collection by calling the ``table()``
+        method from the ``DB`` facade
+      - Retrieves distinct field values of documents from the ``movies``
+        collection that match a query filter
+      - Prints the distinct values
 
-   .. output::
-      :language: console
-      :visible: false
+      The example calls the following query builder methods:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``directors`` field includes ``"Sofia Coppola"``
+      - ``select()``: Retrieves the matching documents' ``imdb.rating``
+        field values
+      - ``distinct()``: Retrieves the unique values of the selected
+        field and returns the list of values
+      - ``get()``: Retrieves the query results
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/DistinctTest.php
+            :start-after: begin-qb-distinct
+            :end-before: end-qb-distinct
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
 
-      [[5.6],[6.4],[7.2],[7.8]]
+            [[5.6],[6.4],[7.2],[7.8]]
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst
-
-.. tip::
-
-   For more information about query filters, see the :ref:`laravel-retrieve-matching` section of
-   the Read Operations guide.
-
