@@ -19,7 +19,7 @@ Find a Document
 
    .. replacement:: result-operation
 
-      the ``first()`` method to return one document.
+      the ``first()`` method to return one document
 
 If multiple documents match the query filter, ``first()`` returns the first matching document according to the documents'
 :term:`natural order` in the database or according to the sort order that you can specify

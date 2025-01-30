@@ -25,7 +25,7 @@ Find Multiple Documents
 
    .. replacement:: result-operation
 
-      the ``get()`` method to retrieve the results.
+      the ``get()`` method to retrieve the results
 
 Pass a query filter to the ``where()`` method to retrieve documents that meet a
 set of criteria. When you call the ``get()`` method, MongoDB returns the

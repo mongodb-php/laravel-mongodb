@@ -1,2 +1,3 @@
-|operator-description| by creating a query builder, using a method such
-as ``Model::where()`` or the ``DB`` facade to match documents in a collection, and then calling |result-operation|.
+|operator-description| by using a method such as ``Model::where()`` or
+methods from the ``DB`` facade to match documents, and then calling
+|result-operation|.

@@ -17,48 +17,90 @@ Delete Multiple Documents
    :depth: 1
    :class: singlecol
 
-You can delete multiple documents in a collection by calling the ``delete()`` method on an
-object collection or a query builder.
+You can delete multiple documents in a collection by calling the
+``delete()`` method on an object collection or a query builder.
 
-To delete multiple documents, pass a query filter to the ``where()`` method. Then, delete the
-matching documents by calling the ``delete()`` method.
-
-Example
--------
-
-This usage example performs the following actions:
-
-- Uses the ``Movie`` Eloquent model to represent the ``movies`` collection in the
-  ``sample_mflix`` database
-- Deletes documents from the ``movies`` collection that match a query filter
-- Prints the number of deleted documents
-
-The example calls the following methods on the ``Movie`` model:
-
-- ``where()``: matches documents in which the value of the ``year`` field is less than or
-  equal to ``1910``.
-- ``delete()``: deletes the matched documents. This method returns the number
-  of documents that the method successfully deletes.
-
-.. io-code-block::
-   :copyable: true
-
-   .. input:: ../includes/usage-examples/DeleteManyTest.php
-      :start-after: begin-delete-many
-      :end-before: end-delete-many
-      :language: php
-      :dedent:
-
-   .. output::
-      :language: console
-      :visible: false
-
-      Deleted documents: 7
-
-.. include:: /includes/usage-examples/fact-edit-laravel-app.rst
+To delete multiple documents, pass a query filter to the ``where()``
+method. Then, delete the matching documents by calling the ``delete()``
+method.
 
 .. tip::
 
    To learn more about deleting documents with the {+odm-short+}, see the :ref:`laravel-fundamentals-delete-documents`
    section of the Write Operations guide.
 
+Example
+-------
+
+Select from the following :guilabel:`Eloquent` and :guilabel:`Query
+Builder` tabs to view usage examples for the same operation that use
+each corresponding query syntax:
+
+.. tabs::
+
+   .. tab:: Eloquent
+      :tabid: eloquent-model-count
+
+      This example performs the following actions:
+      
+      - Uses the ``Movie`` Eloquent model to represent the ``movies``
+        collection in the ``sample_mflix`` database 
+      - Deletes documents from the ``movies`` collection that match a
+        query filter
+      - Prints the number of deleted documents
+      
+      The example calls the following methods on the ``Movie`` model:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``year`` field is less than or equal to ``1910``
+      - ``delete()``: Deletes the matched documents and returns the
+        number of documents successfully deleted
+      
+      .. io-code-block::
+         :copyable: true
+      
+         .. input:: ../includes/usage-examples/DeleteManyTest.php
+            :start-after: begin-eloquent-delete-many
+            :end-before: end-eloquent-delete-many
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            Deleted documents: 7
+
+   .. tab:: Query Builder
+      :tabid: query-builder-count
+
+      This example performs the following actions:
+      
+      - Accesses the ``movies`` collection by calling the ``table()``
+        method from the ``DB`` facade
+      - Deletes documents from the ``movies`` collection that match a
+        query filter
+      - Prints the number of deleted documents
+      
+      The example calls the following query builder methods:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``year`` field is less than or equal to ``1910``
+      - ``delete()``: Deletes the matched documents and returns the
+        number of documents successfully deleted
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/DeleteManyTest.php
+            :start-after: begin-qb-delete-many
+            :end-before: end-qb-delete-many
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            Deleted documents: 7
+
+.. include:: /includes/usage-examples/fact-edit-laravel-app.rst

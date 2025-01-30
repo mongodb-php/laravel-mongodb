@@ -29,12 +29,20 @@ class DeleteManyTest extends TestCase
             ],
         ]);
 
-        // begin-delete-many
+        // begin-eloquent-delete-many
         $deleted = Movie::where('year', '<=', 1910)
             ->delete();
 
         echo 'Deleted documents: ' . $deleted;
-        // end-delete-many
+        // end-eloquent-delete-many
+
+        // begin-qb-delete-many
+        $deleted = DB::table('movies')
+            ->where('year', '<=', 1910)
+            ->delete();
+
+        echo 'Deleted documents: ' . $deleted;
+        // end-qb-delete-many
 
         $this->assertEquals(2, $deleted);
         $this->expectOutputString('Deleted documents: 2');

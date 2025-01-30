@@ -29,12 +29,20 @@ class CountTest extends TestCase
             ],
         ]);
 
-        // begin-count
+        // begin-eloquent-count
         $count = Movie::where('genres', 'Biography')
             ->count();
 
         echo 'Number of documents: ' . $count;
-        // end-count
+        // end-eloquent-count
+
+        // begin-qb-count
+        $count = DB::table('movies')
+            ->where('genres', 'Biography')
+            ->count();
+
+        echo 'Number of documents: ' . $count;
+        // end-qb-count
 
         $this->assertEquals(2, $count);
         $this->expectOutputString('Number of documents: 2');

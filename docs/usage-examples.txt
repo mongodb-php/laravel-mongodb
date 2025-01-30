@@ -43,6 +43,10 @@ operations. Each usage example includes the following components:
 - Example code that you can run from an application controller
 - Output displayed by the print statement
 
+To learn more about the operations demonstrated in the usage examples,
+see the :ref:`laravel-fundamentals-read-ops` and
+:ref:`laravel-fundamentals-write-ops` guides.
+
 How to Use the Usage Examples
 -----------------------------
 
