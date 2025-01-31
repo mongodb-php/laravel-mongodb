@@ -47,6 +47,7 @@ each corresponding query syntax:
       - Uses the ``Movie`` Eloquent model to represent the ``movies``
         collection in the ``sample_mflix`` database 
       - Inserts a document into the ``movies`` collection
+      - Prints the newly inserted document
       
       The example calls the ``create()`` method to insert a document
       that contains the following fields and values:
@@ -85,6 +86,7 @@ each corresponding query syntax:
       - Accesses the ``movies`` collection by calling the ``table()``
         method from the ``DB`` facade
       - Inserts a document into the ``movies`` collection
+      - Prints whether the insert operation succeeds
 
       The example calls the ``insert()`` method to insert a document
       that contains the following fields and values:

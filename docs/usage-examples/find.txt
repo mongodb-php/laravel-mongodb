@@ -130,20 +130,10 @@ each corresponding query syntax:
 
             // Results are truncated
       
-            [
-              {
-                "_id": ...,
-                "runtime": 1256,
-                "title": "Centennial",
-                ...,
-              },
-              {
-                "_id": ...,
-                "runtime": 1140,
-                "title": "Baseball",
-                ...,
-              },
-              ...
-            ]
+            Illuminate\Support\Collection Object ( [items:protected] =>
+            Array ( [0] => Array ( [_id] => ... [runtime] => 1256
+            [title] => Centennial [1] => Array
+            ( [_id] => ... [runtime] => 1140
+            [title] => Baseball ) ...
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst
