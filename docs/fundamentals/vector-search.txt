@@ -137,8 +137,8 @@ following optional parameters to ``search()``:
 
    * - ``exact``
      - ``bool``
-     - Specifies whether to run :term:`ENN` (``true``) or :term:`ANN`
-       (``false``) search
+     - Specifies whether to run an Exact Nearest Neighbor (``true``) or
+       Approximate Nearest Neighbor (``false``) search
      - ``false``
 
    * - ``filter``
