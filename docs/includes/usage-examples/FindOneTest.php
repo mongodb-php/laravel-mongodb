@@ -14,7 +14,7 @@ class FindOneTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function testFindOne(): void
+    public function testEloquentFindOne(): void
     {
         require_once __DIR__ . '/Movie.php';
 
@@ -25,11 +25,28 @@ class FindOneTest extends TestCase
 
         // begin-eloquent-find-one
         $movie = Movie::where('directors', 'Rob Reiner')
-          ->orderBy('_id')
+          ->orderBy('id')
           ->first();
 
         echo $movie->toJson();
         // end-eloquent-find-one
+
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->expectOutputRegex('/^{"title":"The Shawshank Redemption","directors":\["Frank Darabont","Rob Reiner"\],"id":"[a-z0-9]{24}"}$/');
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testQBFindOne(): void
+    {
+        require_once __DIR__ . '/Movie.php';
+
+        Movie::truncate();
+        Movie::insert([
+            ['title' => 'The Shawshank Redemption', 'directors' => ['Frank Darabont', 'Rob Reiner']],
+        ]);
 
         // begin-qb-find-one
         $movie = DB::table('movies')
@@ -40,8 +57,7 @@ class FindOneTest extends TestCase
         echo $movie['title'];
         // end-qb-find-one
 
-        $this->assertInstanceOf(Movie::class, $movie);
         $this->assertSame($movie['title'], 'The Shawshank Redemption');
-        $this->expectOutputString('{"_id":"679cdb4834e26dc5370de462","title":"The Shawshank Redemption","directors":["Frank Darabont","Rob Reiner"]}The Shawshank Redemption');
+        $this->expectOutputString('The Shawshank Redemption');
     }
 }
