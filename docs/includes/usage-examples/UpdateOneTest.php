@@ -49,12 +49,14 @@ class UpdateOneTest extends TestCase
         $updates = DB::table('movies')
             ->updateOne(
                 ['title' => 'Carol'],
-                ['$set' => [
-                    'imdb' => [
-                        'rating' => 7.3,
-                        'votes' => 142000,
+                [
+                    '$set' => [
+                        'imdb' => [
+                            'rating' => 7.3,
+                            'votes' => 142000,
+                        ],
                     ],
-                ]]
+                ],
             );
 
         echo 'Updated documents: ' . $updates;

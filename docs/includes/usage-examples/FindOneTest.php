@@ -8,8 +8,6 @@ use App\Models\Movie;
 use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
 
-use function print_r;
-
 class FindOneTest extends TestCase
 {
     /**
@@ -34,7 +32,7 @@ class FindOneTest extends TestCase
         // end-eloquent-find-one
 
         $this->assertInstanceOf(Movie::class, $movie);
-        
+
         // begin-qb-find-one
         $movie = DB::table('movies')
           ->where('directors', 'Rob Reiner')
