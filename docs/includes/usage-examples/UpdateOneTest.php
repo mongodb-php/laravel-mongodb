@@ -47,15 +47,15 @@ class UpdateOneTest extends TestCase
 
         // begin-qb-update-one
         $updates = DB::table('movies')
-            ->where('title', 'Carol')
-            ->orderBy('_id')
-            ->first()
-            ->update([
-                'imdb' => [
-                    'rating' => 7.3,
-                    'votes' => 142000,
-                ],
-            ]);
+            ->updateOne(
+                ['title' => 'Carol'],
+                ['$set' => [
+                    'imdb' => [
+                        'rating' => 7.3,
+                        'votes' => 142000,
+                    ],
+                ]]
+            );
 
         echo 'Updated documents: ' . $updates;
         // end-qb-update-one

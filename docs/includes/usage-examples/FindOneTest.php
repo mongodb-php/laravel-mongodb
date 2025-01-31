@@ -34,15 +34,16 @@ class FindOneTest extends TestCase
         // end-eloquent-find-one
 
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertSame($movie->title, 'The Shawshank Redemption');
-
+        
         // begin-qb-find-one
         $movie = DB::table('movies')
           ->where('directors', 'Rob Reiner')
           ->orderBy('_id')
           ->first();
 
-        echo print_r($movie);
+        echo $movie['title'];
         // end-qb-find-one
+
+        $this->assertSame($movie['title'], 'The Shawshank Redemption');
     }
 }
