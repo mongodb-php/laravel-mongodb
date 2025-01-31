@@ -36,7 +36,13 @@ class DeleteOneTest extends TestCase
         // end-eloquent-delete-one
 
         $this->assertEquals(1, $deleted);
-        $this->expectOutputString('Deleted documents: 1Deleted documents: 0');
+
+        Movie::insert([
+            [
+                'title' => 'Quiz Show',
+                'runtime' => 133,
+            ],
+        ]);
 
         // begin-qb-delete-one
         $deleted = DB::table('movies')
@@ -47,5 +53,9 @@ class DeleteOneTest extends TestCase
 
         echo 'Deleted documents: ' . $deleted;
         // end-qb-delete-one
+
+        $this->assertEquals(1, $deleted);
+
+        $this->expectOutputString('Deleted documents: 1Deleted documents: 1');
     }
 }

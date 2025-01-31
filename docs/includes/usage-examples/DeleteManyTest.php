@@ -38,7 +38,17 @@ class DeleteManyTest extends TestCase
         // end-eloquent-delete-many
 
         $this->assertEquals(2, $deleted);
-        $this->expectOutputString('Deleted documents: 2Deleted documents: 0');
+
+        Movie::insert([
+            [
+                'title' => 'Train Pulling into a Station',
+                'year' => 1896,
+            ],
+            [
+                'title' => 'The Ball Game',
+                'year' => 1898,
+            ],
+        ]);
 
         // begin-qb-delete-many
         $deleted = DB::table('movies')
@@ -47,5 +57,8 @@ class DeleteManyTest extends TestCase
 
         echo 'Deleted documents: ' . $deleted;
         // end-qb-delete-many
+
+        $this->assertEquals(2, $deleted);
+        $this->expectOutputString('Deleted documents: 2Deleted documents: 2');
     }
 }

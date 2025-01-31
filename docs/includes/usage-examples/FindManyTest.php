@@ -40,6 +40,8 @@ class FindManyTest extends TestCase
             ->get();
         // end-eloquent-find
 
+        $this->assertEquals(2, $movies->count());
+
         // begin-qb-find
         $movies = DB::table('movies')
             ->where('runtime', '>', 900)

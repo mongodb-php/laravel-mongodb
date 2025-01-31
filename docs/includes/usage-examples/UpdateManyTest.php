@@ -45,6 +45,23 @@ class UpdateManyTest extends TestCase
 
         $this->assertEquals(2, $updates);
 
+        Movie::insert([
+            [
+                'title' => 'ABCD',
+                'imdb' => [
+                    'rating' => 9.5,
+                    'votes' => 1,
+                ],
+            ],
+            [
+                'title' => 'Testing',
+                'imdb' => [
+                    'rating' => 9.3,
+                    'votes' => 1,
+                ],
+            ],
+        ]);
+
         // begin-qb-update-many
         $updates = DB::table('movies')
             ->where('imdb.rating', '>', 9.0)
@@ -53,6 +70,7 @@ class UpdateManyTest extends TestCase
         echo 'Updated documents: ' . $updates;
         // end-qb-update-many
 
-        $this->expectOutputString('Updated documents: 2Updated documents: 0');
+        $this->assertEquals(2, $updates);
+        $this->expectOutputString('Updated documents: 2Updated documents: 2');
     }
 }

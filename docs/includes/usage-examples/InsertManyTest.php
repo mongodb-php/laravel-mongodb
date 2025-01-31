@@ -41,6 +41,8 @@ class InsertManyTest extends TestCase
         echo 'Insert operation success: ' . ($success ? 'yes' : 'no');
         // end-eloquent-insert-many
 
+        $this->assertTrue($success);
+
         // begin-qb-insert-many
         $success = DB::table('movies')
             ->insert([

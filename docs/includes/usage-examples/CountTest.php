@@ -36,6 +36,8 @@ class CountTest extends TestCase
 
         echo 'Number of documents: ' . $count;
         // end-eloquent-count
+        
+        $this->assertEquals(2, $count);
 
         // begin-qb-count
         $count = DB::table('movies')
