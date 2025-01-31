@@ -46,7 +46,7 @@ The example calls the following methods on the ``Movie`` model:
 - ``where()``: Matches documents in which the value of the
   ``title`` field is ``"Carol"``
 - ``orderBy()``: Sorts matched documents by their ascending ``_id`` values
-- ``first()``: Retrieves only the first matching document.
+- ``first()``: Retrieves only the first matching document
 - ``update()``: Updates the value of the ``imdb.rating`` nested
   field to from ``6.9`` to ``7.3`` and the value of the
   ``imdb.votes`` nested field from ``493`` to ``142000``

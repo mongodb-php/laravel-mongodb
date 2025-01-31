@@ -49,7 +49,7 @@ each corresponding query syntax:
       - Inserts documents into the ``movies`` collection
       - Prints whether the insert operation succeeds
       
-      The example calls the ``insert()`` method to insert documents that model
+      The example calls the ``insert()`` method to insert documents that represent
       movies released in ``2023``. If the insert operation is
       successful, it returns a value of ``1``. If the operation fails, it throws
       an exception.
@@ -79,7 +79,7 @@ each corresponding query syntax:
       - Inserts documents into the ``movies`` collection
       - Prints whether the insert operation succeeds
 
-      The example calls the ``insert()`` method to insert documents that model
+      The example calls the ``insert()`` method to insert documents that represent
       movies released in ``2023``. If the insert operation is
       successful, it returns a value of ``1``. If the operation fails, it throws
       an exception.
