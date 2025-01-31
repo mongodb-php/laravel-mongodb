@@ -32,7 +32,7 @@ class FindOneTest extends TestCase
         // end-eloquent-find-one
 
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->expectOutputRegex('/^{"title":"The Shawshank Redemption","directors":\["Frank Darabont","Rob Reiner"\],"id":"[a-z0-9]{24}"}$/');
+        $this->expectOutputRegex('/^{"_id":"[a-z0-9]{24}","title":"The Shawshank Redemption","directors":\["Frank Darabont","Rob Reiner"\]}$/');
     }
 
     /**
