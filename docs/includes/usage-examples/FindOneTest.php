@@ -43,5 +43,6 @@ class FindOneTest extends TestCase
         // end-qb-find-one
 
         $this->assertSame($movie['title'], 'The Shawshank Redemption');
+        $this->expectOutputString('{"_id":"679cdb4834e26dc5370de462","title":"The Shawshank Redemption","directors":["Frank Darabont","Rob Reiner"]}The Shawshank Redemption');
     }
 }

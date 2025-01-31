@@ -43,5 +43,6 @@ class InsertOneTest extends TestCase
 
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertSame($movie->title, 'Marriage Story');
+        $this->expectOutputString('{"title":"Marriage Story","year":2019,"runtime":136,"updated_at":"2025-01-31T14:16:40.834000Z","created_at":"2025-01-31T14:16:40.834000Z","_id":"679cdb488f9fa3d481091a42"}Insert operation success: yes');
     }
 }

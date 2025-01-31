@@ -89,7 +89,7 @@ each corresponding query syntax:
         method from the ``DB`` facade
       - Retrieves a document from the ``movies`` collection that matches
         a query filter
-      - Prints the retrieved document
+      - Prints the ``title`` field of the retrieved document
 
       The example calls the following query builder methods:
       
@@ -110,13 +110,6 @@ each corresponding query syntax:
             :language: console
             :visible: false
 
-            // Result is truncated
-      
-            {
-              "_id": ...,
-              "title": "This Is Spinal Tap",
-              "directors": [ "Rob Reiner" ],
-               ...
-            }
+            This Is Spinal Tap
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst

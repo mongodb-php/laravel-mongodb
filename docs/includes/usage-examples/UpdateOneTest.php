@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
-use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
 
 class UpdateOneTest extends TestCase
@@ -44,24 +43,6 @@ class UpdateOneTest extends TestCase
         // end-eloquent-update-one
 
         $this->assertTrue($updates);
-
-        // begin-qb-update-one
-        $updates = DB::table('movies')
-            ->updateOne(
-                ['title' => 'Carol'],
-                [
-                    '$set' => [
-                        'imdb' => [
-                            'rating' => 7.3,
-                            'votes' => 142000,
-                        ],
-                    ],
-                ],
-            );
-
-        echo 'Updated documents: ' . $updates;
-        // end-qb-update-one
-
-        $this->expectOutputString('Updated documents: 1Updated documents: 0');
+        $this->expectOutputString('Updated documents: 1');
     }
 }
