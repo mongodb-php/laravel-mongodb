@@ -31,8 +31,6 @@ class FindOneTest extends TestCase
         echo $movie->toJson();
         // end-eloquent-find-one
 
-        $this->assertInstanceOf(Movie::class, $movie);
-
         // begin-qb-find-one
         $movie = DB::table('movies')
           ->where('directors', 'Rob Reiner')
@@ -42,6 +40,7 @@ class FindOneTest extends TestCase
         echo $movie['title'];
         // end-qb-find-one
 
+        $this->assertInstanceOf(Movie::class, $movie);
         $this->assertSame($movie['title'], 'The Shawshank Redemption');
         $this->expectOutputString('{"_id":"679cdb4834e26dc5370de462","title":"The Shawshank Redemption","directors":["Frank Darabont","Rob Reiner"]}The Shawshank Redemption');
     }

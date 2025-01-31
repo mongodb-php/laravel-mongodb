@@ -86,7 +86,7 @@ each corresponding query syntax:
         method from the ``DB`` facade
       - Inserts a document into the ``movies`` collection
 
-      The example calls the ``create()`` method to insert a document
+      The example calls the ``insert()`` method to insert a document
       that contains the following fields and values:
 
       - ``title`` value of ``"Marriage Story"``
