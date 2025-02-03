@@ -104,11 +104,11 @@ application to support Atlas Search queries.
 			<?php
 			
 			return [
-			    'driver' => env('SCOUT_DRIVER', 'mongodb'),
-			    'mongodb' => [
-			        'connection' => env('SCOUT_MONGODB_CONNECTION', 'mongodb'),
-			    ],
-			    'prefix' => env('SCOUT_PREFIX', 'scout_'),
+				 'driver' => env('SCOUT_DRIVER', 'mongodb'),
+				 'mongodb' => [
+					  'connection' => env('SCOUT_MONGODB_CONNECTION', 'mongodb'),
+				 ],
+				 'prefix' => env('SCOUT_PREFIX', 'scout_'),
 			];
 		
 		The preceding code specifies the following configuration:
@@ -145,7 +145,7 @@ application to support Atlas Search queries.
 		
 			{
 			  "mappings": {
-			    "dynamic": true
+				 "dynamic": true
 			  }
 			}
 		
@@ -181,17 +181,17 @@ application to support Atlas Search queries.
 			
 			.. code-block:: php
 				
-            class Movie extends Model
-            {
-                ....
-                public function toSearchableArray(): array
-                {
-                    return [
-                        'plot' => $this->plot,
-                        'title' => $this->title,
-                    ];
-                }
-            }
+				class Movie extends Model
+				{
+					 ....
+					 public function toSearchableArray(): array
+					 {
+						  return [
+								'plot' => $this->plot,
+								'title' => $this->title,
+						  ];
+					 }
+			   }
 
 .. TODO Use an External Search Engine
 .. -----------------------------
