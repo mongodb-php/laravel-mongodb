@@ -181,17 +181,17 @@ application to support Atlas Search queries.
 			
 			.. code-block:: php
 				
-				class Movie extends Model
-				{
-				    ....
-				    public function toSearchableArray(): array
-				    {
-				        return [
-				            'plot' => $this->plot,
-				            'title' => $this->title,
-				        ];
-				    }
-				}
+            class Movie extends Model
+            {
+                ....
+                public function toSearchableArray(): array
+                {
+                    return [
+                        'plot' => $this->plot,
+                        'title' => $this->title,
+                    ];
+                }
+            }
 
 .. TODO Use an External Search Engine
 .. -----------------------------
