@@ -21,6 +21,7 @@
    Query Builder </query-builder>
    User Authentication </user-authentication>
    Cache & Locks </cache>
+   Scout Integration </scout>
    HTTP Sessions </sessions>
    Queues </queues>
    Transactions </transactions>
@@ -85,6 +86,7 @@ see the following content:
 - :ref:`laravel-aggregation-builder`
 - :ref:`laravel-user-authentication`
 - :ref:`laravel-cache`
+- :ref:`laravel-scout`
 - :ref:`laravel-sessions`
 - :ref:`laravel-queues`
 - :ref:`laravel-transactions`
