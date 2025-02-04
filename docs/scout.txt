@@ -55,154 +55,154 @@ application to support Atlas Search queries.
    :style: connected
    
    .. step:: Install the Scout package
-	  
-	  Before you can use Scout in your application, run the following
-	  command from your application's root directory to install Laravel Scout:
-	  
-	  .. code-block:: bash
-		 	 
-		 composer require laravel/scout
+      
+      Before you can use Scout in your application, run the following
+      command from your application's root directory to install Laravel Scout:
+      
+      .. code-block:: bash
+              
+         composer require laravel/scout
 
    .. step:: Add the Searchable trait to your model
 
-	  Add the ``Laravel\Scout\Searchable`` trait to an Eloquent model to make
-	  it searchable. The following example adds this trait to the ``Movie``
-	  model, which represents documents in the ``sample_mflix.movies``
-	  collection:
-		
-	  .. code-block:: php
-		 :emphasize-lines: 6, 10
-		
-		 <?php
-		  
-		 namespace App\Models;
-		  
-		 use MongoDB\Laravel\Eloquent\Model;
-		 use Laravel\Scout\Searchable;
-		 
-		 class Movie extends Model
-		 {
-			 use Searchable;
-			 
-			 protected $connection = 'mongodb';
-		 }
+      Add the ``Laravel\Scout\Searchable`` trait to an Eloquent model to make
+      it searchable. The following example adds this trait to the ``Movie``
+      model, which represents documents in the ``sample_mflix.movies``
+      collection:
+        
+      .. code-block:: php
+         :emphasize-lines: 6, 10
+        
+         <?php
+          
+         namespace App\Models;
+          
+         use MongoDB\Laravel\Eloquent\Model;
+         use Laravel\Scout\Searchable;
+         
+         class Movie extends Model
+         {
+             use Searchable;
+             
+             protected $connection = 'mongodb';
+         }
 
    .. step:: Configure Scout in your application
 
-	  Ensure that your application is configured to use MongoDB as its
-	  database connection. To learn how to configure MongoDB, see the
-	  :ref:`laravel-quick-start-connect-to-mongodb` section of the Quick Start
-	  guide.
-	  
-	  To configure Scout in your application, create a file named
-	  ``scout.php`` in your application's ``config`` directory. Paste the
-	  following code into the file to configure Scout:
-		
-	  .. code-block:: php
-		 :caption: config/scout.php
-	  
-		 <?php
-		 
-		 return [
-			 'driver' => env('SCOUT_DRIVER', 'mongodb'),
-			 'mongodb' => [
-		 		 'connection' => env('SCOUT_MONGODB_CONNECTION', 'mongodb'),
-			 ],
-			 'prefix' => env('SCOUT_PREFIX', 'scout_'),
-		 ];
+      Ensure that your application is configured to use MongoDB as its
+      database connection. To learn how to configure MongoDB, see the
+      :ref:`laravel-quick-start-connect-to-mongodb` section of the Quick Start
+      guide.
+      
+      To configure Scout in your application, create a file named
+      ``scout.php`` in your application's ``config`` directory. Paste the
+      following code into the file to configure Scout:
+        
+      .. code-block:: php
+         :caption: config/scout.php
+      
+         <?php
+         
+         return [
+             'driver' => env('SCOUT_DRIVER', 'mongodb'),
+             'mongodb' => [
+                 'connection' => env('SCOUT_MONGODB_CONNECTION', 'mongodb'),
+             ],
+             'prefix' => env('SCOUT_PREFIX', 'scout_'),
+         ];
 
-	  The preceding code specifies the following configuration:
-	  
-	  - Uses the value of the ``SCOUT_DRIVER`` environment variable as
-		the default search driver, or ``mongodb`` if the environment
-		variable is not set
-		
-	  - Specifies ``scout_`` as the prefix for the collection name of the
-		searchable collection
-	  
-	  Set the following environment variable in your application's
-	  ``.env`` file to select ``mongodb`` as the default search driver:
-	  
-	  .. code-block:: none
-		 :caption: .env
-		 
-		 SCOUT_DRIVER=mongodb
-	  
-	  .. tip:: Queueing
-	  
-		 When using Scout, consider configuring a queue driver to reduce
-		 response times for your application's web interface. To learn more,
-		 see the `Queuing section
-		 <https://laravel.com/docs/{+laravel-docs-version+}/scout#queueing>`__
-		 of the Laravel Scout documentation and the :ref:`laravel-queues` guide.
+      The preceding code specifies the following configuration:
+      
+      - Uses the value of the ``SCOUT_DRIVER`` environment variable as
+        the default search driver, or ``mongodb`` if the environment
+        variable is not set
+        
+      - Specifies ``scout_`` as the prefix for the collection name of the
+        searchable collection
+      
+      Set the following environment variable in your application's
+      ``.env`` file to select ``mongodb`` as the default search driver:
+      
+      .. code-block:: none
+         :caption: .env
+         
+         SCOUT_DRIVER=mongodb
+      
+      .. tip:: Queueing
+      
+         When using Scout, consider configuring a queue driver to reduce
+         response times for your application's web interface. To learn more,
+         see the `Queuing section
+         <https://laravel.com/docs/{+laravel-docs-version+}/scout#queueing>`__
+         of the Laravel Scout documentation and the :ref:`laravel-queues` guide.
 
    .. step:: Create the Atlas Search index
 
-	  After you configure Scout and set your default search driver, you can
-	  create your searchable collection and search index by running the
-	  following command from your application's root directory:
-		
-	  .. code-block:: bash
-		 
-		 php artisan scout:index 'App\Models\Movie'
-		
-	  Because you set MongoDB as the default search driver, the preceding
-	  command creates the search collection with an Atlas Search index in your
-	  MongoDB database. The collection is named ``scout_movies``, based on the prefix
-	  set in the preceding step. The Atlas Search index is named ``scout``
-	  and has the following configuration:
+      After you configure Scout and set your default search driver, you can
+      create your searchable collection and search index by running the
+      following command from your application's root directory:
+        
+      .. code-block:: bash
+         
+         php artisan scout:index 'App\Models\Movie'
+        
+      Because you set MongoDB as the default search driver, the preceding
+      command creates the search collection with an Atlas Search index in your
+      MongoDB database. The collection is named ``scout_movies``, based on the prefix
+      set in the preceding step. The Atlas Search index is named ``scout``
+      and has the following configuration:
 
-	  .. code-block:: json
-	  
-		 {
-		   "mappings": {
-			 "dynamic": true
-		   }
-		 }
-		
-	  .. note::
-	  
-		 MongoDB can take up to a minute to create and finalize
-		 an Atlas Search index, so the ``scout:index`` command might not
-		 return a success message immediately.
+      .. code-block:: json
+      
+         {
+           "mappings": {
+             "dynamic": true
+           }
+         }
+        
+      .. note::
+      
+         MongoDB can take up to a minute to create and finalize
+         an Atlas Search index, so the ``scout:index`` command might not
+         return a success message immediately.
 
    .. step:: Import data into the searchable collection
 
-	  You can use Scout to replicate data from a source collection into a
-	  searchable collection. The following command replicates and indexes data
-	  from the ``movies`` collection into the ``scout_movies`` collection
-	  created in the preceding step:
-		
-	  .. code-block:: bash
-		 
-		 php artisan scout:import 'App\Models\Movie'
-		
-	  The documents are automatically indexed for Atlas Search queries.
+      You can use Scout to replicate data from a source collection into a
+      searchable collection. The following command replicates and indexes data
+      from the ``movies`` collection into the ``scout_movies`` collection
+      created in the preceding step:
+        
+      .. code-block:: bash
+         
+         php artisan scout:import 'App\Models\Movie'
+        
+      The documents are automatically indexed for Atlas Search queries.
 
-	  .. tip:: Select Fields to Import
+      .. tip:: Select Fields to Import
 
-		 You might not need all the fields from your source documents in your
-		 searchable collection. Limiting the fields you replicate can improve
-		 your application's speed and performance.
-			
-		 You can select specific fields to import by defining the
-		 ``toSearchableArray()`` method in your Eloquent model class. The
-		 following code demonstrates how to define ``toSearchableArray()`` to
-		 select only the ``plot`` and ``title`` fields for replication:
-			
-		 .. code-block:: php
-		 	
-			class Movie extends Model
-			{
-				....
-				public function toSearchableArray(): array
-				{
-					return [
-						'plot' => $this->plot,
-						'title' => $this->title,
-					];
-				}
-			}
+         You might not need all the fields from your source documents in your
+         searchable collection. Limiting the fields you replicate can improve
+         your application's speed and performance.
+            
+         You can select specific fields to import by defining the
+         ``toSearchableArray()`` method in your Eloquent model class. The
+         following code demonstrates how to define ``toSearchableArray()`` to
+         select only the ``plot`` and ``title`` fields for replication:
+            
+         .. code-block:: php
+            
+            class Movie extends Model
+            {
+                ....
+                public function toSearchableArray(): array
+                {
+                    return [
+                        'plot' => $this->plot,
+                        'title' => $this->title,
+                    ];
+                }
+            }
 
 After completing these steps, you can perform Atlas Search queries on the
 ``scout_movies`` collection in your {+odm-long+} application.
