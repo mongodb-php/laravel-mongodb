@@ -21,6 +21,12 @@ use function method_exists;
 use function throw_if;
 use function value;
 
+/**
+ * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TResult
+ * @extends EmbedsOneOrMany<TRelatedModel, TDeclaringModel, TResult>
+ */
 class EmbedsMany extends EmbedsOneOrMany
 {
     /** @inheritdoc */

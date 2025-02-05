@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany as EloquentHasMany;
 
+/**
+ * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @extends EloquentHasMany<TRelatedModel, TDeclaringModel>
+ */
 class HasMany extends EloquentHasMany
 {
     /**

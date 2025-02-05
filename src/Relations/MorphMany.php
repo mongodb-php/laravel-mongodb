@@ -7,6 +7,11 @@ namespace MongoDB\Laravel\Relations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany as EloquentMorphMany;
 
+/**
+ * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @extends EloquentMorphMany<TRelatedModel, TDeclaringModel>
+ */
 class MorphMany extends EloquentMorphMany
 {
     /**

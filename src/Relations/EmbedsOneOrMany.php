@@ -21,6 +21,12 @@ use function is_array;
 use function str_starts_with;
 use function throw_if;
 
+/**
+ * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TResult
+ * @extends \Illuminate\Database\Eloquent\Relations\Relation<TRelatedModel, TDeclaringModel, TResult>
+ */
 abstract class EmbedsOneOrMany extends Relation
 {
     /**

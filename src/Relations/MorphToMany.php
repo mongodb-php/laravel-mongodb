@@ -24,6 +24,11 @@ use function in_array;
 use function is_array;
 use function is_numeric;
 
+/**
+ * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @extends EloquentMorphToMany<TRelatedModel, TDeclaringModel>
+ */
 class MorphToMany extends EloquentMorphToMany
 {
     /** @inheritdoc */

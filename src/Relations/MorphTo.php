@@ -7,6 +7,11 @@ namespace MongoDB\Laravel\Relations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo as EloquentMorphTo;
 
+/**
+ * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @extends EloquentMorphTo<TRelatedModel, TDeclaringModel>
+ */
 class MorphTo extends EloquentMorphTo
 {
     /** @inheritdoc */

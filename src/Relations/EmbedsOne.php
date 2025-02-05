@@ -11,6 +11,12 @@ use Throwable;
 
 use function throw_if;
 
+/**
+ * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TResult
+ * @extends EmbedsOneOrMany<TRelatedModel, TDeclaringModel, TResult>
+ */
 class EmbedsOne extends EmbedsOneOrMany
 {
     public function initRelation(array $models, $relation)

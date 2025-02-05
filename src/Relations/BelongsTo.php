@@ -7,6 +7,11 @@ namespace MongoDB\Laravel\Relations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @extends \Illuminate\Database\Eloquent\Relations\BelongsTo<TRelatedModel, TDeclaringModel>
+ */
 class BelongsTo extends \Illuminate\Database\Eloquent\Relations\BelongsTo
 {
     /**
