@@ -11,18 +11,43 @@ parameters:
 			path: src/MongoDBServiceProvider.php
 
 		-
-			message: "#^Method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:push\\(\\) invoked with 3 parameters, 0 required\\.$#"
-			count: 2
+			message: "#^Call to an undefined method TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:pull\\(\\)\\.$#"
+			count: 1
 			path: src/Relations/BelongsToMany.php
 
 		-
-			message: "#^Call to an undefined method MongoDB\\\\Laravel\\\\Relations\\\\EmbedsMany\\<TRelatedModel of MongoDB\\\\Laravel\\\\Eloquent\\\\Model, TDeclaringModel of MongoDB\\\\Laravel\\\\Eloquent\\\\Model, TResult\\>\\:\\:contains\\(\\)\\.$#"
+			message: "#^Method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:push\\(\\) invoked with 3 parameters, 0 required\\.$#"
+			count: 3
+			path: src/Relations/BelongsToMany.php
+
+		-
+			message: "#^Call to an undefined method MongoDB\\\\Laravel\\\\Relations\\\\EmbedsMany\\<TRelatedModel of Illuminate\\\\Database\\\\Eloquent\\\\Model, TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model, TResult\\>\\:\\:contains\\(\\)\\.$#"
 			count: 1
 			path: src/Relations/EmbedsMany.php
 
 		-
-			message: "#^Method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:push\\(\\) invoked with 3 parameters, 0 required\\.$#"
+			message: "#^Call to an undefined method TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:getParentRelation\\(\\)\\.$#"
+			count: 1
+			path: src/Relations/EmbedsOneOrMany.php
+
+		-
+			message: "#^Call to an undefined method TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:setParentRelation\\(\\)\\.$#"
+			count: 1
+			path: src/Relations/EmbedsOneOrMany.php
+
+		-
+			message: "#^Call to an undefined method TRelatedModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:setParentRelation\\(\\)\\.$#"
 			count: 2
+			path: src/Relations/EmbedsOneOrMany.php
+
+		-
+			message: "#^Call to an undefined method TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:pull\\(\\)\\.$#"
+			count: 2
+			path: src/Relations/MorphToMany.php
+
+		-
+			message: "#^Method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:push\\(\\) invoked with 3 parameters, 0 required\\.$#"
+			count: 6
 			path: src/Relations/MorphToMany.php
 
 		-

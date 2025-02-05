@@ -22,8 +22,8 @@ use function in_array;
 use function is_numeric;
 
 /**
- * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
- * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TRelatedModel of Model
+ * @template TDeclaringModel of Model
  * @extends EloquentBelongsToMany<TRelatedModel, TDeclaringModel>
  */
 class BelongsToMany extends EloquentBelongsToMany

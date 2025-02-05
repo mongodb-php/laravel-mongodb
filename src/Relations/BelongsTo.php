@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @template TRelatedModel of \MongoDB\Laravel\Eloquent\Model
- * @template TDeclaringModel of \MongoDB\Laravel\Eloquent\Model
+ * @template TRelatedModel of Model
+ * @template TDeclaringModel of Model
  * @extends \Illuminate\Database\Eloquent\Relations\BelongsTo<TRelatedModel, TDeclaringModel>
  */
 class BelongsTo extends \Illuminate\Database\Eloquent\Relations\BelongsTo
