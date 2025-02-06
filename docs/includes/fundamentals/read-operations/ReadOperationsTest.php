@@ -6,8 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Support\Facades\DB;
-use MongoDB\Laravel\Tests\TestCase;
 use MongoDB\Driver\ReadPreference;
+use MongoDB\Laravel\Tests\TestCase;
 
 class ReadOperationsTest extends TestCase
 {
