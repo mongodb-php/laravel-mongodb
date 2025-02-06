@@ -56,7 +56,6 @@ each corresponding query syntax:
       
       - ``where()``: Matches documents in which the value of the
         ``title`` field is ``"Quiz Show"``
-      - ``orderBy()``: Sorts matched documents by their ascending ``_id`` values
       - ``limit()``: Retrieves only the first matching document
       - ``delete()``: Deletes the retrieved document
       
@@ -90,7 +89,6 @@ each corresponding query syntax:
       
       - ``where()``: Matches documents in which the value of the
         ``title`` field is ``"Quiz Show"``
-      - ``orderBy()``: Sorts matched documents by their ascending ``_id`` values
       - ``limit()``: Retrieves only the first matching document
       - ``delete()``: Deletes the retrieved document
       

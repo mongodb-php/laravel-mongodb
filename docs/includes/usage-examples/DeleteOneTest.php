@@ -28,7 +28,6 @@ class DeleteOneTest extends TestCase
 
         // begin-eloquent-delete-one
         $deleted = Movie::where('title', 'Quiz Show')
-            ->orderBy('_id')
             ->limit(1)
             ->delete();
 
@@ -47,7 +46,6 @@ class DeleteOneTest extends TestCase
         // begin-qb-delete-one
         $deleted = DB::table('movies')
             ->where('title', 'Quiz Show')
-            ->orderBy('_id')
             ->limit(1)
             ->delete();
 
@@ -55,7 +53,6 @@ class DeleteOneTest extends TestCase
         // end-qb-delete-one
 
         $this->assertEquals(1, $deleted);
-
         $this->expectOutputString('Deleted documents: 1Deleted documents: 1');
     }
 }
