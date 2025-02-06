@@ -6,13 +6,14 @@ namespace MongoDB\Laravel\Relations;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo as EloquentBelongsTo;
 
 /**
  * @template TRelatedModel of Model
  * @template TDeclaringModel of Model
- * @extends \Illuminate\Database\Eloquent\Relations\BelongsTo<TRelatedModel, TDeclaringModel>
+ * @extends EloquentBelongsTo<TRelatedModel, TDeclaringModel>
  */
-class BelongsTo extends \Illuminate\Database\Eloquent\Relations\BelongsTo
+class BelongsTo extends EloquentBelongsTo
 {
     /**
      * Get the key for comparing against the parent key in "has" query.

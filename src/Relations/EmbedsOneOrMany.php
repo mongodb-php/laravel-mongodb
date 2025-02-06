@@ -25,7 +25,7 @@ use function throw_if;
  * @template TRelatedModel of Model
  * @template TDeclaringModel of Model
  * @template TResult
- * @extends \Illuminate\Database\Eloquent\Relations\Relation<TRelatedModel, TDeclaringModel, TResult>
+ * @extends Relation<TRelatedModel, TDeclaringModel, TResult>
  */
 abstract class EmbedsOneOrMany extends Relation
 {
