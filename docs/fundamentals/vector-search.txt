@@ -35,9 +35,9 @@ examples of how to use the {+odm-short+} to perform searches.
 To learn more about Atlas Vector Search, see the :atlas:`Overview
 </atlas-vector-search/vector-search-overview/>` in the 
 Atlas documentation. The Atlas Vector Search API internally uses the
-``$search`` aggregation operator to perform queries. To learn more about
-this operator, see the :atlas:`$search
-</atlas-search/aggregation-stages/search/>` reference in the Atlas
+``$vectorSearch`` aggregation operator to perform queries. To learn more about
+this operator, see the :atlas:`$vectorSearch
+</atlas-vector-search/vector-search-stage/#syntax>` reference in the Atlas
 documentation.
 
 .. note::
@@ -47,7 +47,7 @@ documentation.
    For more complex use cases, create an aggregation pipeline by using
    the :ref:`laravel-aggregation-builder`.
    
-   To perform advanced text on your documents, you can use the
+   To perform advanced full-text searches on your documents, you can use the
    {+odm-long+} Atlas Search API. To learn about this feature, see
    the :ref:`laravel-atlas-search` guide.
 
@@ -73,24 +73,24 @@ You must pass the following parameters to the ``vectorSearch()`` method:
    :header-rows: 1
 
    * - Parameter
-     - Type
-     - Description
+	 - Type
+	 - Description
 
    * - ``index``
-     - ``string``
-     - Name of the vector search index
+	 - ``string``
+	 - Name of the vector search index
 
    * - ``path``
-     - ``array`` or ``string``
-     - Field that stores vector embeddings
+	 - ``array`` or ``string``
+	 - Field that stores vector embeddings
    
    * - ``queryVector``
-     - ``array``
-     - Vector representation of your query
+	 - ``array``
+	 - Vector representation of your query
    
    * - ``limit``
-     - ``int``
-     - Number of results to return
+	 - ``int``
+	 - Number of results to return
 
 The following code uses the ``vector`` index created in the preceding
 :ref:`laravel-avs-index` section to perform an Atlas Vector Search query on the
@@ -100,57 +100,57 @@ The following code uses the ``vector`` index created in the preceding
    :copyable: true
 
    .. input::
-      :language: php
+	  :language: php
 
-      $movies = Book::vectorSearch(
-          index: 'vector',
-          path: 'vector_embeddings',
-          // Vector representation of the query `coming of age`
-          queryVector: [-0.0016261312, -0.028070757, ...],
-          limit: 3,
-      );
+	  $movies = Book::vectorSearch(
+		  index: 'vector',
+		  path: 'vector_embeddings',
+		  // Vector representation of the query `coming of age`
+		  queryVector: [-0.0016261312, -0.028070757, ...],
+		  limit: 3,
+	  );
 
    .. output::
-      :language: json
-      :visible: false
+	  :language: json
+	  :visible: false
 
-      [
-         { "title": "Sunrising",
-           "plot": "A shy teenager discovers confidence and new friendships during a transformative summer camp experience."
-         },
-         { "title": "Last Semester",
-           "plot": "High school friends navigate love, identity, and unexpected challenges before graduating together."
-         }
-      ]
+	  [
+		 { "title": "Sunrising",
+		   "plot": "A shy teenager discovers confidence and new friendships during a transformative summer camp experience."
+		 },
+		 { "title": "Last Semester",
+		   "plot": "High school friends navigate love, identity, and unexpected challenges before graduating together."
+		 }
+	  ]
 
-You can use the ``vector()`` method to perform many types of Atlas
+You can use the ``vectorSearch()`` method to perform many types of Atlas
 Search queries. Depending on your desired query, you can pass the
-following optional parameters to ``search()``:
+following optional parameters to ``vectorSearch()``:
 
 .. list-table::
    :header-rows: 1
 
    * - Optional Parameter
-     - Type
-     - Description
-     - Default Value
+	 - Type
+	 - Description
+	 - Default Value
 
    * - ``exact``
-     - ``bool``
-     - Specifies whether to run an Exact Nearest Neighbor (``true``) or
-       Approximate Nearest Neighbor (``false``) search
-     - ``false``
+	 - ``bool``
+	 - Specifies whether to run an Exact Nearest Neighbor (``true``) or
+	   Approximate Nearest Neighbor (``false``) search
+	 - ``false``
 
    * - ``filter``
-     - ``QueryInterface`` or ``array``
-     - Specifies a pre-filter for documents to search on
-     - no filtering
+	 - ``QueryInterface`` or ``array``
+	 - Specifies a pre-filter for documents to search on
+	 - no filtering
 
    * - ``numCandidates``
-     - ``int`` or ``null``
-     - Specifies the number of nearest neighbors to use during the
-       search
-     - ``null``
+	 - ``int`` or ``null``
+	 - Specifies the number of nearest neighbors to use during the
+	   search
+	 - ``null``
 
 .. note::
 
