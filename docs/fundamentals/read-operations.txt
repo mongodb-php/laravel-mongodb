@@ -634,7 +634,7 @@ The ``readPreference()`` method accepts the following parameters:
    in the MongoDB PHP extension documentation.
 
 The following example queries for documents in which the value of the ``title``
-field is ``"Carrie"`` and sets the read preference to ``"secondaryPreferred"``.
+field is ``"Carrie"`` and sets the read preference to ``ReadPreference::SECONDARY_PREFERRED``.
 As a result, the query retrieves the results from secondary replica set
 members or the primary member if no secondaries are available:
 
@@ -668,7 +668,7 @@ members or the primary member if no secondaries are available:
                 public function show()
                 {
                    $movies = Movie::where('title', 'Carrie')
-                        ->readPreference('secondaryPreferred')
+                        ->readPreference(ReadPreference::SECONDARY_PREFERRED)
                         ->get();
 
                     return view('browse_movies', [

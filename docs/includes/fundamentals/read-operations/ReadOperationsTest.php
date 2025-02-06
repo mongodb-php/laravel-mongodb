@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\Movie;
 use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
+use MongoDB\Driver\ReadPreference;
 
 class ReadOperationsTest extends TestCase
 {
@@ -175,7 +176,7 @@ class ReadOperationsTest extends TestCase
     {
         // start-read-pref
         $movies = Movie::where('title', 'Carrie')
-            ->readPreference('secondaryPreferred')
+            ->readPreference(ReadPreference::SECONDARY_PREFERRED)
             ->get();
         // end-read-pref
 

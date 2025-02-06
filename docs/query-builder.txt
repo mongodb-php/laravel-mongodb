@@ -1044,8 +1044,9 @@ set members by setting a read preference.
 
 The following example queries the ``movies`` collection for documents
 in which the ``runtime`` value is greater than ``240``. The example passes a
-value of ``"secondary"`` to the ``readPreference()`` method, which sends 
-the query to secondary replica set members:
+value of ``ReadPreference::SECONDARY_PREFERRED`` to the ``readPreference()``
+method, which sends the query to secondary replica set members
+or the primary member if no secondaries are available:
 
 .. literalinclude:: /includes/query-builder/QueryBuilderTest.php
    :language: php
