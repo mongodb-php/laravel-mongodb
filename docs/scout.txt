@@ -29,10 +29,14 @@ Laravel documentation.
 The Scout integration for {+odm-long+} provides the following
 functionality:
 
-- Provides an abstraction to create search indexes on documents in
-  MongoDB collections and external search engines. In MongoDB, this feature
-  allows you to create :atlas:`Atlas Search indexes
-  </atlas-search/manage-indexes/>`.
+- Provides an abstraction to create :atlas:`Atlas Search indexes
+  </atlas-search/manage-indexes/>` from any MongoDB or SQL model.
+  
+  .. tip::
+    
+     We recommend creating Search indexes by using the ``Schema``
+     builder methods. To learn more, see the :ref:`TODO DOCSP-46230`
+     section of the Atlas Search guide.
 
 - Allows you to automatically replicate data from MongoDB into a
   search engine such as `Meilisearch <https://www.meilisearch.com/>`__
@@ -42,7 +46,7 @@ functionality:
 .. note:: Deployment Compatibility
 
    You can use Laravel Scout only when you connect to MongoDB Atlas
-   clusters. This feature is not available for self-managed or
+   deployments. This feature is not available for self-managed or
    serverless deployments.
 
 Scout for Atlas Search Tutorial
