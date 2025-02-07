@@ -73,24 +73,24 @@ You must pass the following parameters to the ``vectorSearch()`` method:
    :header-rows: 1
 
    * - Parameter
-	 - Type
-	 - Description
+     - Type
+     - Description
 
    * - ``index``
-	 - ``string``
-	 - Name of the vector search index
+     - ``string``
+     - Name of the vector search index
 
    * - ``path``
-	 - ``string``
-	 - Field that stores vector embeddings
+     - ``string``
+     - Field that stores vector embeddings
    
    * - ``queryVector``
-	 - ``array``
-	 - Vector representation of your query
+     - ``array``
+     - Vector representation of your query
    
    * - ``limit``
-	 - ``int``
-	 - Number of results to return
+     - ``int``
+     - Number of results to return
 
 The following code uses the ``vector`` index created in the preceding
 :ref:`laravel-avs-index` section to perform an Atlas Vector Search query on the
@@ -100,28 +100,28 @@ The following code uses the ``vector`` index created in the preceding
    :copyable: true
 
    .. input::
-	  :language: php
+      :language: php
 
-	  $movies = Book::vectorSearch(
-		  index: 'vector',
-		  path: 'vector_embeddings',
-		  // Vector representation of the query `coming of age`
-		  queryVector: [-0.0016261312, -0.028070757, ...],
-		  limit: 3,
-	  );
+      $movies = Book::vectorSearch(
+          index: 'vector',
+          path: 'vector_embeddings',
+          // Vector representation of the query `coming of age`
+          queryVector: [-0.0016261312, -0.028070757, ...],
+          limit: 3,
+      );
 
    .. output::
-	  :language: json
-	  :visible: false
+      :language: json
+      :visible: false
 
-	  [
-		 { "title": "Sunrising",
-		   "plot": "A shy teenager discovers confidence and new friendships during a transformative summer camp experience."
-		 },
-		 { "title": "Last Semester",
-		   "plot": "High school friends navigate love, identity, and unexpected challenges before graduating together."
-		 }
-	  ]
+      [
+         { "title": "Sunrising",
+           "plot": "A shy teenager discovers confidence and new friendships during a transformative summer camp experience."
+         },
+         { "title": "Last Semester",
+           "plot": "High school friends navigate love, identity, and unexpected challenges before graduating together."
+         }
+      ]
 
 You can use the ``vectorSearch()`` method to perform many types of Atlas
 Search queries. Depending on your desired query, you can pass the
@@ -131,26 +131,26 @@ following optional parameters to ``vectorSearch()``:
    :header-rows: 1
 
    * - Optional Parameter
-	 - Type
-	 - Description
-	 - Default Value
+     - Type
+     - Description
+     - Default Value
 
    * - ``exact``
-	 - ``bool``
-	 - Specifies whether to run an Exact Nearest Neighbor (``true``) or
-	   Approximate Nearest Neighbor (``false``) search
-	 - ``false``
+     - ``bool``
+     - Specifies whether to run an Exact Nearest Neighbor (``true``) or
+       Approximate Nearest Neighbor (``false``) search
+     - ``false``
 
    * - ``filter``
-	 - ``QueryInterface`` or ``array``
-	 - Specifies a pre-filter for documents to search on
-	 - no filtering
+     - ``QueryInterface`` or ``array``
+     - Specifies a pre-filter for documents to search on
+     - no filtering
 
    * - ``numCandidates``
-	 - ``int`` or ``null``
-	 - Specifies the number of nearest neighbors to use during the
-	   search
-	 - ``null``
+     - ``int`` or ``null``
+     - Specifies the number of nearest neighbors to use during the
+       search
+     - ``null``
 
 .. note::
 
