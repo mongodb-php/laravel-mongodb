@@ -81,7 +81,7 @@ You must pass the following parameters to the ``vectorSearch()`` method:
 	 - Name of the vector search index
 
    * - ``path``
-	 - ``array`` or ``string``
+	 - ``string``
 	 - Field that stores vector embeddings
    
    * - ``queryVector``

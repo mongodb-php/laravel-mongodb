@@ -116,8 +116,7 @@ class AtlasSearchTest extends TestCase
     public function autocompleteSearchTest(): void
     {
         // start-auto-query
-        $movies = Movie::autocomplete('title', 'jak')
-            ->get();
+        $movies = Movie::autocomplete('title', 'jak')->get();
         // end-auto-query
 
         $this->assertNotNull($movies);
@@ -145,8 +144,7 @@ class AtlasSearchTest extends TestCase
         $this->assertSame('C', $results->first()->title);
     }
 
-    /** Generates random vectors using fixed seed to make tests
-     * deterministic */
+    /** Generates random vectors using fixed seed to make tests deterministic */
     private function addVector(array $items): array
     {
         srand(1);
