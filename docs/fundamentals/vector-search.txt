@@ -56,7 +56,32 @@ documentation.
 Create an Atlas Vector Search Index
 -----------------------------------
 
-.. TODO in DOCSP-46230
+You can create an Atlas Search index in either of the following ways:
+
+- Call the ``create()`` method on the ``Schema`` facade and pass the
+  ``vectorSearchIndex()`` helper method with index creation details. To learn
+  more about this strategy, see the
+  :ref:`laravel-schema-builder-atlas-idx` section of the Schema Builder guide.
+  
+- Access a collection, then call the
+  :phpmethod:`MongoDB\Collection::createSearchIndex()` from the
+  {+php-library+}. You must specify the ``type`` option as
+  ``'vectorSearch'``, as shown in the following code:
+  
+  .. code-block:: php
+     
+     $collection = DB::connection('mongodb')->getCollection('movies');
+     
+     $collection->createSearchIndex([
+         'fields' => [
+             [
+                 'type' => 'vector',
+                 'numDimensions' => 4,
+                 'path' => 'embeddings',
+                 'similarity' => 'cosine'
+             ],
+         ],
+     ], ['name' => 'vector_index', 'type' => 'vectorSearch']);
 
 Perform Queries
 ---------------
