@@ -40,7 +40,7 @@ return new class extends Migration
                     [
                         'type' => 'vector',
                         'numDimensions' => 4,
-                        'path' => 'vector4',
+                        'path' => 'embeddings',
                         'similarity' => 'cosine',
                     ],
                 ],

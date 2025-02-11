@@ -76,7 +76,7 @@ following changes to perform the schema changes on your MongoDB database:
    specifies the correct database:
 
    - Make sure your ``connections`` array item contains a valid ``mongodb``
-     entry in your ``config/database.php`` file
+	 entry in your ``config/database.php`` file
    - Specify ``"mongodb"`` in the ``$connection`` field of your migration class
 
 The following example migration class contains the following methods:
@@ -175,30 +175,30 @@ the migration, including the default index on the ``_id`` field:
 .. io-code-block::
 
    .. input:: /includes/schema-builder/flights_migration.php
-      :language: php
-      :dedent:
-      :start-after: begin create index
-      :end-before: end create index
+	  :language: php
+	  :dedent:
+	  :start-after: begin create index
+	  :end-before: end create index
 
    .. output::
-      :language: json
-      :visible: false
+	  :language: json
+	  :visible: false
 
-      [
-        { v: 2, key: { _id: 1 }, name: '_id_' },
-        { v: 2, key: { mission_type: 1 }, name: 'mission_type_1' },
-        {
-          v: 2,
-          key: { launch_location: 1, launch_date: -1 },
-          name: 'launch_location_1_launch_date_-1'
-        },
-        {
-          v: 2,
-          key: { mission_id: 1 },
-          name: 'unique_mission_id_idx',
-          unique: true
-        }
-      ]
+	  [
+		{ v: 2, key: { _id: 1 }, name: '_id_' },
+		{ v: 2, key: { mission_type: 1 }, name: 'mission_type_1' },
+		{
+		  v: 2,
+		  key: { launch_location: 1, launch_date: -1 },
+		  name: 'launch_location_1_launch_date_-1'
+		},
+		{
+		  v: 2,
+		  key: { mission_id: 1 },
+		  name: 'unique_mission_id_idx',
+		  unique: true
+		}
+	  ]
 
 Specify Index Options
 ~~~~~~~~~~~~~~~~~~~~~
@@ -215,35 +215,35 @@ field:
 .. io-code-block::
 
    .. input:: /includes/schema-builder/passengers_migration.php
-      :language: php
-      :dedent:
-      :start-after: begin index options
-      :end-before: end index options
+	  :language: php
+	  :dedent:
+	  :start-after: begin index options
+	  :end-before: end index options
 
    .. output::
-      :language: json
-      :visible: false
+	  :language: json
+	  :visible: false
 
-      [
-        { v: 2, key: { _id: 1 }, name: '_id_' },
-        {
-          v: 2,
-          key: { last_name: 1 },
-          name: 'passengers_collation_idx',
-          collation: {
-            locale: 'de@collation=phonebook',
-            caseLevel: false,
-            caseFirst: 'off',
-            strength: 3,
-            numericOrdering: true,
-            alternate: 'non-ignorable',
-            maxVariable: 'punct',
-            normalization: false,
-            backwards: false,
-            version: '57.1'
-          }
-        }
-      ]
+	  [
+		{ v: 2, key: { _id: 1 }, name: '_id_' },
+		{
+		  v: 2,
+		  key: { last_name: 1 },
+		  name: 'passengers_collation_idx',
+		  collation: {
+			locale: 'de@collation=phonebook',
+			caseLevel: false,
+			caseFirst: 'off',
+			strength: 3,
+			numericOrdering: true,
+			alternate: 'non-ignorable',
+			maxVariable: 'punct',
+			normalization: false,
+			backwards: false,
+			version: '57.1'
+		  }
+		}
+	  ]
 
 To learn more about index options, see :manual:`Options for All Index Types </reference/method/db.collection.createIndex/#options-for-all-index-types>`
 in the {+server-docs-name+}.
@@ -276,25 +276,25 @@ the ``_id`` field:
 .. io-code-block::
 
    .. input:: /includes/schema-builder/planets_migration.php
-      :language: php
-      :dedent:
-      :start-after: begin index helpers
-      :end-before: end index helpers
+	  :language: php
+	  :dedent:
+	  :start-after: begin index helpers
+	  :end-before: end index helpers
 
    .. output::
-      :language: json
-      :visible: false
+	  :language: json
+	  :visible: false
 
-      [
-        { v: 2, key: { _id: 1 }, name: '_id_' },
-        { v: 2, key: { rings: 1 }, name: 'rings_1', sparse: true },
-        {
-          v: 2,
-          key: { last_visible_dt: 1 },
-          name: 'last_visible_dt_1',
-          expireAfterSeconds: 86400
-        }
-      ]
+	  [
+		{ v: 2, key: { _id: 1 }, name: '_id_' },
+		{ v: 2, key: { rings: 1 }, name: 'rings_1', sparse: true },
+		{
+		  v: 2,
+		  key: { last_visible_dt: 1 },
+		  name: 'last_visible_dt_1',
+		  expireAfterSeconds: 86400
+		}
+	  ]
 
 You can specify sparse, TTL, and unique indexes on either a single field or
 compound index by specifying them in the index options.
@@ -307,26 +307,26 @@ field:
 .. io-code-block::
 
    .. input:: /includes/schema-builder/planets_migration.php
-      :language: php
-      :dedent:
-      :start-after: begin multi index helpers
-      :end-before: end multi index helpers
+	  :language: php
+	  :dedent:
+	  :start-after: begin multi index helpers
+	  :end-before: end multi index helpers
 
    .. output::
-      :language: json
-      :visible: false
+	  :language: json
+	  :visible: false
 
-      [
-        { v: 2, key: { _id: 1 }, name: '_id_' },
-        {
-          v: 2,
-          key: { last_visible_dt: 1 },
-          name: 'last_visible_dt_1',
-          unique: true,
-          sparse: true,
-          expireAfterSeconds: 3600
-        }
-      ]
+	  [
+		{ v: 2, key: { _id: 1 }, name: '_id_' },
+		{
+		  v: 2,
+		  key: { last_visible_dt: 1 },
+		  name: 'last_visible_dt_1',
+		  unique: true,
+		  sparse: true,
+		  expireAfterSeconds: 3600
+		}
+	  ]
 
 To learn more about these indexes, see :manual:`Index Properties </core/indexes/index-properties/>`
 in the {+server-docs-name+}.
@@ -351,25 +351,25 @@ default index on the ``_id`` field:
 
 .. io-code-block::
    .. input:: /includes/schema-builder/spaceports_migration.php
-      :language: php
-      :dedent:
-      :start-after: begin create geospatial index
-      :end-before: end create geospatial index
+	  :language: php
+	  :dedent:
+	  :start-after: begin create geospatial index
+	  :end-before: end create geospatial index
 
    .. output::
-      :language: json
-      :visible: false
+	  :language: json
+	  :visible: false
 
-      [
-        { v: 2, key: { _id: 1 }, name: '_id_' },
-        {
-          v: 2,
-          key: { launchpad_location: '2dsphere' },
-          name: 'launchpad_location_2dsphere',
-          '2dsphereIndexVersion': 3
-        },
-        { v: 2, key: { runway_location: '2d' }, name: 'runway_location_2d' }
-      ]
+	  [
+		{ v: 2, key: { _id: 1 }, name: '_id_' },
+		{
+		  v: 2,
+		  key: { launchpad_location: '2dsphere' },
+		  name: 'launchpad_location_2dsphere',
+		  '2dsphereIndexVersion': 3
+		},
+		{ v: 2, key: { runway_location: '2d' }, name: 'runway_location_2d' }
+	  ]
 
 
 To learn more about geospatial indexes, see
@@ -437,17 +437,45 @@ Click the :guilabel:`{+code-output-label+}` button to see the Search
 indexes created by running the migration:
 
 .. io-code-block::
+
    .. input:: /includes/schema-builder/galaxies_migration.php
-      :language: php
-      :dedent:
-      :start-after: begin-create-search-indexes
-      :end-before: end-create-search-indexes
+	  :language: php
+	  :dedent:
+	  :start-after: begin-create-search-indexes
+	  :end-before: end-create-search-indexes
 
    .. output::
-      :language: json
-      :visible: false
+	  :language: json
+	  :visible: false
 
-      WIP
+	  {
+		"id": "...", 
+		"name": "dynamic_index",
+		"type": "search",
+		"status": "READY",
+		"queryable": true,
+		"latestDefinition": {
+		  "mappings": { "dynamic": true }
+		},
+		...
+	  }
+	  {
+		"id": "...",
+		"name": "auto_index",
+		"type": "search",
+		"status": "READY",
+		"queryable": true,
+		"latestDefinition": {
+		  "mappings": {
+			"fields": { "name": [
+			  { "type": "string", "analyzer": "lucene.english" }, 
+			  { "type": "autocomplete", "analyzer": "lucene.english" },
+			  { "type": "token" }
+			] } 
+		  } 
+		},
+		...
+	  }
 
 Vector Search
 `````````````
@@ -467,16 +495,31 @@ indexes created by running the migration:
 
 .. io-code-block::
    .. input:: /includes/schema-builder/galaxies_migration.php
-      :language: php
-      :dedent:
-      :start-after: begin-create-vs-index
-      :end-before: end-create-vs-index
+	  :language: php
+	  :dedent:
+	  :start-after: begin-create-vs-index
+	  :end-before: end-create-vs-index
 
    .. output::
-      :language: json
-      :visible: false
+	  :language: json
+	  :visible: false
 
-      WIP
+	  {
+		"id": "...", 
+		"name": "vs_index",
+		"type": "vectorSearch",
+		"status": "READY",
+		"queryable": true,
+		"latestDefinition": {
+		  "fields": [ { 
+			  "type": "vector",
+			  "numDimensions": 4,
+			  "path": "vector4",
+			  "similarity": "cosine"
+		  } ]
+		},
+		...
+	  }
 
 Drop a Search Index
 ```````````````````
