@@ -36,12 +36,14 @@ return new class extends Migration
         // start-create-vs-index
         Schema::create('galaxies', function (Blueprint $collection) {
             $collection->vectorSearchIndex([
-                'fields' => [[
-                    'type' => 'vector',
-                    'numDimensions' => 4,
-                    'path' => 'vector4',
-                    'similarity' => 'cosine'
-                ]],
+                'fields' => [
+                    [
+                        'type' => 'vector',
+                        'numDimensions' => 4,
+                        'path' => 'vector4',
+                        'similarity' => 'cosine',
+                    ],
+                ],
             ], 'vs_index');
         });
         // end-create-vs-index
