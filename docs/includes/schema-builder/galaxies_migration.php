@@ -33,7 +33,7 @@ return new class extends Migration
         });
         // end-create-search-indexes
 
-        // start-create-vs-index
+        // begin-create-vs-index
         Schema::create('galaxies', function (Blueprint $collection) {
             $collection->vectorSearchIndex([
                 'fields' => [
