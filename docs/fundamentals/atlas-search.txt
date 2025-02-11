@@ -64,7 +64,7 @@ You can create an Atlas Search index in either of the following ways:
   :ref:`laravel-schema-builder-atlas-idx` section of the Schema Builder guide.
   
 - Access a collection, then call the
-  :phpmethod:`createSearchIndex() <MongoDB\\Collection::createSearchIndex()>`
+  :phpmethod:`createSearchIndex() <phpmethod.MongoDB\\Collection::createSearchIndex()>`
   method from the {+php-library+}, as shown in the following code:
   
   .. code-block:: php

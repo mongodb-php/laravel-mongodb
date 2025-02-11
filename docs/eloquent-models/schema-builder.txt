@@ -514,7 +514,7 @@ indexes created by running the migration:
           "fields": [ { 
               "type": "vector",
               "numDimensions": 4,
-              "path": "vector4",
+              "path": "embeddings",
               "similarity": "cosine"
           } ]
         },
