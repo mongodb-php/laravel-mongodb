@@ -68,12 +68,12 @@ You can create an Atlas Search index in either of the following ways:
   {+php-library+}, as shown in the following code:
   
   .. code-block:: php
-	 
-	 $collection = DB::connection('mongodb')->getCollection('movies');
-	 
-	 $collection->createSearchIndex(
-		 ['mappings' => ['dynamic' => true]], 
-		 ['name' => 'search_index']
+     
+     $collection = DB::connection('mongodb')->getCollection('movies');
+     
+     $collection->createSearchIndex(
+         ['mappings' => ['dynamic' => true]], 
+         ['name' => 'search_index']
      );
 
 Perform Queries
@@ -111,23 +111,23 @@ model's ``title`` field for the term ``'dream'``:
    :copyable: true
 
    .. input:: /includes/fundamentals/as-avs/AtlasSearchTest.php
-	  :language: php
-	  :dedent:
-	  :start-after: start-search-query
-	  :end-before: end-search-query
+      :language: php
+      :dedent:
+      :start-after: start-search-query
+      :end-before: end-search-query
 
    .. output::
-	  :language: json
-	  :visible: false
+      :language: json
+      :visible: false
 
-	  [
-		 { "title": "Dreaming of Jakarta",
-		   "year": 1990
-		 },
-		 { "title": "See You in My Dreams",
-		   "year": 1996
-		 }
-	  ]
+      [
+         { "title": "Dreaming of Jakarta",
+           "year": 1990
+         },
+         { "title": "See You in My Dreams",
+           "year": 1996
+         }
+      ]
 
 You can use the ``search()`` method to perform many types of Atlas
 Search queries. Depending on your desired query, you can pass the
@@ -137,55 +137,55 @@ following optional parameters to ``search()``:
    :header-rows: 1
 
    * - Optional Parameter
-	 - Type
-	 - Description
+     - Type
+     - Description
 
    * - ``index``
-	 - ``string``
-	 - Provides the name of the Atlas Search index to use
+     - ``string``
+     - Provides the name of the Atlas Search index to use
 
    * - ``highlight``
-	 - ``array``
-	 - Specifies highlighting options for displaying search terms in their
-	   original context
+     - ``array``
+     - Specifies highlighting options for displaying search terms in their
+       original context
 
    * - ``concurrent``
-	 - ``bool``
-	 - Parallelizes search query across segments on dedicated search nodes
+     - ``bool``
+     - Parallelizes search query across segments on dedicated search nodes
 
    * - ``count``
-	 - ``string``
-	 - Specifies the count options for retrieving a count of the results
+     - ``string``
+     - Specifies the count options for retrieving a count of the results
 
    * - ``searchAfter``
-	 - ``string``
-	 - Specifies a reference point for returning documents starting
-	   immediately following that point
+     - ``string``
+     - Specifies a reference point for returning documents starting
+       immediately following that point
    
    * - ``searchBefore``
-	 - ``string``
-	 - Specifies a reference point for returning documents starting
-	   immediately preceding that point
+     - ``string``
+     - Specifies a reference point for returning documents starting
+       immediately preceding that point
 
    * - ``scoreDetails``
-	 - ``bool``
-	 - Specifies whether to retrieve a detailed breakdown of the score
-	   for results
+     - ``bool``
+     - Specifies whether to retrieve a detailed breakdown of the score
+       for results
    
    * - ``sort``
-	 - ``array``
-	 - Specifies the fields on which to sort the results
+     - ``array``
+     - Specifies the fields on which to sort the results
    
    * - ``returnStoredSource``
-	 - ``bool``
-	 - Specifies whether to perform a full document lookup on the
-	   backend database or return only stored source fields directly
-	   from Atlas Search
+     - ``bool``
+     - Specifies whether to perform a full document lookup on the
+       backend database or return only stored source fields directly
+       from Atlas Search
    
    * - ``tracking``
-	 - ``array``
-	 - Specifies the tracking option to retrieve analytics information
-	   on the search terms
+     - ``array``
+     - Specifies the tracking option to retrieve analytics information
+       on the search terms
 
 To learn more about these parameters, see the :atlas:`Fields
 </atlas-search/aggregation-stages/search/#fields>` section of the
@@ -218,20 +218,20 @@ string ``"jak"`` on the ``title`` field:
    :copyable: true
 
    .. input:: /includes/fundamentals/as-avs/AtlasSearchTest.php
-	  :language: php
-	  :dedent:
-	  :start-after: start-auto-query
-	  :end-before: end-auto-query
+      :language: php
+      :dedent:
+      :start-after: start-auto-query
+      :end-before: end-auto-query
 
    .. output::
-	  :language: json
-	  :visible: false
+      :language: json
+      :visible: false
 
-	  [
-		 "Dreaming of Jakarta",
-		 "Jakob the Liar",
-		 "Emily Calling Jake"
-	  ]
+      [
+         "Dreaming of Jakarta",
+         "Jakob the Liar",
+         "Emily Calling Jake"
+      ]
 
 You can also pass the following optional parameters to the ``autocomplete()``
 method to customize the query:
@@ -240,19 +240,19 @@ method to customize the query:
    :header-rows: 1
 
    * - Optional Parameter
-	 - Type
-	 - Description
-	 - Default Value
+     - Type
+     - Description
+     - Default Value
 
    * - ``fuzzy``
-	 - ``bool`` or ``array``
-	 - Enables fuzzy search and fuzzy search options
-	 - ``false``
+     - ``bool`` or ``array``
+     - Enables fuzzy search and fuzzy search options
+     - ``false``
 
    * - ``tokenOrder``
-	 - ``string``
-	 - Specifies order in which to search for tokens
-	 - ``'any'``
+     - ``string``
+     - Specifies order in which to search for tokens
+     - ``'any'``
 
 To learn more about these parameters, see the :atlas:`Options
 </atlas-search/autocomplete/#options>` section of the
