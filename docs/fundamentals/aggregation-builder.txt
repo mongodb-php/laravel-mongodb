@@ -431,8 +431,8 @@ it uses an aggregation pipeline that contains the following stages:
    2014
 
 #. :manual:`$group </reference/operator/aggregation/group/>` stage to
-   group the documents by date and calculate the total sale amount,
-   average quantity, and total count for each group
+   group the documents by date and calculate the total sales amount,
+   average sales quantity, and sale count for each group
 
 #. :manual:`$sort </reference/operator/aggregation/sort/>` stage to
    sort the results by the total sale amount for each group in descending
@@ -480,7 +480,7 @@ it uses an aggregation pipeline that contains the following stages:
    output a separate document for each element in the ``items.tags`` arrays
 
 #. :manual:`$group </reference/operator/aggregation/group/>` stage to
-   group the documents by the tag value and calculates the total sales
+   group the documents by the tag value and calculate the total sales
    amount of items that have each tag
 
 Click the :guilabel:`{+code-output-label+}` button to see the data returned by
