@@ -30,6 +30,8 @@ This section provides examples of the following delete operations:
 - :ref:`Delete one document <laravel-fundamentals-delete-one>`
 - :ref:`Delete multiple documents <laravel-fundamentals-delete-many>`
 
+.. include:: /includes/fundamentals/write-operations/sample-model-section.rst
+
 .. _laravel-fundamentals-delete-one:
 
 Delete One Document
