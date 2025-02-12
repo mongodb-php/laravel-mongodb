@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
-use MongoDB\Laravel\Schema\Blueprint;
 
 return new class extends Migration
 {
@@ -20,7 +19,7 @@ return new class extends Migration
                 'timeField' => 'timestamp',
                 'metaField' => 'location',
                 'granularity' => 'minutes',
-            ]
+            ],
         ];
 
         Schema::create('precipitation', null, $options);
