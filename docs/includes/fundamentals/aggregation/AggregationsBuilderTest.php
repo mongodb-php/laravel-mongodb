@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventory;
+use App\Models\Order;
+use App\Models\Sale;
 use DateTimeImmutable;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Builder\Accumulator;
@@ -13,9 +16,6 @@ use MongoDB\Builder\Query;
 use MongoDB\Builder\Type\Sort;
 use MongoDB\Laravel\Tests\Models\User;
 use MongoDB\Laravel\Tests\TestCase;
-use App\Models\Sale;
-use App\Models\Order;
-use App\Models\Inventory;
 
 class AggregationsBuilderTest extends TestCase
 {
@@ -192,39 +192,39 @@ class AggregationsBuilderTest extends TestCase
 
         Sale::insert([
             [
-                '_id' => "1",
+                '_id' => '1',
                 'items' => [
                     [
                         'name' => 'pens',
                         'tags' => ['writing', 'office', 'school', 'stationary'],
                         'price' => new Decimal128('12.00'),
-                        'quantity' => 5
+                        'quantity' => 5,
                     ],
                     [
                         'name' => 'envelopes',
                         'tags' => ['stationary', 'office'],
                         'price' => new Decimal128('19.95'),
-                        'quantity' => 8
-                    ]
-                ]
+                        'quantity' => 8,
+                    ],
+                ],
             ],
             [
-                '_id' => "2",
+                '_id' => '2',
                 'items' => [
                     [
                         'name' => 'laptop',
                         'tags' => ['office', 'electronics'],
                         'price' => new Decimal128('800.00'),
-                        'quantity' => 1
+                        'quantity' => 1,
                     ],
                     [
                         'name' => 'notepad',
                         'tags' => ['stationary', 'school'],
                         'price' => new Decimal128('14.95'),
-                        'quantity' => 3
-                    ]
-                ]
-            ]
+                        'quantity' => 3,
+                    ],
+                ],
+            ],
         ]);
 
         // start-builder-unwind
@@ -258,17 +258,17 @@ class AggregationsBuilderTest extends TestCase
                 '_id' => 1,
                 'item' => 'almonds',
                 'price' => 12,
-                'quantity' => 2
+                'quantity' => 2,
             ],
             [
                 '_id' => 2,
                 'item' => 'pecans',
                 'price' => 20,
-                'quantity' => 1
+                'quantity' => 1,
             ],
             [
-                '_id' => 3
-            ]
+                '_id' => 3,
+            ],
         ]);
 
         Inventory::insert([
@@ -276,34 +276,34 @@ class AggregationsBuilderTest extends TestCase
                 '_id' => 1,
                 'sku' => 'almonds',
                 'description' => 'product 1',
-                'instock' => 120
+                'instock' => 120,
             ],
             [
                 '_id' => 2,
                 'sku' => 'bread',
                 'description' => 'product 2',
-                'instock' => 80
+                'instock' => 80,
             ],
             [
                 '_id' => 3,
                 'sku' => 'cashews',
                 'description' => 'product 3',
-                'instock' => 60
+                'instock' => 60,
             ],
             [
                 '_id' => 4,
                 'sku' => 'pecans',
                 'description' => 'product 4',
-                'instock' => 70
+                'instock' => 70,
             ],
             [
                 '_id' => 5,
                 'sku' => null,
-                'description' => 'Incomplete'
+                'description' => 'Incomplete',
             ],
             [
-                '_id' => 6
-            ]
+                '_id' => 6,
+            ],
         ]);
 
         // start-builder-lookup
