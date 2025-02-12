@@ -430,9 +430,11 @@ in the {+server-docs-name+}.
 Additional Information
 ----------------------
 
-To view runnable code examples that demonstrate how to insert documents
-by using the {+odm-short+}, see the
-:ref:`laravel-fundamentals-write-ops` guide.
+To view runnable code examples that demonstrate how to update documents
+by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-update-one-usage`
+- :ref:`laravel-update-many-usage`
 
 To learn how to insert documents into a MongoDB collection, see the
 :ref:`laravel-fundamentals-write-insert` guide.

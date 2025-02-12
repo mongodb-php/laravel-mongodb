@@ -45,6 +45,9 @@ The examples in this section show how to use the ``save()`` and
 ``create()`` Eloquent methods to insert an instance of a ``Concert``
 model as a MongoDB document.
 
+save() Method
+~~~~~~~~~~~~~
+
 When the ``save()`` method succeeds, you can access the model instance on
 which you called the method.
 
@@ -75,6 +78,9 @@ You can retrieve the inserted document's ``_id`` value by accessing the model's
    :dedent:
    :start-after: begin inserted id
    :end-before: end inserted id
+
+create() Method
+~~~~~~~~~~~~~~~
 
 If you enable mass assignment by defining either the ``$fillable`` or
 ``$guarded`` attributes, you can use the Eloquent model ``create()`` method
@@ -119,8 +125,10 @@ Additional Information
 ----------------------
 
 To view runnable code examples that demonstrate how to insert documents
-by using the {+odm-short+}, see the
-:ref:`laravel-fundamentals-write-ops` guide.
+by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-insert-one-usage`
+- :ref:`laravel-insert-many-usage`
 
 To learn how to modify data that is already in MongoDB, see the
 :ref:`laravel-fundamentals-write-modify` guide.

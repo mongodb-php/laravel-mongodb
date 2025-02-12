@@ -168,9 +168,11 @@ modify delete behavior, see the following sections:
 - :ref:`Pruning <laravel-model-pruning>`, which lets you define conditions
   that qualify a document for automatic deletion
 
-To view runnable code examples that demonstrate how to insert documents
-by using the {+odm-short+}, see the
-:ref:`laravel-fundamentals-write-ops` guide.
+To view runnable code examples that demonstrate how to delete documents
+by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-delete-one-usage`
+- :ref:`laravel-delete-many-usage`
 
 To learn how to insert documents into a MongoDB collection, see the
 :ref:`laravel-fundamentals-write-insert` guide.

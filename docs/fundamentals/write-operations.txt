@@ -33,7 +33,7 @@ methods that you can use to write data to MongoDB by using
 .. tip::
 
    To learn more about any of the methods shown on this page, see the
-   link provided in each section.
+   links provided in each section.
 
 Insert One
 ----------
