@@ -495,7 +495,8 @@ running the code:
       :language: php
       :dedent:
 
-   .. output:: 
+   .. output::
+      :language: json
       :visible: false
 
       [
@@ -539,6 +540,7 @@ running the code:
       :dedent:
 
    .. output:: 
+      :language: json
       :visible: false
 
       [
