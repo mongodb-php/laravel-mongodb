@@ -102,7 +102,7 @@ a parameter:
 
 .. code-block:: php
 
-   $result = Schema::hasCollection('ts-collection');
+   $result = Schema::hasCollection('precipitation');
    echo $result;
 
 The ``hasCollection()`` method returns a value of ``1`` if the
