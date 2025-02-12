@@ -8,6 +8,7 @@ use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\Sale;
 use DateTimeImmutable;
+use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Builder\Accumulator;
 use MongoDB\Builder\Expression;
@@ -307,7 +308,7 @@ class AggregationsBuilderTest extends TestCase
         ]);
 
         // start-builder-lookup
-        $pipeline = Sale::aggregate()
+        $pipeline = Order::aggregate()
             ->lookup(
                 from: 'inventory',
                 localField: 'item',
