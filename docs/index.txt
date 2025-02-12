@@ -19,6 +19,7 @@
    Fundamentals </fundamentals>
    Eloquent Models </eloquent-models>
    Query Builder </query-builder>
+   Databases & Collections </database-collection>
    User Authentication </user-authentication>
    Cache & Locks </cache>
    Queues </queues>
@@ -87,6 +88,12 @@ see the following content:
 - :ref:`laravel-queues`
 - :ref:`laravel-transactions`
 - :ref:`laravel-filesystems`
+
+Databases and Collections
+-------------------------
+
+Learn how to use the {+odm-short+} to work with MongoDB databases and collections
+in the :ref:`laravel-db-coll` section.
 
 Issues & Help
 -------------
