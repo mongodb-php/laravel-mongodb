@@ -32,8 +32,8 @@ methods that you can use to write data to MongoDB by using
 
 .. tip::
 
-   To learn more about any of the methods shown on this page, see the
-   links provided in each section.
+   To learn more about any of the methods included in this guide,
+   see the links provided in each section.
 
 Insert One
 ----------
@@ -160,7 +160,7 @@ collection:
 To view a runnable example that deletes one document, see the
 :ref:`laravel-delete-one-usage` usage example.
 
-To learn more about inserting documents, see the
+To learn more about deleting documents, see the
 :ref:`laravel-fundamentals-write-delete` guide.
 
 Delete Multiple
@@ -177,5 +177,5 @@ collection:
 To view a runnable example that deletes multiple documents, see the
 :ref:`laravel-delete-many-usage` usage example.
 
-To learn more about inserting documents, see the
+To learn more about deleting documents, see the
 :ref:`laravel-fundamentals-write-delete` guide.

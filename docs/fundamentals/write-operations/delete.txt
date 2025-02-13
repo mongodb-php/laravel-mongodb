@@ -42,8 +42,8 @@ You can delete one document in the following ways:
 - Call the ``$model->delete()`` method on an instance of the model.
 - Chain methods to retrieve and delete an instance of a model by calling the
   ``delete()`` method.
-- Call the ``Model::destroy($id)`` method on the model, passing it the id of
-  the document to be deleted.
+- Call the ``Model::destroy($id)`` method on the model, passing it the
+  ``_id`` value of the document to be deleted.
 
 delete() Method
 ~~~~~~~~~~~~~~~
@@ -56,7 +56,6 @@ on an instance of the model:
    :dedent:
    :start-after: begin delete one model
    :end-before: end delete one model
-   :caption: Delete the document by calling the delete() method on an instance.
 
 When the ``delete()`` method succeeds, the operation returns the number of
 documents deleted.
@@ -72,7 +71,6 @@ matching document and delete it:
    :dedent:
    :start-after: begin model delete one fluent
    :end-before: end model delete one fluent
-   :caption: Delete the matching document by chaining the delete() method.
 
 .. include:: /includes/fact-orderby-id.rst
 
@@ -80,26 +78,25 @@ When the ``delete()`` method succeeds, it returns the number of documents
 deleted.
 
 If the ``where()`` method does not match any documents, the ``delete()`` method
-returns returns ``0``.
+returns ``0``.
 
 destroy() Method
 ~~~~~~~~~~~~~~~~
 
 The following example shows how to delete a document by passing the value of
-its id to the ``Model::destroy($id)`` method:
+its ``_id`` value to the ``Model::destroy($id)`` method:
 
 .. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
    :language: php
    :dedent:
    :start-after: begin model delete by id
    :end-before: end model delete by id
-   :caption: Delete the document by its id value.
 
 When the ``destroy()`` method succeeds, it returns the number of documents
 deleted.
 
-If the id value does not match any documents, the ``destroy()`` method
-returns returns ``0``.
+If the ``_id`` value does not match any documents, the ``destroy()`` method
+returns ``0``.
 
 .. _laravel-fundamentals-delete-many:
 
@@ -118,14 +115,13 @@ destroy() Method
 ~~~~~~~~~~~~~~~~
 
 The following example shows how to delete a document by passing an array of
-id values, represented by ``$ids``, to the ``destroy()`` method:
+``_id`` values, represented by ``$ids``, to the ``destroy()`` method:
 
 .. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
    :language: php
    :dedent:
    :start-after: begin model delete multiple by id
    :end-before: end model delete multiple by id
-   :caption: Delete documents by their ids.
 
 .. tip::
 
@@ -135,8 +131,8 @@ id values, represented by ``$ids``, to the ``destroy()`` method:
 When the ``destroy()`` method succeeds, it returns the number of documents
 deleted.
 
-If the id values do not match any documents, the ``destroy()`` method
-returns returns ``0``.
+If the ``_id`` values do not match any documents, the ``destroy()`` method
+returns ``0``.
 
 delete() Method
 ~~~~~~~~~~~~~~~
@@ -149,7 +145,6 @@ and delete them:
    :dedent:
    :start-after: begin model delete multiple fluent
    :end-before: end model delete multiple fluent
-   :caption: Chain calls to retrieve matching documents and delete them.
 
 When the ``delete()`` method succeeds, it returns the number of documents
 deleted.

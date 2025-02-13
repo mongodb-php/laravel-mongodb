@@ -68,7 +68,6 @@ This example code performs the following actions:
    :dedent:
    :start-after: begin model insert one
    :end-before: end model insert one
-   :caption: Insert a document by calling the save() method on an instance.
 
 You can retrieve the inserted document's ``_id`` value by accessing the model's
 ``id`` member, as shown in the following code example:
@@ -106,20 +105,21 @@ to save the documents.
 When the ``insert()`` method succeeds, it returns the value ``1``. If it
 fails, it throws an exception.
 
-The example code saves multiple models in a single call by passing them as
-an array to the ``insert()`` method:
-
-.. note::
-
-   This example wraps the dates in the `MongoDB\\BSON\\UTCDateTime <{+phplib-api+}/class.mongodb-bson-utcdatetime.php>`__
-   class to convert it to a type MongoDB can serialize because Laravel
-   skips attribute casting on bulk insert operations.
+The following example saves multiple models in a single call by passing
+them as an array to the ``insert()`` method:
 
 .. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
    :language: php
    :dedent:
    :start-after: begin model insert many
    :end-before: end model insert many
+
+.. note::
+
+   This example wraps the dates in the `MongoDB\\BSON\\UTCDateTime
+   <{+phplib-api+}/class.mongodb-bson-utcdatetime.php>`__
+   class to convert it to a type MongoDB can serialize because Laravel
+   skips attribute casting on bulk insert operations.
 
 Additional Information
 ----------------------

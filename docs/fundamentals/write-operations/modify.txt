@@ -59,7 +59,6 @@ of the model and calling its ``save()`` method:
    :dedent:
    :start-after: begin model update one save
    :end-before: end model update one save
-   :caption: Update a document by calling the save() method on an instance.
 
 When the ``save()`` method succeeds, the model instance on which you called the
 method contains the updated values.
@@ -74,7 +73,6 @@ retrieve and update the first matching document:
    :dedent:
    :start-after: begin model update one fluent
    :end-before: end model update one fluent
-   :caption: Update the matching document by chaining the update() method.
 
 .. include:: /includes/fact-orderby-id.rst
 
@@ -141,17 +139,16 @@ the following methods:
 Upsert Method
 ~~~~~~~~~~~~~
 
-The ``upsert(array $values, array|string $uniqueBy, array|null
-$update)`` method accepts the following parameters:
+The ``upsert()`` method accepts the following parameters:
 
 - ``$values``: Array of fields and values that specify documents to update or insert.
-- ``$uniqueBy``: List of fields that uniquely identify documents in your
+- ``$uniqueBy``: One or more fields that uniquely identify documents in your
   first array parameter.
-- ``$update``: Optional list of fields to update if a matching document
+- ``$update``: Optional array of fields to update if a matching document
   exists. If you omit this parameter, the {+odm-short+} updates all fields.
 
-To specify an upsert in the ``upsert()`` method, set parameters
-as shown in the following code example:
+To specify an upsert in the ``upsert()`` method, pass the required
+parameters as shown in the following code example:
 
 .. code-block:: php
    :copyable: false
@@ -293,7 +290,7 @@ optional parameter ``unique`` to ``true`` to skip adding any duplicate values
 in the array. The following code example shows the structure of a ``push()``
 method call:
 
-.. code-block:: none
+.. code-block:: php
    :copyable: false
 
    YourModel::where(<match criteria>)
@@ -340,7 +337,7 @@ an array in a MongoDB document. You can pass one or more values to remove
 from the array. The following code example shows the structure of a
 ``pull()`` method call:
 
-.. code-block:: none
+.. code-block:: php
    :copyable: false
 
    YourModel::where(<match criteria>)
@@ -387,7 +384,7 @@ structure of a positional operator update call on a single matching document:
    Currently, the {+odm-short+} offers this operation only on the ``DB`` facade
    and not on the Eloquent ORM.
 
-.. code-block:: none
+.. code-block:: php
    :copyable: false
 
    DB::connection('mongodb')
@@ -395,7 +392,6 @@ structure of a positional operator update call on a single matching document:
       ->updateOne(
           <match criteria>,
           ['$set' => ['<array field>.$' => <replacement value>]]);
-
 
 The following example shows how to replace the array value ``"dance-pop"``
 with ``"contemporary"`` in the ``genres`` array field. Click the
