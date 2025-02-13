@@ -2,7 +2,7 @@
 .. _laravel-fundamentals-write-delete:
 
 ================
-Modify Documents
+Delete Documents
 ================
 
 .. facet::
