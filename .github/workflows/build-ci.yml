@@ -1,97 +1,88 @@
-name: "CI"
+name: CI
 
 on:
-    push:
-    pull_request:
+  push:
+  pull_request:
 
 jobs:
-    build:
-        runs-on: "${{ matrix.os }}"
+  build:
+    runs-on: ${{ matrix.os }}
 
-        name: "PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} MongoDB ${{ matrix.mongodb }} ${{ matrix.mode }}"
+    name: PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} MongoDB ${{ matrix.mongodb }} ${{ matrix.mode }}
 
-        strategy:
-            matrix:
-                os:
-                    - "ubuntu-latest"
-                mongodb:
-                    - "4.4"
-                    - "5.0"
-                    - "6.0"
-                    - "7.0"
-                    - "8.0"
-                php:
-                    - "8.1"
-                    - "8.2"
-                    - "8.3"
-                    - "8.4"
-                laravel:
-                    - "10.*"
-                    - "11.*"
-                include:
-                    - php: "8.1"
-                      laravel: "10.*"
-                      mongodb: "5.0"
-                      mode: "low-deps"
-                      os: "ubuntu-latest"
-                    - php: "8.4"
-                      laravel: "11.*"
-                      mongodb: "7.0"
-                      os: "ubuntu-latest"
-                exclude:
-                    - php: "8.1"
-                      laravel: "11.*"
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        mongodb: ['4.4', '5.0', '6.0', '7.0', '8.0']
+        php: ['8.1', '8.2', '8.3', '8.4']
+        laravel: ['10.*', '11.*', '12.*']
+        include:
+          - php: '8.1'
+            laravel: 10.*
+            mongodb: '5.0'
+            mode: low-deps
+            os: ubuntu-latest
+          - php: '8.4'
+            laravel: 11.*
+            mongodb: '7.0'
+            os: ubuntu-latest
+        exclude:
+          - php: '8.1'
+            laravel: 11.*
+          - laravel: 12.*
+            php: '8.1'
 
-        steps:
-            -   uses: "actions/checkout@v4"
+    steps:
+      - uses: actions/checkout@v4
 
-            -   name: "Create MongoDB Replica Set"
-                run: |
-                    docker run --name mongodb -p 27017:27017 -e MONGO_INITDB_DATABASE=unittest --detach mongo:${{ matrix.mongodb }} mongod --replSet rs --setParameter transactionLifetimeLimitSeconds=5
+      - name: Create MongoDB Replica Set
+        run: |
+          docker run --name mongodb -p 27017:27017 -e MONGO_INITDB_DATABASE=unittest --detach mongo:${{ matrix.mongodb }} mongod --replSet rs --setParameter transactionLifetimeLimitSeconds=5
 
-                    if [ "${{ matrix.mongodb }}" = "4.4" ]; then MONGOSH_BIN="mongo"; else MONGOSH_BIN="mongosh"; fi
-                    until docker exec --tty mongodb $MONGOSH_BIN --eval "db.runCommand({ ping: 1 })"; do
-                      sleep 1
-                    done
-                    sudo docker exec --tty mongodb $MONGOSH_BIN --eval "rs.initiate({\"_id\":\"rs\",\"members\":[{\"_id\":0,\"host\":\"127.0.0.1:27017\" }]})"
+          if [ "${{ matrix.mongodb }}" = "4.4" ]; then MONGOSH_BIN="mongo"; else MONGOSH_BIN="mongosh"; fi
+          until docker exec --tty mongodb $MONGOSH_BIN --eval "db.runCommand({ ping: 1 })"; do
+            sleep 1
+          done
+          sudo docker exec --tty mongodb $MONGOSH_BIN --eval "rs.initiate({\"_id\":\"rs\",\"members\":[{\"_id\":0,\"host\":\"127.0.0.1:27017\" }]})"
 
-            -   name: "Show MongoDB server status"
-                run: |
-                    if [ "${{ matrix.mongodb }}" = "4.4" ]; then MONGOSH_BIN="mongo"; else MONGOSH_BIN="mongosh"; fi
-                    docker exec --tty mongodb $MONGOSH_BIN --eval "db.runCommand({ serverStatus: 1 })"
+      - name: Show MongoDB server status
+        run: |
+          if [ "${{ matrix.mongodb }}" = "4.4" ]; then MONGOSH_BIN="mongo"; else MONGOSH_BIN="mongosh"; fi
+          docker exec --tty mongodb $MONGOSH_BIN --eval "db.runCommand({ serverStatus: 1 })"
 
-            -   name: "Installing php"
-                uses: "shivammathur/setup-php@v2"
-                with:
-                    php-version: ${{ matrix.php }}
-                    extensions: "curl,mbstring,xdebug"
-                    coverage: "xdebug"
-                    tools: "composer"
+      - name: Installing php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl,mbstring,xdebug
+          coverage: xdebug
+          tools: composer
 
-            -   name: "Show Docker version"
-                if: ${{ runner.debug }}
-                run: "docker version && env"
+      - name: Show Docker version
+        if: '${{ runner.debug }}'
+        run: docker version && env
 
-            -   name: "Restrict Laravel version"
-                run: "composer require --dev --no-update 'laravel/framework:${{ matrix.laravel }}'"
+      - name: Restrict Laravel version
+        run: composer require --dev --no-update 'laravel/framework:${{ matrix.laravel }}'
 
-            -   name: "Download Composer cache dependencies from cache"
-                id: "composer-cache"
-                run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Download Composer cache dependencies from cache
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-            -   name: "Cache Composer dependencies"
-                uses: "actions/cache@v4"
-                with:
-                    path: ${{ steps.composer-cache.outputs.dir }}
-                    key: "${{ matrix.os }}-composer-${{ hashFiles('**/composer.json') }}"
-                    restore-keys: "${{ matrix.os }}-composer-"
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ matrix.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ matrix.os }}-composer-
 
-            -   name: "Install dependencies"
-                run: |
-                  composer update --no-interaction \
-                    $([[ "${{ matrix.mode }}" == low-deps ]] && echo ' --prefer-lowest') \
-                    $([[ "${{ matrix.mode }}" == ignore-php-req ]] && echo ' --ignore-platform-req=php+')
-            -   name: "Run tests"
-                run: |
-                  export MONGODB_URI="mongodb://127.0.0.1:27017/?replicaSet=rs"
-                  ./vendor/bin/phpunit --coverage-clover coverage.xml --exclude-group atlas-search
+      - name: Install dependencies
+        run: |
+          composer update --no-interaction \
+            $([[ "${{ matrix.mode }}" == low-deps ]] && echo ' --prefer-lowest') \
+            $([[ "${{ matrix.mode }}" == ignore-php-req ]] && echo ' --ignore-platform-req=php+')
+
+      - name: Run tests
+        run: |
+          export MONGODB_URI="mongodb://127.0.0.1:27017/?replicaSet=rs"
+          ./vendor/bin/phpunit --coverage-clover coverage.xml --exclude-group atlas-search
