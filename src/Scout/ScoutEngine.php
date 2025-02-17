@@ -66,9 +66,11 @@ final class ScoutEngine extends Engine
 
     private const TYPEMAP = ['root' => 'object', 'document' => 'bson', 'array' => 'bson'];
 
+    /** @param array<string, array> $indexDefinitions */
     public function __construct(
         private Database $database,
         private bool $softDelete,
+        private array $indexDefinitions = [],
     ) {
     }
 
@@ -435,14 +437,16 @@ final class ScoutEngine extends Engine
     {
         assert(is_string($name), new TypeError(sprintf('Argument #1 ($name) must be of type string, %s given', get_debug_type($name))));
 
+        $definition = $this->indexDefinitions[$name] ?? self::DEFAULT_DEFINITION;
+        if (! isset($definition['mappings'])) {
+            throw new LogicException(sprintf('The search index definition for collection "scout.mongodb.index-definition.%s" must contain a "mappings" key. Find documentation at https://www.mongodb.com/docs/atlas/atlas-search/create-index/', $name));
+        }
+
         // Ensure the collection exists before creating the search index
         $this->database->createCollection($name);
 
         $collection = $this->database->selectCollection($name);
-        $collection->createSearchIndex(
-            self::DEFAULT_DEFINITION,
-            ['name' => self::INDEX_NAME],
-        );
+        $collection->createSearchIndex($definition, ['name' => self::INDEX_NAME]);
 
         if ($options['wait'] ?? true) {
             $this->wait(function () use ($collection) {

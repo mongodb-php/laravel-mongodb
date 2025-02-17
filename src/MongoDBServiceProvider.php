@@ -167,10 +167,11 @@ class MongoDBServiceProvider extends ServiceProvider
                 $connectionName = $app->get('config')->get('scout.mongodb.connection', 'mongodb');
                 $connection = $app->get('db')->connection($connectionName);
                 $softDelete = (bool) $app->get('config')->get('scout.soft_delete', false);
+                $indexDefinitions = $app->get('config')->get('scout.mongodb.index-definitions', []);
 
                 assert($connection instanceof Connection, new InvalidArgumentException(sprintf('The connection "%s" is not a MongoDB connection.', $connectionName)));
 
-                return new ScoutEngine($connection->getMongoDB(), $softDelete);
+                return new ScoutEngine($connection->getMongoDB(), $softDelete, $indexDefinitions);
             });
 
             return $engineManager;
