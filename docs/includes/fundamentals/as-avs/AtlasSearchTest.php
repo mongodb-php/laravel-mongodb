@@ -10,7 +10,9 @@ use MongoDB\Builder\Query;
 use MongoDB\Builder\Search;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Laravel\Schema\Builder;
+use MongoDB\Laravel\Tests\Models\Book;
 use MongoDB\Laravel\Tests\TestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_map;
 use function mt_getrandmax;
@@ -19,6 +21,7 @@ use function range;
 use function srand;
 use function usleep;
 
+#[Group('atlas-search')]
 class AtlasSearchTest extends TestCase
 {
     private array $vectors;
@@ -84,7 +87,7 @@ class AtlasSearchTest extends TestCase
         do {
             $ready = true;
             usleep(10_000);
-            foreach ($collection->listSearchIndexes() as $index) {
+            foreach ($moviesCollection->listSearchIndexes() as $index) {
                 if ($index['status'] !== 'READY') {
                     $ready = false;
                 }
@@ -102,7 +105,7 @@ class AtlasSearchTest extends TestCase
         $movies = Movie::search(
             sort: ['title' => 1],
             operator: Search::text('title', 'dream'),
-        )->get();
+        )->all();
         // end-search-query
 
         $this->assertNotNull($movies);
@@ -113,10 +116,10 @@ class AtlasSearchTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function autocompleteSearchTest(): void
+    public function testAutocompleteSearch(): void
     {
         // start-auto-query
-        $movies = Movie::autocomplete('title', 'jak')->get();
+        $movies = Movie::autocomplete('title', 'jak')->all();
         // end-auto-query
 
         $this->assertNotNull($movies);
@@ -127,7 +130,7 @@ class AtlasSearchTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function vectorSearchTest(): void
+    public function testVectorSearch(): void
     {
         $results = Book::vectorSearch(
             index: 'vector',
