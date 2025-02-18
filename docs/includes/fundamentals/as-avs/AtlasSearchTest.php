@@ -10,7 +10,6 @@ use MongoDB\Builder\Query;
 use MongoDB\Builder\Search;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Laravel\Schema\Builder;
-use MongoDB\Laravel\Tests\Models\Book;
 use MongoDB\Laravel\Tests\TestCase;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -132,7 +131,7 @@ class AtlasSearchTest extends TestCase
      */
     public function testVectorSearch(): void
     {
-        $results = Book::vectorSearch(
+        $results = Movie::vectorSearch(
             index: 'vector',
             path: 'vector4',
             queryVector: $this->vectors[0],
@@ -144,7 +143,7 @@ class AtlasSearchTest extends TestCase
         );
 
         $this->assertNotNull($results);
-        $this->assertSame('C', $results->first()->title);
+        $this->assertSame('D', $results->first()->title);
     }
 
     /** Generates random vectors using fixed seed to make tests deterministic */
