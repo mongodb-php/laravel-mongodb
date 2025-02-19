@@ -40,7 +40,7 @@ class ScoutEngineTest extends TestCase
         $engine = new ScoutEngine($database, false, ['collection_invalid' => ['foo' => 'bar']]);
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('The search index definition for collection "scout.mongodb.index-definition.collection_invalid" must contain a "mappings" key');
+        $this->expectExceptionMessage('Invalid search index definition for collection "collection_invalid", the "mappings" key is required.');
         $engine->createIndex('collection_invalid');
     }
 

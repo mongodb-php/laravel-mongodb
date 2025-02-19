@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
+use InvalidArgumentException;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Searchable;
@@ -439,7 +440,7 @@ final class ScoutEngine extends Engine
 
         $definition = $this->indexDefinitions[$name] ?? self::DEFAULT_DEFINITION;
         if (! isset($definition['mappings'])) {
-            throw new LogicException(sprintf('The search index definition for collection "scout.mongodb.index-definition.%s" must contain a "mappings" key. Find documentation at https://www.mongodb.com/docs/atlas/atlas-search/create-index/', $name));
+            throw new InvalidArgumentException(sprintf('Invalid search index definition for collection "%s", the "mappings" key is required. Find documentation at https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#search-index-definition-syntax', $name));
         }
 
         // Ensure the collection exists before creating the search index
