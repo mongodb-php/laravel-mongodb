@@ -20,6 +20,7 @@ jobs:
                     - "8.4"
                 laravel:
                     - "11.*"
+                    - "12.*"
 
         steps:
             -   uses: "actions/checkout@v4"
