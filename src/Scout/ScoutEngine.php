@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
+use InvalidArgumentException;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Searchable;
@@ -66,9 +67,11 @@ final class ScoutEngine extends Engine
 
     private const TYPEMAP = ['root' => 'object', 'document' => 'bson', 'array' => 'bson'];
 
+    /** @param array<string, array> $indexDefinitions */
     public function __construct(
         private Database $database,
         private bool $softDelete,
+        private array $indexDefinitions = [],
     ) {
     }
 
@@ -435,14 +438,16 @@ final class ScoutEngine extends Engine
     {
         assert(is_string($name), new TypeError(sprintf('Argument #1 ($name) must be of type string, %s given', get_debug_type($name))));
 
+        $definition = $this->indexDefinitions[$name] ?? self::DEFAULT_DEFINITION;
+        if (! isset($definition['mappings'])) {
+            throw new InvalidArgumentException(sprintf('Invalid search index definition for collection "%s", the "mappings" key is required. Find documentation at https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#search-index-definition-syntax', $name));
+        }
+
         // Ensure the collection exists before creating the search index
         $this->database->createCollection($name);
 
         $collection = $this->database->selectCollection($name);
-        $collection->createSearchIndex(
-            self::DEFAULT_DEFINITION,
-            ['name' => self::INDEX_NAME],
-        );
+        $collection->createSearchIndex($definition, ['name' => self::INDEX_NAME]);
 
         if ($options['wait'] ?? true) {
             $this->wait(function () use ($collection) {
