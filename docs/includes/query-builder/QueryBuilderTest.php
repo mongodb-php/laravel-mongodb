@@ -665,4 +665,27 @@ class QueryBuilderTest extends TestCase
 
         $this->assertIsInt($result);
     }
+
+    public function testTimeSeries(): void
+    {
+        // begin time series
+        $data = [
+            [
+                'precipitation_mm' => 0.5,
+                'location' => 'New York City',
+                'timestamp' => new UTCDateTime(Carbon::create(2023, 9, 12, 0, 0, 0, 'CET')),
+            ],
+            [
+                'precipitation_mm' => 2.8,
+                'location' => 'New York City',
+                'timestamp' => new UTCDateTime(Carbon::create(2023, 9, 17, 0, 0, 0, 'CET')),
+            ],
+        ];
+    
+        $result = DB::table('precipitation')
+            ->insert($data);
+        // end time series
+
+        $this->assertIsBool($result);
+    }
 }

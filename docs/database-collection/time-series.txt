@@ -105,8 +105,8 @@ a parameter:
    $result = Schema::hasCollection('precipitation');
    echo $result;
 
-The ``hasCollection()`` method returns a value of ``1`` if the
-collection exists.
+If the collection exists, the ``hasCollection()`` method returns a 
+value of ``true``.
 
 .. _laravel-time-series-insert:
 
@@ -132,23 +132,11 @@ time series collection created in the :ref:`Create a Time Series Collection exam
 - ``location``, which stores location metadata
 - ``timestamp``, which stores the time of the measurement collection
 
-.. code-block:: php
-
-    $data = [
-        [
-            'precipitation_mm' => 0.5,
-            'location' => 'New York City',
-            'timestamp' => new UTCDateTime(Carbon::create(2023, 9, 12, 0, 0, 0, 'CET')),
-        ],
-        [
-            'precipitation_mm' => 2.8,
-            'location' => 'New York City',
-            'timestamp' => new UTCDateTime(Carbon::create(2023, 9, 17, 0, 0, 0, 'CET')),
-        ],
-    ];
-
-    $result = DB::table('precipitation')
-        ->insert($data);
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin time series
+   :end-before: end time series
 
 .. note::
 
