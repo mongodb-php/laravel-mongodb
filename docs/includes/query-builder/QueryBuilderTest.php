@@ -682,7 +682,7 @@ class QueryBuilderTest extends TestCase
                 'timestamp' => new UTCDateTime(Carbon::create(2023, 9, 17, 0, 0, 0, 'CET')),
             ],
         ];
-    
+
         $result = DB::table('precipitation')
             ->insert($data);
         // end time series
