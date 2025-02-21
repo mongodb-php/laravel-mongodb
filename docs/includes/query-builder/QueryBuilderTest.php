@@ -687,6 +687,6 @@ class QueryBuilderTest extends TestCase
             ->insert($data);
         // end time series
 
-        $this->assertIsBool($result);
+        $this->assertTrue($result);
     }
 }
