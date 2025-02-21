@@ -132,7 +132,7 @@ time series collection created in the :ref:`Create a Time Series Collection exam
 - ``location``, which stores location metadata
 - ``timestamp``, which stores the time of the measurement collection
 
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+.. literalinclude:: /includes/query-builder/QueryBuilderTest.php
    :language: php
    :dedent:
    :start-after: begin time series
