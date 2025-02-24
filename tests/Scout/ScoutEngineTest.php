@@ -141,7 +141,7 @@ class ScoutEngineTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-    public function provideSearchPipelines(): iterable
+    public static function provideSearchPipelines(): iterable
     {
         $defaultPipeline = [
             [
@@ -377,11 +377,11 @@ class ScoutEngineTest extends TestCase
 
         yield 'with callback' => [
             fn () => new Builder(new SearchableModel(), 'query', callback: function (...$args) {
-                $this->assertCount(3, $args);
-                $this->assertInstanceOf(Collection::class, $args[0]);
-                $this->assertSame('collection_searchable', $args[0]->getCollectionName());
-                $this->assertSame('query', $args[1]);
-                $this->assertNull($args[2]);
+                self::assertCount(3, $args);
+                self::assertInstanceOf(Collection::class, $args[0]);
+                self::assertSame('collection_searchable', $args[0]->getCollectionName());
+                self::assertSame('query', $args[1]);
+                self::assertNull($args[2]);
 
                 return $args[0]->aggregate(['pipeline']);
             }),
