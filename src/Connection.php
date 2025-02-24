@@ -114,11 +114,29 @@ class Connection extends BaseConnection
     /**
      * Get the MongoDB database object.
      *
+     * @deprecated Use getDatabase() instead
+     *
      * @return Database
      */
     public function getMongoDB()
     {
         return $this->db;
+    }
+
+    /**
+     * Get the MongoDB database object
+     *
+     * @param string|null $name Name of the database, or null to get the default one
+     *
+     * @return Database
+     */
+    public function getDatabase(?string $name = null): Database
+    {
+        if ($name === null) {
+            return $this->db;
+        }
+
+        return $this->connection->{$name};
     }
 
     /**
