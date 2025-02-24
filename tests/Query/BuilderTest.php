@@ -1605,7 +1605,7 @@ class BuilderTest extends TestCase
         $connection = m::mock(Connection::class);
         $processor  = m::mock(Processor::class);
         $connection->shouldReceive('getSession')->andReturn(null);
-        $connection->shouldReceive('getQueryGrammar')->andReturn(new Grammar());
+        $connection->shouldReceive('getQueryGrammar')->andReturn(new Grammar($connection));
 
         return new Builder($connection, null, $processor);
     }

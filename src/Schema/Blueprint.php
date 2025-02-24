@@ -19,18 +19,16 @@ use function key;
 class Blueprint extends SchemaBlueprint
 {
     /**
-     * The MongoConnection object for this blueprint.
-     *
-     * @var Connection
+     * The MongoDB connection object for this blueprint.
      */
-    protected $connection;
+    protected Connection $connection;
 
     /**
-     * The Collection object for this blueprint.
+     * The MongoDB collection object for this blueprint.
      *
      * @var Collection
      */
-    protected $collection;
+    protected Collection $collection;
 
     /**
      * Fluent columns.
@@ -44,7 +42,7 @@ class Blueprint extends SchemaBlueprint
      */
     public function __construct(Connection $connection, string $collection)
     {
-        parent::__construct($collection);
+        parent::__construct($connection, $collection);
 
         $this->connection = $connection;
 
