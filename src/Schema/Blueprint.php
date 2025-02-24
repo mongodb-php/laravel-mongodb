@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MongoDB\Laravel\Schema;
 
+use Closure;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint as SchemaBlueprint;
 use MongoDB\Collection;

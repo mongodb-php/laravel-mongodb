@@ -355,12 +355,14 @@ class Connection extends BaseConnection
     /** @inheritdoc */
     protected function getDefaultQueryGrammar()
     {
+        // Argument added in Laravel 12
         return new Query\Grammar($this);
     }
 
     /** @inheritdoc */
     protected function getDefaultSchemaGrammar()
     {
+        // Argument added in Laravel 12
         return new Schema\Grammar($this);
     }
 
