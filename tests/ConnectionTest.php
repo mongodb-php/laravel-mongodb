@@ -48,15 +48,15 @@ class ConnectionTest extends TestCase
     {
         $connection = DB::connection('mongodb');
         $this->assertInstanceOf(Connection::class, $connection);
-        $client = $connection->getMongoClient();
+        $client = $connection->getClient();
         $this->assertInstanceOf(Client::class, $client);
         $connection->disconnect();
-        $client = $connection->getMongoClient();
+        $client = $connection->getClient();
         $this->assertNull($client);
         DB::purge('mongodb');
         $connection = DB::connection('mongodb');
         $this->assertInstanceOf(Connection::class, $connection);
-        $client = $connection->getMongoClient();
+        $client = $connection->getClient();
         $this->assertInstanceOf(Client::class, $client);
     }
 
@@ -64,7 +64,7 @@ class ConnectionTest extends TestCase
     {
         $connection = DB::connection('mongodb');
         $this->assertInstanceOf(Database::class, $connection->getMongoDB());
-        $this->assertInstanceOf(Client::class, $connection->getMongoClient());
+        $this->assertInstanceOf(Client::class, $connection->getClient());
     }
 
     public static function dataConnectionConfig(): Generator
@@ -196,12 +196,49 @@ class ConnectionTest extends TestCase
     public function testConnectionConfig(string $expectedUri, string $expectedDatabaseName, array $config): void
     {
         $connection = new Connection($config);
-        $client     = $connection->getMongoClient();
+        $client     = $connection->getClient();
 
         $this->assertSame($expectedUri, (string) $client);
         $this->assertSame($expectedDatabaseName, $connection->getMongoDB()->getDatabaseName());
         $this->assertSame('foo', $connection->getCollection('foo')->getCollectionName());
         $this->assertSame('foo', $connection->table('foo')->raw()->getCollectionName());
+    }
+
+    public function testLegacyGetMongoClient(): void
+    {
+        $connection = DB::connection('mongodb');
+        $expected = $connection->getClient();
+
+        $this->assertSame($expected, $connection->getMongoClient());
+    }
+
+    public function testLegacyGetMongoDB(): void
+    {
+        $connection = DB::connection('mongodb');
+        $expected = $connection->getDatabase();
+
+        $this->assertSame($expected, $connection->getMongoDB());
+    }
+
+    public function testGetDatabase(): void
+    {
+        $connection = DB::connection('mongodb');
+        $defaultName = env('MONGODB_DATABASE', 'unittest');
+        $database = $connection->getDatabase();
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertSame($defaultName, $database->getDatabaseName());
+        $this->assertSame($database, $connection->getDatabase($defaultName), 'Same instance for the default database');
+    }
+
+    public function testGetOtherDatabase(): void
+    {
+        $connection = DB::connection('mongodb');
+        $name = 'other_random_database';
+        $database = $connection->getDatabase($name);
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertSame($name, $database->getDatabaseName($name));
     }
 
     public function testConnectionWithoutConfiguredDatabase(): void

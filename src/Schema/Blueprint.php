@@ -251,7 +251,7 @@ class Blueprint extends SchemaBlueprint
     {
         $collection = $this->collection->getCollectionName();
 
-        $db = $this->connection->getMongoDB();
+        $db = $this->connection->getDatabase();
 
         // Ensure the collection is created.
         $db->createCollection($collection, $options);
