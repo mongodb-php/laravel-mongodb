@@ -42,7 +42,7 @@
         "orchestra/testbench": "^8.0|^9.0",
         "mockery/mockery": "^1.4.4@stable",
         "doctrine/coding-standard": "12.0.x-dev",
-        "spatie/laravel-query-builder": "^5.6",
+        "spatie/laravel-query-builder": "^5.6|^6",
         "phpstan/phpstan": "^1.10",
         "rector/rector": "^1.2"
     },
