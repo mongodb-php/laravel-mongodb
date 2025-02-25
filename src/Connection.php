@@ -71,7 +71,7 @@ class Connection extends BaseConnection
         $this->database = $this->getDefaultDatabaseName($dsn, $config);
 
         // Select database
-        $this->db = $this->connection->selectDatabase($this->database);
+        $this->db = $this->connection->getDatabase($this->database);
 
         $this->tablePrefix = $config['prefix'] ?? '';
 
@@ -139,7 +139,7 @@ class Connection extends BaseConnection
     public function getDatabase(?string $name = null): Database
     {
         if ($name && $name !== $this->database) {
-            return $this->connection->{$name};
+            return $this->connection->getDatabase($name);
         }
 
         return $this->db;
