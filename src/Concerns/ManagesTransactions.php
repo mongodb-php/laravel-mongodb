@@ -12,15 +12,18 @@ use Throwable;
 
 use function MongoDB\with_transaction;
 
-/** @see https://docs.mongodb.com/manual/core/transactions/ */
+/**
+ * @internal
+ *
+ * @see https://docs.mongodb.com/manual/core/transactions/
+ */
 trait ManagesTransactions
 {
     protected ?Session $session = null;
 
     protected $transactions = 0;
 
-    /** @return Client */
-    abstract public function getMongoClient();
+    abstract public function getClient(): ?Client;
 
     public function getSession(): ?Session
     {
@@ -30,7 +33,7 @@ trait ManagesTransactions
     private function getSessionOrCreate(): Session
     {
         if ($this->session === null) {
-            $this->session = $this->getMongoClient()->startSession();
+            $this->session = $this->getClient()->startSession();
         }
 
         return $this->session;

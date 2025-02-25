@@ -67,7 +67,7 @@ class MongoDBServiceProvider extends ServiceProvider
                 assert($connection instanceof Connection, new InvalidArgumentException(sprintf('The database connection "%s" used for the session does not use the "mongodb" driver.', $connectionName)));
 
                 return new MongoDbSessionHandler(
-                    $connection->getMongoClient(),
+                    $connection->getClient(),
                     $app->config->get('session.options', []) + [
                         'database' => $connection->getDatabaseName(),
                         'collection' => $app->config->get('session.table') ?: 'sessions',
@@ -132,8 +132,8 @@ class MongoDBServiceProvider extends ServiceProvider
                         throw new InvalidArgumentException(sprintf('The database connection "%s" does not use the "mongodb" driver.', $config['connection'] ?? $app['config']['database.default']));
                     }
 
-                    $bucket = $connection->getMongoClient()
-                        ->selectDatabase($config['database'] ?? $connection->getDatabaseName())
+                    $bucket = $connection->getClient()
+                        ->getDatabase($config['database'] ?? $connection->getDatabaseName())
                         ->selectGridFSBucket(['bucketName' => $config['bucket'] ?? 'fs', 'disableMD5' => true]);
                 }
 
@@ -171,7 +171,7 @@ class MongoDBServiceProvider extends ServiceProvider
 
                 assert($connection instanceof Connection, new InvalidArgumentException(sprintf('The connection "%s" is not a MongoDB connection.', $connectionName)));
 
-                return new ScoutEngine($connection->getMongoDB(), $softDelete, $indexDefinitions);
+                return new ScoutEngine($connection->getDatabase(), $softDelete, $indexDefinitions);
             });
 
             return $engineManager;

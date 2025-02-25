@@ -76,7 +76,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
      */
     public function hasCollection($name)
     {
-        $db = $this->connection->getMongoDB();
+        $db = $this->connection->getDatabase();
 
         $collections = iterator_to_array($db->listCollections([
             'filter' => ['name' => $name],
@@ -139,7 +139,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getTables()
     {
-        $db = $this->connection->getMongoDB();
+        $db = $this->connection->getDatabase();
         $collections = [];
 
         foreach ($db->listCollectionNames() as $collectionName) {
@@ -167,7 +167,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getTableListing()
     {
-        $collections = iterator_to_array($this->connection->getMongoDB()->listCollectionNames());
+        $collections = iterator_to_array($this->connection->getDatabase()->listCollectionNames());
 
         sort($collections);
 
@@ -176,7 +176,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getColumns($table)
     {
-        $stats = $this->connection->getMongoDB()->selectCollection($table)->aggregate([
+        $stats = $this->connection->getDatabase()->selectCollection($table)->aggregate([
             // Sample 1,000 documents to get a representative sample of the collection
             ['$sample' => ['size' => 1_000]],
             // Convert each document to an array of fields
@@ -229,7 +229,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getIndexes($table)
     {
-        $collection = $this->connection->getMongoDB()->selectCollection($table);
+        $collection = $this->connection->getDatabase()->selectCollection($table);
         assert($collection instanceof Collection);
         $indexList = [];
 
@@ -301,7 +301,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
      */
     public function getCollection($name)
     {
-        $db = $this->connection->getMongoDB();
+        $db = $this->connection->getDatabase();
 
         $collections = iterator_to_array($db->listCollections([
             'filter' => ['name' => $name],
@@ -318,7 +318,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
     protected function getAllCollections()
     {
         $collections = [];
-        foreach ($this->connection->getMongoDB()->listCollections() as $collection) {
+        foreach ($this->connection->getDatabase()->listCollections() as $collection) {
             $collections[] = $collection->getName();
         }
 
