@@ -75,8 +75,8 @@ includes the following line in the ``require`` object:
 Create Aggregation Stages
 -------------------------
 
-To start an aggregation stage, call the ``Model::aggregate()`` method.
-Then, chain an aggregation stage method and specify the necessary
+To start an aggregation pipeline, call the ``Model::aggregate()`` method.
+Then, chain aggregation stage methods and specify the necessary
 parameters for the stage. For example, you can call the ``sort()``
 operator method to build a ``$sort`` stage.
 
@@ -90,10 +90,11 @@ to build aggregation stages:
 
 .. tip::
 
-   To learn more about builder classes, see the `mongodb/mongodb-php-builder <https://github.com/mongodb/mongo-php-builder/>`__
+   To learn more about builder classes, see the
+   :github:`mongodb/mongodb-php-builder <mongodb/mongo-php-builder>`
    GitHub repository.
 
-This section features the following examples, which show how to use common
+This section features the following examples that show how to use common
 aggregation stages:
 
 - :ref:`laravel-aggregation-match-stage-example`
