@@ -41,6 +41,7 @@ class QueryBuilderTest extends TestCase
 {
     public function tearDown(): void
     {
+        DB::table('books')->truncate();
         DB::table('users')->truncate();
         DB::table('items')->truncate();
 
@@ -1156,5 +1157,38 @@ class QueryBuilderTest extends TestCase
 
         $result = DB::table('items')->where($queryId, '=', 'abc')->delete();
         $this->assertSame(1, $result);
+    }
+
+    public function testAggregateFunctionsWithGroupBy()
+    {
+        DB::table('users')->insert([
+            ['name' => 'John Doe', 'role' => 'admin', 'score' => 1],
+            ['name' => 'Jane Doe', 'role' => 'admin', 'score' => 2],
+            ['name' => 'Robert Roe', 'role' => 'user', 'score' => 4],
+        ]);
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->count();
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 2], (object) ['role' => 'user', 'aggregate' => 1]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->max('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 2], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->min('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 1], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->sum('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 3], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->avg('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 1.5], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
+
+        $results = DB::table('users')->groupBy('role')->orderBy('role')->average('score');
+        $this->assertInstanceOf(LaravelCollection::class, $results);
+        $this->assertEquals([(object) ['role' => 'admin', 'aggregate' => 1.5], (object) ['role' => 'user', 'aggregate' => 4]], $results->toArray());
     }
 }
