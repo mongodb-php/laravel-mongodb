@@ -32,28 +32,33 @@ functionality:
 - Provides an abstraction to create :atlas:`Atlas Search indexes
   </atlas-search/manage-indexes/>` from any MongoDB or SQL model.
   
-  .. tip::
+  .. important:: Use Schema Builder to Create Search Indexes
     
-     We recommend creating Search indexes by using the ``Schema``
-     builder methods. To learn more, see the :ref:`TODO DOCSP-46230`
-     section of the Atlas Search guide.
+     If your documents are already in MongoDB, create Search indexes
+     by using {+php-library+} or ``Schema`` builder methods to improve
+     search query performance. To learn more about creating Search
+     indexes, see the :ref:`laravel-as-index` section of the Atlas
+     Search guide.
 
 - Allows you to automatically replicate data from MongoDB into a
   search engine such as `Meilisearch <https://www.meilisearch.com/>`__
   or `Algolia <https://www.algolia.com/>`__. You can use a MongoDB Eloquent
-  model as the source to import and index.
+  model as the source to import and index. To learn more about indexing
+  to a search engine, see the `Indexing
+  <https://laravel.com/docs/{+laravel-docs-version+}/scout#indexing>`__
+  section of the Laravel Scout documentation.
 
-.. note:: Deployment Compatibility
+.. important:: Deployment Compatibility
 
    You can use Laravel Scout only when you connect to MongoDB Atlas
-   deployments. This feature is not available for self-managed or
-   serverless deployments.
+   deployments. This feature is not available for self-managed
+   deployments.
 
 Scout for Atlas Search Tutorial
 -------------------------------
 
-This section demonstrates how to use the Scout integration in your
-application to support Atlas Search queries.
+This tutorial demonstrates how to use Scout to compound and index
+documents for MongoDB Atlas Search from Eloquent models (MongoDB or SQL).
 
 .. procedure::
    :style: connected
@@ -61,7 +66,8 @@ application to support Atlas Search queries.
    .. step:: Install the Scout package
       
       Before you can use Scout in your application, run the following
-      command from your application's root directory to install Laravel Scout:
+      command from your application's root directory to install the
+      ``laravel/scout`` package:
       
       .. code-block:: bash
               
@@ -90,6 +96,12 @@ application to support Atlas Search queries.
              
              protected $connection = 'mongodb';
          }
+
+      The ``Searchable`` trait also allows you to reformat documents,
+      embed related documents, or transform document values. To learn
+      more, see the `Configuring Searchable Data
+      <https://laravel.com/docs/{+laravel-docs-version+}/scout#configuring-searchable-data>`__
+      section of the Laravel Scout documentation.
 
    .. step:: Configure Scout in your application
 
@@ -124,6 +136,11 @@ application to support Atlas Search queries.
       - Specifies ``scout_`` as the prefix for the collection name of the
         searchable collection
       
+      In the ``config/scout.php`` file, you can also specify a custom
+      Atlas Search index definition. To learn more, see the :ref:`custom
+      index definition example <laravel-scout-custom-index>` in the
+      following step.
+
       Set the following environment variable in your application's
       ``.env`` file to select ``mongodb`` as the default search driver:
       
@@ -154,7 +171,7 @@ application to support Atlas Search queries.
       command creates the search collection with an Atlas Search index in your
       MongoDB database. The collection is named ``scout_movies``, based on the prefix
       set in the preceding step. The Atlas Search index is named ``scout``
-      and has the following configuration:
+      and has the following configuration by default:
 
       .. code-block:: json
       
@@ -163,7 +180,28 @@ application to support Atlas Search queries.
              "dynamic": true
            }
          }
-        
+
+      .. _laravel-scout-custom-index:
+
+      To customize the index definition, add the ``index-definitions``
+      configuration to the ``mongodb`` entry in your
+      ``config/scout.php`` file. The following code demonstrates how to
+      specify a custom index definition for the ``scout_index`` index:
+
+      .. code-block:: php
+      
+         'mongodb' => [
+             'connection' => env('SCOUT_MONGODB_CONNECTION', 'mongodb'),
+             'index-definitions' => [
+                 'scout_index' => [
+                     'mappings' => [
+                         'dynamic' => false, 
+                         'fields' => ['title' => ['type' => 'string']]
+                     ]
+                 ]
+             ]
+         ], ...
+
       .. note::
       
          MongoDB can take up to a minute to create and finalize
@@ -172,10 +210,11 @@ application to support Atlas Search queries.
 
    .. step:: Import data into the searchable collection
 
-      You can use Scout to replicate data from a source collection into a
-      searchable collection. The following command replicates and indexes data
-      from the ``movies`` collection into the ``scout_movies`` collection
-      created in the preceding step:
+      You can use Scout to replicate data from a source collection
+      modeled by your Eloquent model into a searchable collection. The
+      following command replicates and indexes data from the ``movies``
+      collection into the ``scout_movies`` collection indexed in the
+      preceding step:
         
       .. code-block:: bash
          
@@ -186,7 +225,7 @@ application to support Atlas Search queries.
       .. tip:: Select Fields to Import
 
          You might not need all the fields from your source documents in your
-         searchable collection. Limiting the fields you replicate can improve
+         searchable collection. Limiting the amount of data you replicate can improve
          your application's speed and performance.
             
          You can select specific fields to import by defining the
@@ -209,11 +248,6 @@ application to support Atlas Search queries.
             }
 
 After completing these steps, you can perform Atlas Search queries on the
-``scout_movies`` collection in your {+odm-long+} application.
-
-.. TODO add link to Atlas Search guide
-
-.. TODO Use an External Search Engine
-.. -----------------------------
-
-.. TODO https://jira.mongodb.org/browse/DOCSP-45125
+``scout_movies`` collection in your {+odm-long+} application. To learn
+how to perform full-text searches, see the :ref:`laravel-atlas-search`
+guide.
