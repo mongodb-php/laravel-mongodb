@@ -15,6 +15,8 @@ class SchemaVersionTest extends TestCase
     public function tearDown(): void
     {
         SchemaVersion::truncate();
+
+        parent::tearDown();
     }
 
     public function testWithBasicDocument()

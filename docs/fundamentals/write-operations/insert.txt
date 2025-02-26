@@ -1,0 +1,134 @@
+.. _laravel-fundamentals-insert-documents:
+.. _laravel-fundamentals-write-insert:
+
+================
+Insert Documents
+================
+
+.. facet::
+   :name: genre
+   :values: reference
+
+.. meta::
+   :keywords: update, update one, upsert, code example, mass assignment, eloquent model, push, pull
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Overview
+--------
+
+In this guide, you can learn how to insert documents into MongoDB
+collections from your Laravel application by using {+odm-long+}.
+
+When you insert the documents, ensure the data does not violate any
+unique indexes on the collection. When inserting the first document of a
+collection or creating a new collection, MongoDB automatically creates a
+unique index on the ``_id`` field.
+
+For more information on creating indexes on MongoDB collections by using the
+Laravel schema builder, see the :ref:`laravel-eloquent-indexes` section
+of the Schema Builder documentation.
+
+To learn more about Eloquent models in the {+odm-short+}, see the
+:ref:`laravel-eloquent-models` section.
+
+.. include:: /includes/fundamentals/write-operations/sample-model-section.rst
+
+Insert One Document
+-------------------
+
+The examples in this section show how to use the ``save()`` and
+``create()`` Eloquent methods to insert an instance of a ``Concert``
+model as a MongoDB document.
+
+save() Method
+~~~~~~~~~~~~~
+
+When the ``save()`` method succeeds, you can access the model instance on
+which you called the method.
+
+If the operation fails, the model instance is assigned ``null``.
+
+This example code performs the following actions:
+
+- Creates a new instance of the ``Concert`` model
+- Assigns string values to the ``performer`` and ``venue`` fields
+- Assigns an array of strings to the ``genre`` field
+- Assigns a number to the ``ticketsSold`` field
+- Assigns a date to the ``performanceDate`` field by using the ``Carbon``
+  package
+- Inserts the document by calling the ``save()`` method
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model insert one
+   :end-before: end model insert one
+
+You can retrieve the inserted document's ``_id`` value by accessing the model's
+``id`` member, as shown in the following code example:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin inserted id
+   :end-before: end inserted id
+
+create() Method
+~~~~~~~~~~~~~~~
+
+If you enable mass assignment by defining either the ``$fillable`` or
+``$guarded`` attributes, you can use the Eloquent model ``create()`` method
+to perform the insert in a single call, as shown in the following example:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model insert one mass assign
+   :end-before: end model insert one mass assign
+
+To learn more about the Carbon PHP API extension, see the
+:github:`Carbon <briannesbitt/Carbon>` GitHub repository.
+
+Insert Multiple Documents
+-------------------------
+
+This example shows how to use the ``insert()`` Eloquent method to insert
+multiple instances of a ``Concert`` model as MongoDB documents. This bulk
+insert method reduces the number of calls your application needs to make
+to save the documents.
+
+When the ``insert()`` method succeeds, it returns the value ``1``. If it
+fails, it throws an exception.
+
+The following example saves multiple models in a single call by passing
+them as an array to the ``insert()`` method:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model insert many
+   :end-before: end model insert many
+
+.. note::
+
+   This example wraps the dates in the `MongoDB\\BSON\\UTCDateTime
+   <{+phplib-api+}/class.mongodb-bson-utcdatetime.php>`__
+   class to convert it to a type MongoDB can serialize because Laravel
+   skips attribute casting on bulk insert operations.
+
+Additional Information
+----------------------
+
+To view runnable code examples that demonstrate how to insert documents
+by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-insert-one-usage`
+- :ref:`laravel-insert-many-usage`
+
+To learn how to modify data that is already in MongoDB, see the
+:ref:`laravel-fundamentals-write-modify` guide.

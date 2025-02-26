@@ -17,6 +17,12 @@ Databases and Collections
    :depth: 2
    :class: singlecol
 
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   Time Series </database-collection/time-series>
+
 Overview
 --------
 

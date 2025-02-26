@@ -157,10 +157,15 @@ drop various types of indexes on a collection.
 Create an Index
 ~~~~~~~~~~~~~~~
 
-To create indexes, call the ``create()`` method on the ``Schema`` facade
-in your migration file. Pass it the collection name and a callback
-method with a ``MongoDB\Laravel\Schema\Blueprint`` parameter. Specify the
-index creation details on the ``Blueprint`` instance.
+To create indexes, perform the following actions:
+
+1. Call the ``create()`` method on the ``Schema`` facade
+   in your migration file.
+
+#. Pass it the collection name and a callback method with a
+   ``MongoDB\Laravel\Schema\Blueprint`` parameter.
+
+#. Specify the index creation details on the ``Blueprint`` instance.
 
 The following example migration creates indexes on the following collection
 fields:
@@ -262,11 +267,16 @@ indexes:
 - Unique indexes, which prevent inserting documents that contain duplicate
   values for the indexed field
 
-To create these index types, call the ``create()`` method on the ``Schema`` facade
-in your migration file. Pass ``create()`` the collection name and a callback
-method with a ``MongoDB\Laravel\Schema\Blueprint`` parameter. Call the
-appropriate helper method on the ``Blueprint`` instance and pass the
-index creation details.
+To create these index types, perform the following actions:
+
+1. Call the ``create()`` method on the ``Schema`` facade
+   in your migration file.
+   
+#. Pass ``create()`` the collection name and a callback method with a
+   ``MongoDB\Laravel\Schema\Blueprint`` parameter.
+
+#. Call the appropriate helper method for the index type on the
+   ``Blueprint`` instance and pass the index creation details.
 
 The following migration code shows how to create a sparse and a TTL index
 by using the index helpers. Click the :guilabel:`{+code-output-label+}` button to see
@@ -339,10 +349,16 @@ Create a Geospatial Index
 In MongoDB, geospatial indexes let you query geospatial coordinate data for
 inclusion, intersection, and proximity.
 
-To create geospatial indexes, call the ``create()`` method on the ``Schema`` facade
-in your migration file. Pass ``create()`` the collection name and a callback
-method with a ``MongoDB\Laravel\Schema\Blueprint`` parameter. Specify the
-geospatial index creation details on the ``Blueprint`` instance.
+To create geospatial indexes, perform the following actions:
+
+1. Call the ``create()`` method on the ``Schema`` facade
+   in your migration file.
+   
+#. Pass ``create()`` the collection name and a callback method with a
+   ``MongoDB\Laravel\Schema\Blueprint`` parameter.
+
+#. Specify the geospatial index creation details on the ``Blueprint``
+   instance.
 
 The following example migration creates a ``2d`` and ``2dsphere`` geospatial
 index on the ``spaceports`` collection. Click the :guilabel:`{+code-output-label+}`
@@ -379,11 +395,16 @@ the {+server-docs-name+}.
 Drop an Index
 ~~~~~~~~~~~~~
 
-To drop indexes from a collection, call the ``table()`` method on the
-``Schema`` facade in your migration file. Pass it the table name and a
-callback method with a ``MongoDB\Laravel\Schema\Blueprint`` parameter.
-Call the ``dropIndex()`` method with the index name on the ``Blueprint``
-instance.
+To drop indexes from a collection, perform the following actions:
+
+1. Call the ``table()`` method on the ``Schema`` facade in your
+   migration file.
+   
+#. Pass it the table name and a callback method with a
+   ``MongoDB\Laravel\Schema\Blueprint`` parameter.
+
+#. Call the ``dropIndex()`` method with the index name on the
+   ``Blueprint`` instance.
 
 .. note::
 
@@ -399,4 +420,155 @@ from the ``flights`` collection:
    :start-after: begin drop index
    :end-before: end drop index
 
+.. _laravel-schema-builder-atlas-idx:
 
+Manage Atlas Search and Vector Search Indexes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In MongoDB, :atlas:`Atlas Search indexes
+</atlas-search/manage-indexes/>` support your full-text queries.
+:atlas:`Atlas Vector Search indexes
+</atlas-vector-search/vector-search-type/>` support similarity
+searches that compare query vectors to vector embeddings in your
+documents.
+
+View the following guides to learn more about the Atlas Search and
+Vector Search features:
+
+- :ref:`laravel-atlas-search` guide
+- :ref:`laravel-vector-search` guide
+
+Atlas Search
+````````````
+
+To create Atlas Search indexes, perform the following actions:
+
+1. Call the ``create()`` method on the ``Schema`` facade in your
+   migration file.
+
+#. Pass ``create()`` the collection name and a callback method with a
+   ``MongoDB\Laravel\Schema\Blueprint`` parameter.
+
+#. Pass the Atlas index creation details to the ``searchIndex()`` method
+   on the ``Blueprint`` instance.
+
+This example migration creates the following Atlas Search indexes on the
+``galaxies`` collection:
+
+- ``dynamic_index``: Creates dynamic mappings
+- ``auto_index``: Supports autocomplete queries on the ``name`` field
+
+Click the :guilabel:`{+code-output-label+}` button to see the Search
+indexes created by running the migration:
+
+.. io-code-block::
+
+   .. input:: /includes/schema-builder/galaxies_migration.php
+      :language: php
+      :dedent:
+      :start-after: begin-create-search-indexes
+      :end-before: end-create-search-indexes
+
+   .. output::
+      :language: json
+      :visible: false
+
+      {
+        "id": "...", 
+        "name": "dynamic_index",
+        "type": "search",
+        "status": "READY",
+        "queryable": true,
+        "latestDefinition": {
+          "mappings": { "dynamic": true }
+        },
+        ...
+      }
+      {
+        "id": "...",
+        "name": "auto_index",
+        "type": "search",
+        "status": "READY",
+        "queryable": true,
+        "latestDefinition": {
+          "mappings": {
+            "fields": { "name": [
+              { "type": "string", "analyzer": "lucene.english" }, 
+              { "type": "autocomplete", "analyzer": "lucene.english" },
+              { "type": "token" }
+            ] } 
+          } 
+        },
+        ...
+      }
+
+Vector Search
+`````````````
+
+To create Vector Search indexes, perform the following actions:
+
+1. Call the ``create()`` method on the ``Schema`` facade in your
+   migration file.
+
+#. Pass ``create()`` the collection name and a callback method with a
+   ``MongoDB\Laravel\Schema\Blueprint`` parameter.
+
+#. Pass the vector index creation details to the ``vectorSearchIndex()``
+   method on the ``Blueprint`` instance. 
+
+The following example migration creates a Vector Search index called
+``vs_index`` on the ``galaxies`` collection.
+
+Click the :guilabel:`{+code-output-label+}` button to see the Search
+indexes created by running the migration:
+
+.. io-code-block::
+   .. input:: /includes/schema-builder/galaxies_migration.php
+      :language: php
+      :dedent:
+      :start-after: begin-create-vs-index
+      :end-before: end-create-vs-index
+
+   .. output::
+      :language: json
+      :visible: false
+
+      {
+        "id": "...", 
+        "name": "vs_index",
+        "type": "vectorSearch",
+        "status": "READY",
+        "queryable": true,
+        "latestDefinition": {
+          "fields": [ { 
+              "type": "vector",
+              "numDimensions": 4,
+              "path": "embeddings",
+              "similarity": "cosine"
+          } ]
+        },
+        ...
+      }
+
+Drop a Search Index
+```````````````````
+
+To drop an Atlas Search or Vector Search index from a collection,
+perform the following actions:
+
+1. Call the ``table()`` method on the ``Schema`` facade in your migration file.
+
+#. Pass it the collection name and a callback method with a
+   ``MongoDB\Laravel\Schema\Blueprint`` parameter.
+
+#. Call the ``dropSearchIndex()`` method with the Search index name on
+   the ``Blueprint`` instance. 
+
+The following example migration drops an index called ``auto_index``
+from the ``galaxies`` collection:
+
+.. literalinclude:: /includes/schema-builder/galaxies_migration.php
+   :language: php
+   :dedent:
+   :start-after: begin-drop-search-index
+   :end-before: end-drop-search-index

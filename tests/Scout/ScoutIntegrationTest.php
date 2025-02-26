@@ -17,6 +17,7 @@ use PHPUnit\Framework\Attributes\Group;
 use function array_merge;
 use function count;
 use function env;
+use function iterator_to_array;
 use function Orchestra\Testbench\artisan;
 use function range;
 use function sprintf;
@@ -38,6 +39,9 @@ class ScoutIntegrationTest extends TestCase
 
         $app['config']->set('scout.driver', 'mongodb');
         $app['config']->set('scout.prefix', 'prefix_');
+        $app['config']->set('scout.mongodb.index-definitions', [
+            'prefix_scout_users' => ['mappings' => ['dynamic' => true, 'fields' => ['bool_field' => ['type' => 'boolean']]]],
+        ]);
     }
 
     public function setUp(): void
@@ -103,8 +107,9 @@ class ScoutIntegrationTest extends TestCase
 
         self::assertSame(44, $collection->countDocuments());
 
-        $searchIndexes = $collection->listSearchIndexes(['name' => 'scout']);
+        $searchIndexes = $collection->listSearchIndexes(['name' => 'scout', 'typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']]);
         self::assertCount(1, $searchIndexes);
+        self::assertSame(['mappings' => ['dynamic' => true, 'fields' => ['bool_field' => ['type' => 'boolean']]]], iterator_to_array($searchIndexes)[0]['latestDefinition']);
 
         // Wait for all documents to be indexed asynchronously
         $i = 100;

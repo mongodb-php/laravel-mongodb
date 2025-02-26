@@ -39,6 +39,7 @@ aggregation builder to create the stages of an aggregation pipeline:
 
 - :ref:`laravel-add-aggregation-dependency`
 - :ref:`laravel-build-aggregation`
+- :ref:`laravel-aggregation-examples`
 - :ref:`laravel-create-custom-operator-factory`
 
 .. tip::
@@ -71,12 +72,13 @@ includes the following line in the ``require`` object:
 
 .. _laravel-build-aggregation:
 
-Create an Aggregation Pipeline
-------------------------------
+Create Aggregation Stages
+-------------------------
 
 To start an aggregation pipeline, call the ``Model::aggregate()`` method.
-Then, chain the aggregation stage methods in the sequence you want them to
-run.
+Then, chain aggregation stage methods and specify the necessary
+parameters for the stage. For example, you can call the ``sort()``
+operator method to build a ``$sort`` stage.
 
 The aggregation builder includes the following namespaces that you can import
 to build aggregation stages:
@@ -88,17 +90,17 @@ to build aggregation stages:
 
 .. tip::
 
-   To learn more about builder classes, see the `mongodb/mongodb-php-builder <https://github.com/mongodb/mongo-php-builder/>`__
+   To learn more about builder classes, see the
+   :github:`mongodb/mongodb-php-builder <mongodb/mongo-php-builder>`
    GitHub repository.
 
-This section features the following examples, which show how to use common
-aggregation stages and combine stages to build an aggregation pipeline:
+This section features the following examples that show how to use common
+aggregation stages:
 
 - :ref:`laravel-aggregation-match-stage-example`
 - :ref:`laravel-aggregation-group-stage-example`
 - :ref:`laravel-aggregation-sort-stage-example`
 - :ref:`laravel-aggregation-project-stage-example`
-- :ref:`laravel-aggregation-pipeline-example`
 
 To learn more about MongoDB aggregation operators, see
 :manual:`Aggregation Stages </reference/operator/aggregation-pipeline/>` in
@@ -112,10 +114,10 @@ by the ``User`` model. You can add the sample data by running the following
 ``insert()`` method:
 
 .. literalinclude:: /includes/fundamentals/aggregation/AggregationsBuilderTest.php
-      :language: php
-      :dedent:
-      :start-after: begin aggregation builder sample data
-      :end-before: end aggregation builder sample data
+   :language: php
+   :dedent:
+   :start-after: begin aggregation builder sample data
+   :end-before: end aggregation builder sample data
 
 .. _laravel-aggregation-match-stage-example:
 
@@ -151,6 +153,7 @@ Click the :guilabel:`{+code-output-label+}` button to see the documents
 returned by running the code:
 
 .. io-code-block::
+   :copyable: true
 
    .. input:: /includes/fundamentals/aggregation/AggregationsBuilderTest.php
       :language: php
@@ -226,6 +229,7 @@ Click the :guilabel:`{+code-output-label+}` button to see the documents
 returned by running the code:
 
 .. io-code-block::
+   :copyable: true
 
    .. input:: /includes/fundamentals/aggregation/AggregationsBuilderTest.php
       :language: php
@@ -270,6 +274,7 @@ alphabetical order. Click the :guilabel:`{+code-output-label+}` button to see
 the documents returned by running the code:
 
 .. io-code-block::
+   :copyable: true
 
    .. input:: /includes/fundamentals/aggregation/AggregationsBuilderTest.php
       :language: php
@@ -370,6 +375,7 @@ Click the :guilabel:`{+code-output-label+}` button to see the data returned by
 running the code:
 
 .. io-code-block::
+   :copyable: true
 
    .. input:: /includes/fundamentals/aggregation/AggregationsBuilderTest.php
       :language: php
@@ -390,56 +396,166 @@ running the code:
         { "name": "Ellis Lee" }
       ]
 
+.. _laravel-aggregation-examples:
 
-.. _laravel-aggregation-pipeline-example:
+Build Aggregation Pipelines
+---------------------------
 
-Aggregation Pipeline Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To build an aggregation pipeline, call the ``Model::aggregate()`` method,
+then chain the aggregation stages in the sequence you want them to
+run. The examples in this section are adapted from the {+server-docs-name+}.
+Each example provides a link to the sample data that you can insert into
+your database to test the aggregation operation.
 
-This aggregation pipeline example chains multiple stages. Each stage runs
-on the output retrieved from each preceding stage. In this example, the
-stages perform the following operations sequentially:
+This section features the following examples, which show how to use common
+aggregation stages:
 
-- Add the ``birth_year`` field to the documents and set the value to the year
-  extracted from the ``birthday`` field.
-- Group the documents by the value of the ``occupation`` field and compute
-  the average value of ``birth_year`` for each group by using the
-  ``Accumulator::avg()`` function. Assign the result of the computation to
-  the ``birth_year_avg`` field.
-- Sort the documents by the group key field in ascending order.
-- Create the ``profession`` field from the value of the group key field,
-  include the ``birth_year_avg`` field, and omit the ``_id`` field.
+- :ref:`laravel-aggregation-filter-group-example`
+- :ref:`laravel-aggregation-unwind-example`
+- :ref:`laravel-aggregation-lookup-example`
+
+.. _laravel-aggregation-filter-group-example:
+
+Filter and Group Example
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example uses the sample data given in the :manual:`Calculate Count,
+Sum, and Average </reference/operator/aggregation/group/#calculate-count--sum--and-average>`
+section of the ``$group`` stage reference in the {+server-docs-name+}.
+
+The following code example calculates the total sales amount, average
+sales quantity, and sale count for each day in the year 2014. To do so,
+it uses an aggregation pipeline that contains the following stages:
+
+1. :manual:`$match </reference/operator/aggregation/match/>` stage to
+   filter for documents that contain a ``date`` field in which the year is
+   2014
+
+#. :manual:`$group </reference/operator/aggregation/group/>` stage to
+   group the documents by date and calculate the total sales amount,
+   average sales quantity, and sale count for each group
+
+#. :manual:`$sort </reference/operator/aggregation/sort/>` stage to
+   sort the results by the total sale amount for each group in descending
+   order
 
 Click the :guilabel:`{+code-output-label+}` button to see the data returned by
 running the code:
 
 .. io-code-block::
+   :copyable: true
 
    .. input:: /includes/fundamentals/aggregation/AggregationsBuilderTest.php
       :language: php
       :dedent:
-      :start-after: begin pipeline example
-      :end-before: end pipeline example
+      :start-after: start-builder-match-group
+      :end-before: end-builder-match-group
 
    .. output::
       :language: json
       :visible: false
 
       [
-        {
-          "birth_year_avg": 1991.5,
-          "profession": "designer"
-        },
-        {
-          "birth_year_avg": 1995.5,
-          "profession": "engineer"
-        }
+        { "_id": "2014-04-04", "totalSaleAmount": { "$numberDecimal": "200" }, "averageQuantity": 15, "count": 2 },
+        { "_id": "2014-03-15", "totalSaleAmount": { "$numberDecimal": "50" }, "averageQuantity": 10, "count": 1 },
+        { "_id": "2014-03-01", "totalSaleAmount": { "$numberDecimal": "40" }, "averageQuantity": 1.5, "count": 2 }
       ]
 
-.. note::
+.. _laravel-aggregation-unwind-example:
 
-   Since this pipeline omits the ``match()`` stage, the input for the initial
-   stage consists of all the documents in the collection.
+Unwind Embedded Arrays Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example uses the sample data given in the :manual:`Unwind Embedded Arrays
+</reference/operator/aggregation/unwind/#unwind-embedded-arrays>`
+section of the ``$unwind`` stage reference in the {+server-docs-name+}.
+
+The following code example groups sold items by their tags and
+calculates the total sales amount for each tag. To do so,
+it uses an aggregation pipeline that contains the following stages:
+
+1. :manual:`$unwind </reference/operator/aggregation/unwind/>` stage to
+   output a separate document for each element in the ``items`` array
+
+#. :manual:`$unwind </reference/operator/aggregation/unwind/>` stage to
+   output a separate document for each element in the ``items.tags`` arrays
+
+#. :manual:`$group </reference/operator/aggregation/group/>` stage to
+   group the documents by the tag value and calculate the total sales
+   amount of items that have each tag
+
+Click the :guilabel:`{+code-output-label+}` button to see the data returned by
+running the code:
+
+.. io-code-block::
+   :copyable: true
+
+   .. input:: /includes/fundamentals/aggregation/AggregationsBuilderTest.php
+      :start-after: start-builder-unwind
+      :end-before: end-builder-unwind
+      :language: php
+      :dedent:
+
+   .. output::
+      :language: json
+      :visible: false
+
+      [
+        { "_id": "school", "totalSalesAmount": { "$numberDecimal": "104.85" } },
+        { "_id": "electronics", "totalSalesAmount": { "$numberDecimal": "800.00" } },
+        { "_id": "writing", "totalSalesAmount": { "$numberDecimal": "60.00" } },
+        { "_id": "office", "totalSalesAmount": { "$numberDecimal": "1019.60" } },
+        { "_id": "stationary", "totalSalesAmount": { "$numberDecimal": "264.45" } }
+      ]
+
+.. _laravel-aggregation-lookup-example:
+
+Single Equality Join Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example uses the sample data given in the :manual:`Perform a Single
+Equality Join with $lookup
+</reference/operator/aggregation/lookup/#perform-a-single-equality-join-with--lookup>`
+section of the ``$lookup`` stage reference in the {+server-docs-name+}.
+
+The following code example joins the documents from the ``orders``
+collection with the documents from the ``inventory`` collection by using
+the ``item`` field from the ``orders`` collection and the ``sku`` field
+from the ``inventory`` collection.
+
+To do so, the example uses an aggregation pipeline that contains a 
+:manual:`$lookup </reference/operator/aggregation/lookup/>` stage that
+specifies the collection to retrieve data from and the local and
+foreign field names.
+
+Click the :guilabel:`{+code-output-label+}` button to see the data returned by
+running the code:
+
+.. io-code-block::
+   :copyable: true
+
+   .. input:: /includes/fundamentals/aggregation/AggregationsBuilderTest.php
+      :start-after: start-builder-lookup
+      :end-before: end-builder-lookup
+      :language: php
+      :dedent:
+
+   .. output:: 
+      :language: json
+      :visible: false
+
+      [
+        { "_id": 1, "item": "almonds", "price": 12, "quantity": 2, "inventory_docs": [
+            { "_id": 1, "sku": "almonds", "description": "product 1", "instock": 120 } 
+        ] },
+        { "_id": 2, "item": "pecans", "price": 20, "quantity": 1, "inventory_docs": [
+            { "_id": 4, "sku": "pecans", "description": "product 4", "instock": 70 }
+        ] },
+        { "_id": 3, "inventory_docs": [
+            { "_id": 5, "sku": null, "description": "Incomplete" },
+            { "_id": 6 }
+        ] }
+      ]
 
 .. _laravel-create-custom-operator-factory:
 

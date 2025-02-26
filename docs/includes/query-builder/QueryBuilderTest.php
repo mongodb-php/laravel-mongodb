@@ -10,7 +10,9 @@ use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Facades\DB;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
+use MongoDB\Driver\ReadPreference;
 use MongoDB\Laravel\Tests\TestCase;
 
 use function file_get_contents;
@@ -452,6 +454,18 @@ class QueryBuilderTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
     }
 
+    public function testReadPreference(): void
+    {
+        // begin query read pref
+        $result = DB::table('movies')
+            ->where('runtime', '>', 240)
+            ->readPreference(ReadPreference::SECONDARY_PREFERRED)
+            ->get();
+        // end query read pref
+
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
+    }
+
     public function testNear(): void
     {
         $this->importTheaters();
@@ -664,5 +678,28 @@ class QueryBuilderTest extends TestCase
         // end unset
 
         $this->assertIsInt($result);
+    }
+
+    public function testTimeSeries(): void
+    {
+        // begin time series
+        $data = [
+            [
+                'precipitation_mm' => 0.5,
+                'location' => 'New York City',
+                'timestamp' => new UTCDateTime(Carbon::create(2023, 9, 12, 0, 0, 0, 'CET')),
+            ],
+            [
+                'precipitation_mm' => 2.8,
+                'location' => 'New York City',
+                'timestamp' => new UTCDateTime(Carbon::create(2023, 9, 17, 0, 0, 0, 'CET')),
+            ],
+        ];
+
+        $result = DB::table('precipitation')
+            ->insert($data);
+        // end time series
+
+        $this->assertTrue($result);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace MongoDB\Laravel\Tests\Scout;
 
+use ArrayIterator;
 use Closure;
 use DateTimeImmutable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -9,7 +10,9 @@ use Illuminate\Support\Collection as LaravelCollection;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Jobs\RemoveFromSearch;
+use LogicException;
 use Mockery as m;
+use MongoDB\BSON\Document;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
 use MongoDB\Database;
@@ -30,6 +33,82 @@ use function unserialize;
 class ScoutEngineTest extends TestCase
 {
     private const EXPECTED_TYPEMAP = ['root' => 'object', 'document' => 'bson', 'array' => 'bson'];
+
+    public function testCreateIndexInvalidDefinition(): void
+    {
+        $database = m::mock(Database::class);
+        $engine = new ScoutEngine($database, false, ['collection_invalid' => ['foo' => 'bar']]);
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Invalid search index definition for collection "collection_invalid", the "mappings" key is required.');
+        $engine->createIndex('collection_invalid');
+    }
+
+    public function testCreateIndex(): void
+    {
+        $collectionName = 'collection_custom';
+        $expectedDefinition = [
+            'mappings' => [
+                'dynamic' => true,
+            ],
+        ];
+
+        $database = m::mock(Database::class);
+        $collection = m::mock(Collection::class);
+        $database->shouldReceive('createCollection')
+            ->once()
+            ->with($collectionName);
+        $database->shouldReceive('selectCollection')
+            ->with($collectionName)
+            ->andReturn($collection);
+        $collection->shouldReceive('createSearchIndex')
+            ->once()
+            ->with($expectedDefinition, ['name' => 'scout']);
+        $collection->shouldReceive('listSearchIndexes')
+            ->once()
+            ->with(['name' => 'scout', 'typeMap' => ['root' => 'bson']])
+            ->andReturn(new ArrayIterator([Document::fromPHP(['name' => 'scout', 'status' => 'READY'])]));
+
+        $engine = new ScoutEngine($database, false, []);
+        $engine->createIndex($collectionName);
+    }
+
+    public function testCreateIndexCustomDefinition(): void
+    {
+        $collectionName = 'collection_custom';
+        $expectedDefinition = [
+            'mappings' => [
+                [
+                    'analyzer' => 'lucene.standard',
+                    'fields' => [
+                        [
+                            'name' => 'wildcard',
+                            'type' => 'string',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $database = m::mock(Database::class);
+        $collection = m::mock(Collection::class);
+        $database->shouldReceive('createCollection')
+            ->once()
+            ->with($collectionName);
+        $database->shouldReceive('selectCollection')
+            ->with($collectionName)
+            ->andReturn($collection);
+        $collection->shouldReceive('createSearchIndex')
+            ->once()
+            ->with($expectedDefinition, ['name' => 'scout']);
+        $collection->shouldReceive('listSearchIndexes')
+            ->once()
+            ->with(['name' => 'scout', 'typeMap' => ['root' => 'bson']])
+            ->andReturn(new ArrayIterator([Document::fromPHP(['name' => 'scout', 'status' => 'READY'])]));
+
+        $engine = new ScoutEngine($database, false, [$collectionName => $expectedDefinition]);
+        $engine->createIndex($collectionName);
+    }
 
     /** @param callable(): Builder $builder  */
     #[DataProvider('provideSearchPipelines')]
@@ -62,7 +141,7 @@ class ScoutEngineTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-    public function provideSearchPipelines(): iterable
+    public static function provideSearchPipelines(): iterable
     {
         $defaultPipeline = [
             [
@@ -298,11 +377,11 @@ class ScoutEngineTest extends TestCase
 
         yield 'with callback' => [
             fn () => new Builder(new SearchableModel(), 'query', callback: function (...$args) {
-                $this->assertCount(3, $args);
-                $this->assertInstanceOf(Collection::class, $args[0]);
-                $this->assertSame('collection_searchable', $args[0]->getCollectionName());
-                $this->assertSame('query', $args[1]);
-                $this->assertNull($args[2]);
+                self::assertCount(3, $args);
+                self::assertInstanceOf(Collection::class, $args[0]);
+                self::assertSame('collection_searchable', $args[0]->getCollectionName());
+                self::assertSame('query', $args[1]);
+                self::assertNull($args[2]);
 
                 return $args[0]->aggregate(['pipeline']);
             }),

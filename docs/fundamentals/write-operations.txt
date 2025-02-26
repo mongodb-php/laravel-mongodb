@@ -11,6 +11,12 @@ Write Operations
 .. meta::
    :keywords: insert, insert one, update, update one, upsert, code example, mass assignment, push, pull, delete, delete many, primary key, destroy, eloquent model
 
+.. toctree::
+
+   Insert </fundamentals/write-operations/insert>
+   Modify </fundamentals/write-operations/modify>
+   Delete </fundamentals/write-operations/delete>
+
 .. contents:: On this page
    :local:
    :backlinks: none
@@ -20,679 +26,156 @@ Write Operations
 Overview
 --------
 
-In this guide, you can learn how to use {+odm-long+} to perform
-**write operations** on your MongoDB collections. Write operations include
-inserting, updating, and deleting data based on specified criteria.
-
-This guide shows you how to perform the following tasks:
-
-- :ref:`laravel-fundamentals-insert-documents`
-- :ref:`laravel-fundamentals-modify-documents`
-- :ref:`laravel-fundamentals-delete-documents`
-
-.. _laravel-fundamentals-write-sample-model:
-
-Sample Model
-~~~~~~~~~~~~
-
-The write operations in this guide reference the following Eloquent model class:
-
-.. literalinclude:: /includes/fundamentals/write-operations/Concert.php
-   :language: php
-   :dedent:
-   :caption: Concert.php
+In this guide, you can see code templates of common
+methods that you can use to write data to MongoDB by using
+{+odm-long+}.
 
 .. tip::
 
-   The ``$fillable`` attribute lets you use Laravel mass assignment for insert
-   operations. To learn more about mass assignment, see :ref:`laravel-model-mass-assignment`
-   in the Eloquent Model Class documentation.
+   To learn more about any of the methods included in this guide,
+   see the links provided in each section.
 
-   The ``$casts`` attribute instructs Laravel to convert attributes to common
-   data types. To learn more, see `Attribute Casting <https://laravel.com/docs/{+laravel-docs-version+}/eloquent-mutators#attribute-casting>`__
-   in the Laravel documentation.
+Insert One
+----------
 
-.. _laravel-fundamentals-insert-documents:
-
-Insert Documents
-----------------
-
-In this section, you can learn how to insert documents into MongoDB collections
-from your Laravel application by using {+odm-long+}.
-
-When you insert the documents, ensure the data does not violate any
-unique indexes on the collection. When inserting the first document of a
-collection or creating a new collection, MongoDB automatically creates a
-unique index on the ``_id`` field.
-
-For more information on creating indexes on MongoDB collections by using the
-Laravel schema builder, see the :ref:`laravel-eloquent-indexes` section
-of the Schema Builder documentation.
-
-To learn more about Eloquent models in the {+odm-short+}, see the :ref:`laravel-eloquent-models`
-section.
-
-Insert a Document Examples
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-These examples show how to use the ``save()`` Eloquent method to insert an
-instance of a ``Concert`` model as a MongoDB document.
-
-When the ``save()`` method succeeds, you can access the model instance on
-which you called the method.
-
-If the operation fails, the model instance is assigned ``null``.
-
-This example code performs the following actions:
-
-- Creates a new instance of the ``Concert`` model
-- Assigns string values to the ``performer`` and ``venue`` fields
-- Assigns an array of strings to the ``genre`` field
-- Assigns a number to the ``ticketsSold`` field
-- Assigns a date to the ``performanceDate`` field by using the ``Carbon``
-  package
-- Inserts the document by calling the ``save()`` method
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model insert one
-   :end-before: end model insert one
-   :caption: Insert a document by calling the save() method on an instance.
-
-You can retrieve the inserted document's ``_id`` value by accessing the model's
-``id`` member, as shown in the following code example:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin inserted id
-   :end-before: end inserted id
-
-If you enable mass assignment by defining either the ``$fillable`` or
-``$guarded`` attributes, you can use the Eloquent model ``create()`` method
-to perform the insert in a single call, as shown in the following example:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model insert one mass assign
-   :end-before: end model insert one mass assign
-
-To learn more about the Carbon PHP API extension, see the
-:github:`Carbon <briannesbitt/Carbon>` GitHub repository.
-
-Insert Multiple Documents Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This example shows how to use the ``insert()`` Eloquent method to insert
-multiple instances of a ``Concert`` model as MongoDB documents. This bulk
-insert method reduces the number of calls your application needs to make
-to save the documents.
-
-When the ``insert()`` method succeeds, it returns the value ``1``.
-
-If it fails, it throws an exception.
-
-The example code saves multiple models in a single call by passing them as
-an array to the ``insert()`` method:
-
-.. note::
-
-   This example wraps the dates in the `MongoDB\\BSON\\UTCDateTime <{+phplib-api+}/class.mongodb-bson-utcdatetime.php>`__
-   class to convert it to a type MongoDB can serialize because Laravel
-   skips attribute casting on bulk insert operations.
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model insert many
-   :end-before: end model insert many
-
-.. _laravel-fundamentals-modify-documents:
-
-Modify Documents
-----------------
-
-In this section, you can learn how to modify documents in your MongoDB
-collection from your Laravel application. Use update operations to modify
-existing documents or to insert a document if none match the search
-criteria.
-
-You can persist changes on an instance of an Eloquent model or use
-Eloquent's fluent syntax to chain an update operation on methods that
-return a Laravel collection object.
-
-This section provides examples of the following update operations:
-
-- :ref:`Update a document <laravel-modify-documents-update-one>`
-- :ref:`Update multiple documents <laravel-modify-documents-update-multiple>`
-- :ref:`Update or insert in a single operation <laravel-modify-documents-upsert>`
-- :ref:`Update arrays in a document <laravel-modify-documents-arrays>`
-
-.. _laravel-modify-documents-update-one:
-
-Update a Document Examples
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can update a document in the following ways:
-
-- Modify an instance of the model and save the changes by calling the ``save()``
-  method.
-- Chain methods to retrieve an instance of a model and perform updates on it
-  by calling the ``update()`` method.
-
-The following example shows how to update a document by modifying an instance
-of the model and calling its ``save()`` method:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model update one save
-   :end-before: end model update one save
-   :caption: Update a document by calling the save() method on an instance.
-
-When the ``save()`` method succeeds, the model instance on which you called the
-method contains the updated values.
-
-If the operation fails, the {+odm-short+} assigns the model instance a ``null`` value.
-
-The following example shows how to update a document by chaining methods to
-retrieve and update the first matching document:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model update one fluent
-   :end-before: end model update one fluent
-   :caption: Update the matching document by chaining the update() method.
-
-.. include:: /includes/fact-orderby-id.rst
-
-When the ``update()`` method succeeds, the operation returns the number of
-documents updated.
-
-If the retrieve part of the call does not match any documents, the {+odm-short+}
-returns the following error:
-
-.. code-block:: none
-   :copyable: false
-
-   Error: Call to a member function update() on null
-
-.. _laravel-modify-documents-update-multiple:
-
-Update Multiple Documents Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To perform an update on one or more documents, chain the ``update()``
-method to the results of a method that retrieves the documents as a
-Laravel collection object, such as ``where()``.
-
-The following example shows how to chain calls to retrieve matching documents
-and update them:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model update multiple
-   :end-before: end model update multiple
-
-When the ``update()`` method succeeds, the operation returns the number of
-documents updated.
-
-If the retrieve part of the call does not match any documents in the
-collection, the {+odm-short+} returns the following error:
-
-.. code-block:: none
-   :copyable: false
-
-   Error: Call to a member function update() on null
-
-.. _laravel-modify-documents-upsert:
-
-Update or Insert in a Single Operation
---------------------------------------
-
-An **upsert** operation lets you perform an update or insert in a single
-operation. This operation streamlines the task of updating a document or
-inserting one if it does not exist.
-
-Starting in v4.7, you can perform an upsert operation by using either of
-the following methods:
-
-- ``upsert()``: When you use this method, you can perform a **batch
-  upsert** to change or insert multiple documents in one operation.
-
-- ``update()``: When you use this method, you must specify the
-  ``upsert`` option to update all documents that match the query filter
-  or insert one document if no documents are matched. Only this upsert method
-  is supported in versions v4.6 and earlier.
-
-Upsert Method
-~~~~~~~~~~~~~
-
-The ``upsert(array $values, array|string $uniqueBy, array|null
-$update)`` method accepts the following parameters:
-
-- ``$values``: Array of fields and values that specify documents to update or insert.
-- ``$uniqueBy``: List of fields that uniquely identify documents in your
-  first array parameter.
-- ``$update``: Optional list of fields to update if a matching document
-  exists. If you omit this parameter, the {+odm-short+} updates all fields.
-
-To specify an upsert in the ``upsert()`` method, set parameters
-as shown in the following code example:
+The following code shows how to insert a single document into a
+collection:
 
 .. code-block:: php
-   :copyable: false
+    
+   SampleModel::create([
+       '<field name>' => '<value>',
+       '<field name>' => '<value>',
+       ...
+   ]);
 
-   YourModel::upsert(
-      [/* documents to update or insert */],
-      '/* unique field */',
-      [/* fields to update */],
-   );
+To view a runnable example that inserts one document, see the
+:ref:`laravel-insert-one-usage` usage example.
 
-Example
-^^^^^^^
+To learn more about inserting documents, see the
+:ref:`laravel-fundamentals-write-insert` guide.
 
-This example shows how to use the  ``upsert()``
-method to perform an update or insert in a single operation. Click the
-:guilabel:`{+code-output-label+}` button to see the resulting data changes when
-there is a document in which the value of ``performer`` is ``'Angel
-Olsen'`` in the collection already:
+Insert Multiple
+---------------
 
-.. io-code-block::
-
-   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-      :language: php
-      :dedent:
-      :start-after: begin model upsert
-      :end-before: end model upsert
-
-   .. output::
-      :language: json
-      :visible: false
-
-      {
-        "_id": "...",
-        "performer": "Angel Olsen",
-        "venue": "State Theatre",
-        "genres": [
-          "indie",
-          "rock"
-        ],
-        "ticketsSold": 275,
-        "updated_at": ...
-      },
-      {
-        "_id": "...",
-        "performer": "Darondo",
-        "venue": "Cafe du Nord",
-        "ticketsSold": 300,
-        "updated_at": ...
-      }
-
-In the document in which the value of ``performer`` is ``'Angel
-Olsen'``, the ``venue`` field value is not updated, as the upsert
-specifies that the update applies only to the ``ticketsSold`` field.
-
-Update Method
-~~~~~~~~~~~~~
-
-To specify an upsert in an ``update()`` method, set the ``upsert`` option to
-``true`` as shown in the following code example:
+The following code shows how to insert multiple documents into a
+collection:
 
 .. code-block:: php
-   :emphasize-lines: 4
-   :copyable: false
-
-   YourModel::where(/* match criteria */)
-      ->update(
-          [/* update data */],
-          ['upsert' => true]);
-
-When the ``update()`` method is chained to a query, it performs one of the
-following actions:
-
-- If the query matches documents, the ``update()`` method modifies the matching
-  documents.
-- If the query matches zero documents, the ``update()`` method inserts a
-  document that contains the update data and the equality match criteria data.
-
-Example
-^^^^^^^
-
-This example shows how to pass the ``upsert`` option to the  ``update()``
-method to perform an update or insert in a single operation. Click the
-:guilabel:`{+code-output-label+}` button to see the example document inserted when no
-matching documents exist:
-
-.. io-code-block::
-
-   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-      :language: php
-      :dedent:
-      :start-after: begin model update upsert
-      :end-before: end model update upsert
-
-   .. output::
-      :language: json
-      :visible: false
-
-      {
-        "_id": "660c...",
-        "performer": "Jon Batiste",
-        "venue": "Radio City Music Hall",
-        "genres": [
-          "R&B",
-          "soul"
-        ],
-        "ticketsSold": 4000,
-        "updated_at": ...
-      }
-
-.. _laravel-modify-documents-arrays:
-
-Update Arrays in a Document
----------------------------
-
-In this section, you can see examples of the following operations that
-update array values in a MongoDB document:
-
-- :ref:`Add values to an array <laravel-modify-documents-add-array-values>`
-- :ref:`Remove values from an array <laravel-modify-documents-remove-array-values>`
-- :ref:`Update the value of an array element <laravel-modify-documents-update-array-values>`
-
-These examples modify the sample document created by the following insert
-operation:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin array example document
-   :end-before: end array example document
-
-.. _laravel-modify-documents-add-array-values:
-
-Add Values to an Array Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This section shows how to use the ``push()`` method to add values to an array
-in a MongoDB document. You can pass one or more values to add and set the
-optional parameter ``unique`` to ``true`` to skip adding any duplicate values
-in the array. The following code example shows the structure of a ``push()``
-method call:
+    
+   SampleModel::insert([
+       [
+           '<field name>' => '<value>',
+           '<field name>' => '<value>',
+       ],
+       [
+           '<field name>' => '<value>',
+           '<field name>' => '<value>',
+       ],
+       ...
+   ]);
+
+To view a runnable example that inserts multiple documents, see the
+:ref:`laravel-insert-many-usage` usage example.
+
+To learn more about inserting documents, see the
+:ref:`laravel-fundamentals-write-insert` guide.
+
+Update One
+----------
+
+The following code shows how to update a single document in a
+collection by creating or editing a field:
+
+.. code-block:: php
+    
+   SampleModel::where('<field name>', '<value>')
+       ->orderBy('<field to sort on>')
+       ->first()
+       ->update([
+           '<field to update>' => '<new value>',
+       ]);
+
+To view a runnable example that updates one document, see the
+:ref:`laravel-update-one-usage` usage example.
+
+To learn more about updating documents, see the
+:ref:`laravel-fundamentals-write-modify` guide.
+
+Update Multiple
+---------------
+
+The following code shows how to update multiple documents in a
+collection:
+
+.. code-block:: php
+    
+   SampleModel::where('<field name>', '<comparison operator>', '<value>')
+       ->update(['<field to update>' => '<new value>']);
+
+To view a runnable example that updates multiple documents, see the
+:ref:`laravel-update-many-usage` usage example.
+
+To learn more about updating documents, see the
+:ref:`laravel-fundamentals-write-modify` guide.
+
+Upsert
+------
+
+The following code shows how to update a document, or insert one if a
+matching document doesn't exist:
+
+.. code-block:: php
+    
+   SampleModel::where(['<field name>' => '<value>'])
+       ->update(
+           ['<field to update>' => '<new value>', ...],
+           ['upsert' => true],
+       );
+       
+    /* Or, use the upsert() method. */
+    
+    SampleModel::upsert(
+       [<documents to update or insert>],
+       '<unique field name>',
+       [<fields to update>],
+    );
+
+To learn more about upserting documents, see the
+:ref:`laravel-fundamentals-write-modify` guide.
+
+Delete One
+----------
+
+The following code shows how to delete a single document in a
+collection:
+
+.. code-block:: php
+    
+   SampleModel::where('<field name>', '<value>')
+       ->orderBy('<field to sort on>')
+       ->limit(1)
+       ->delete();
+
+To view a runnable example that deletes one document, see the
+:ref:`laravel-delete-one-usage` usage example.
+
+To learn more about deleting documents, see the
+:ref:`laravel-fundamentals-write-delete` guide.
+
+Delete Multiple
+---------------
 
-.. code-block:: none
-   :copyable: false
+The following code shows how to delete multiple documents in a
+collection:
 
-   YourModel::where(<match criteria>)
-      ->push(
-          <field name>,
-          [<values>], // array or single value to add
-          unique: true); // whether to skip existing values
+.. code-block:: php
+    
+   SampleModel::where('<field name>', '<value>')
+       ->delete();
 
-The following example shows how to add the value ``"baroque"`` to
-the ``genres`` array field of a matching document. Click the
-:guilabel:`{+code-output-label+}` button to see the updated document:
+To view a runnable example that deletes multiple documents, see the
+:ref:`laravel-delete-many-usage` usage example.
 
-.. io-code-block::
-
-   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-      :language: php
-      :dedent:
-      :start-after: begin model array push
-      :end-before: end model array push
-
-   .. output::
-      :language: json
-      :visible: false
-
-      {
-        "_id": "660eb...",
-        "performer": "Mitsuko Uchida",
-        "genres": [
-            "classical",
-            "dance-pop",
-
-        ],
-        "updated_at": ...,
-        "created_at": ...
-      }
-
-
-.. _laravel-modify-documents-remove-array-values:
-
-Remove Values From an Array Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This section shows how to use the ``pull()`` method to remove values from
-an array in a MongoDB document. You can pass one or more values to remove
-from the array. The following code example shows the structure of a
-``pull()`` method call:
-
-.. code-block:: none
-   :copyable: false
-
-   YourModel::where(<match criteria>)
-      ->pull(
-          <field name>,
-          [<values>]); // array or single value to remove
-
-The following example shows how to remove array values ``"classical"`` and
-``"dance-pop"`` from the ``genres`` array field. Click the
-:guilabel:`{+code-output-label+}` button to see the updated document:
-
-.. io-code-block::
-
-   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-      :language: php
-      :dedent:
-      :start-after: begin model array pull
-      :end-before: end model array pull
-
-   .. output::
-      :language: json
-      :visible: false
-
-      {
-        "_id": "660e...",
-        "performer": "Mitsuko Uchida",
-        "genres": [],
-        "updated_at": ...,
-        "created_at": ...
-      }
-
-
-.. _laravel-modify-documents-update-array-values:
-
-Update the Value of an Array Element Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This section shows how to use the ``$`` positional operator to update specific
-array elements in a MongoDB document. The ``$`` operator represents the first
-array element that matches the query. The following code example shows the
-structure of a positional operator update call on a single matching document:
-
-
-.. note::
-
-   Currently, the {+odm-short+} offers this operation only on the ``DB`` facade
-   and not on the Eloquent ORM.
-
-.. code-block:: none
-   :copyable: false
-
-   DB::connection('mongodb')
-      ->getCollection(<collection name>)
-      ->updateOne(
-          <match criteria>,
-          ['$set' => ['<array field>.$' => <replacement value>]]);
-
-
-The following example shows how to replace the array value ``"dance-pop"``
-with ``"contemporary"`` in the ``genres`` array field. Click the
-:guilabel:`{+code-output-label+}` button to see the updated document:
-
-.. io-code-block::
-
-   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-      :language: php
-      :dedent:
-      :start-after: begin model array positional
-      :end-before: end model array positional
-
-   .. output::
-      :language: json
-      :visible: false
-
-      {
-        "_id": "660e...",
-        "performer": "Mitsuko Uchida",
-        "genres": [
-          "classical",
-          "contemporary"
-        ],
-        "updated_at": ...,
-        "created_at": ...
-      }
-
-To learn more about array update operators, see :manual:`Array Update Operators </reference/operator/update-array/>`
-in the {+server-docs-name+}.
-
-.. _laravel-fundamentals-delete-documents:
-
-Delete Documents
-----------------
-
-In this section, you can learn how to delete documents from a MongoDB collection
-by using the {+odm-short+}. Use delete operations to remove data from your MongoDB
-database.
-
-This section provides examples of the following delete operations:
-
-- :ref:`Delete one document <laravel-fundamentals-delete-one>`
-- :ref:`Delete multiple documents <laravel-fundamentals-delete-many>`
-
-To learn about the Laravel features available in the {+odm-short+} that modify
-delete behavior, see the following sections:
-
-- :ref:`Soft delete <laravel-model-soft-delete>`, which lets you mark
-  documents as deleted instead of removing them from the database
-- :ref:`Pruning <laravel-model-pruning>`, which lets you define conditions
-  that qualify a document for automatic deletion
-
-.. _laravel-fundamentals-delete-one:
-
-Delete a Document Examples
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can delete one document in the following ways:
-
-- Call the ``$model->delete()`` method on an instance of the model.
-- Call the ``Model::destroy($id)`` method on the model, passing it the id of
-  the document to be deleted.
-- Chain methods to retrieve and delete an instance of a model by calling the
-  ``delete()`` method.
-
-The following example shows how to delete a document by calling ``$model->delete()``
-on an instance of the model:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin delete one model
-   :end-before: end delete one model
-   :caption: Delete the document by calling the delete() method on an instance.
-
-When the ``delete()`` method succeeds, the operation returns the number of
-documents deleted.
-
-If the retrieve part of the call does not match any documents in the collection,
-the operation returns ``0``.
-
-The following example shows how to delete a document by passing the value of
-its id to the ``Model::destroy($id)`` method:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model delete by id
-   :end-before: end model delete by id
-   :caption: Delete the document by its id value.
-
-When the ``destroy()`` method succeeds, it returns the number of documents
-deleted.
-
-If the id value does not match any documents, the ``destroy()`` method
-returns returns ``0``.
-
-The following example shows how to chain calls to retrieve the first
-matching document and delete it:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model delete one fluent
-   :end-before: end model delete one fluent
-   :caption: Delete the matching document by chaining the delete() method.
-
-.. include:: /includes/fact-orderby-id.rst
-
-When the ``delete()`` method succeeds, it returns the number of documents
-deleted.
-
-If the ``where()`` method does not match any documents, the ``delete()`` method
-returns returns ``0``.
-
-.. _laravel-fundamentals-delete-many:
-
-Delete Multiple Documents Examples
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can delete multiple documents in the following ways:
-
-
-- Call the ``Model::destroy($ids)`` method, passing a list of the ids of the
-  documents or model instances to be deleted.
-- Chain methods to retrieve a Laravel collection object that references
-  multiple objects and delete them by calling the ``delete()`` method.
-
-The following example shows how to delete a document by passing an array of
-id values, represented by ``$ids``, to the ``destroy()`` method:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model delete multiple by id
-   :end-before: end model delete multiple by id
-   :caption: Delete documents by their ids.
-
-.. tip::
-
-   The ``destroy()`` method performance suffers when passed large lists. For
-   better performance, use ``Model::whereIn('id', $ids)->delete()`` instead.
-
-When the ``destroy()`` method succeeds, it returns the number of documents
-deleted.
-
-If the id values do not match any documents, the ``destroy()`` method
-returns returns ``0``.
-
-The following example shows how to chain calls to retrieve matching documents
-and delete them:
-
-.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: begin model delete multiple fluent
-   :end-before: end model delete multiple fluent
-   :caption: Chain calls to retrieve matching documents and delete them.
-
-When the ``delete()`` method succeeds, it returns the number of documents
-deleted.
-
-If the ``where()`` method does not match any documents, the ``delete()`` method
-returns ``0``.
-
+To learn more about deleting documents, see the
+:ref:`laravel-fundamentals-write-delete` guide.

@@ -43,6 +43,8 @@ class QueryBuilderTest extends TestCase
     {
         DB::table('users')->truncate();
         DB::table('items')->truncate();
+
+        parent::tearDown();
     }
 
     public function testDeleteWithId()

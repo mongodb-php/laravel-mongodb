@@ -17,50 +17,93 @@ Delete a Document
    :depth: 1
    :class: singlecol
 
-You can delete a document in a collection by retrieving a single Eloquent model and calling
-the ``delete()`` method, or by calling ``delete()`` directly on a query builder.
+You can delete a document in a collection by retrieving a single
+Eloquent model and calling the ``delete()`` method, or by calling
+``delete()`` directly on a query builder.
 
-To delete a document, pass a query filter to the ``where()`` method, sort the matching documents,
-and call the ``limit()`` method to retrieve only the first document. Then, delete this matching
-document by calling the ``delete()`` method.
+To delete a document, pass a query filter to the ``where()`` method,
+sort the matching documents, and call the ``limit()`` method to retrieve
+only the first document. Then, delete this matching document by calling
+the ``delete()`` method.
+
+.. tip::
+
+   To learn more about deleting documents with the {+odm-short+}, see
+   the :ref:`laravel-fundamentals-delete-documents` section of the Write
+   Operations guide.
 
 Example
 -------
 
-This usage example performs the following actions:
+Select from the following :guilabel:`Eloquent` and :guilabel:`Query
+Builder` tabs to view usage examples for the same operation that use
+each corresponding query syntax:
 
-- Uses the ``Movie`` Eloquent model to represent the ``movies`` collection in the
-  ``sample_mflix`` database
-- Deletes a document from the ``movies`` collection that matches a query filter
-- Prints the number of deleted documents
+.. tabs::
 
-The example calls the following methods on the ``Movie`` model:
+   .. tab:: Eloquent
+      :tabid: eloquent-model-count
 
-- ``where()``: matches documents in which the value of the ``title`` field is ``"Quiz Show"``
-- ``orderBy()``: sorts matched documents by their ascending ``_id`` values
-- ``limit()``: retrieves only the first matching document
-- ``delete()``: deletes the retrieved document
+      This example performs the following actions:
+      
+      - Uses the ``Movie`` Eloquent model to represent the ``movies``
+        collection in the ``sample_mflix`` database
+      - Deletes a document from the ``movies`` collection that matches a
+        query filter
+      - Prints the number of deleted documents
+      
+      The example calls the following methods on the ``Movie`` model:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``title`` field is ``"Quiz Show"``
+      - ``limit()``: Retrieves only the first matching document
+      - ``delete()``: Deletes the retrieved document
+      
+      .. io-code-block::
+         :copyable: true
+      
+         .. input:: ../includes/usage-examples/DeleteOneTest.php
+            :start-after: begin-eloquent-delete-one
+            :end-before: end-eloquent-delete-one
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            Deleted documents: 1
 
-.. io-code-block::
-   :copyable: true
+   .. tab:: Query Builder
+      :tabid: query-builder-count
 
-   .. input:: ../includes/usage-examples/DeleteOneTest.php
-      :start-after: begin-delete-one
-      :end-before: end-delete-one
-      :language: php
-      :dedent:
-
-   .. output::
-      :language: console
-      :visible: false
-
-      Deleted documents: 1
+      This example performs the following actions:
+      
+      - Accesses the ``movies`` collection by calling the ``table()``
+        method from the ``DB`` facade
+      - Deletes a document from the ``movies`` collection that matches a
+        query filter
+      - Prints the number of deleted documents
+      
+      The example calls the following query builder methods:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``title`` field is ``"Quiz Show"``
+      - ``limit()``: Retrieves only the first matching document
+      - ``delete()``: Deletes the retrieved document
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/DeleteOneTest.php
+            :start-after: begin-qb-delete-one
+            :end-before: end-qb-delete-one
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            Deleted documents: 1
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst
-
-.. tip::
-
-   To learn more about deleting documents with the {+odm-short+}, see the `Deleting Models
-   <https://laravel.com/docs/{+laravel-docs-version+}/eloquent#deleting-models>`__ section of the
-   Laravel documentation.
-

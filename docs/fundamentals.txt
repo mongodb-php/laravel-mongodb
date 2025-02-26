@@ -16,15 +16,17 @@ Fundamentals
    :maxdepth: 1
 
    Connections </fundamentals/connection>
-   Databases & Collections </fundamentals/database-collection>
    Read Operations </fundamentals/read-operations>
    Write Operations </fundamentals/write-operations>
    Aggregation Builder </fundamentals/aggregation-builder>
+   Atlas Search </fundamentals/atlas-search>
+   Atlas Vector Search </fundamentals/vector-search>
 
 Learn more about the following concepts related to {+odm-long+}:
 
 - :ref:`laravel-fundamentals-connection`
-- :ref:`laravel-db-coll`
 - :ref:`laravel-fundamentals-read-ops`
 - :ref:`laravel-fundamentals-write-ops`
 - :ref:`laravel-aggregation-builder`
+- :ref:`laravel-atlas-search`
+- :ref:`laravel-vector-search`

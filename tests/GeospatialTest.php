@@ -53,6 +53,8 @@ class GeospatialTest extends TestCase
     public function tearDown(): void
     {
         Schema::drop('locations');
+
+        parent::tearDown();
     }
 
     public function testGeoWithin()

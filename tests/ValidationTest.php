@@ -12,6 +12,8 @@ class ValidationTest extends TestCase
     public function tearDown(): void
     {
         User::truncate();
+
+        parent::tearDown();
     }
 
     public function testUnique(): void

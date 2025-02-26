@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Support\Facades\DB;
+use MongoDB\Driver\ReadPreference;
 use MongoDB\Laravel\Tests\TestCase;
 
 class ReadOperationsTest extends TestCase
@@ -33,6 +34,8 @@ class ReadOperationsTest extends TestCase
             ['title' => 'movie_a', 'plot' => 'this is a love story'],
             ['title' => 'movie_b', 'plot' => 'love is a long story'],
             ['title' => 'movie_c', 'plot' => 'went on a trip'],
+            ['title' => 'Carrie', 'year' => 1976],
+            ['title' => 'Carrie', 'year' => 2002],
         ]);
     }
 
@@ -160,6 +163,22 @@ class ReadOperationsTest extends TestCase
         $movies = Movie::where('countries', 'in', ['Canada', 'Egypt'])
             ->get();
         // end-elem-match
+
+        $this->assertNotNull($movies);
+        $this->assertCount(2, $movies);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testReadPreference(): void
+    {
+        // start-read-pref
+        $movies = Movie::where('title', 'Carrie')
+            ->readPreference(ReadPreference::SECONDARY_PREFERRED)
+            ->get();
+        // end-read-pref
 
         $this->assertNotNull($movies);
         $this->assertCount(2, $movies);

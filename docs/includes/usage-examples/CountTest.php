@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use Illuminate\Support\Facades\DB;
 use MongoDB\Laravel\Tests\TestCase;
 
 class CountTest extends TestCase
@@ -29,14 +30,24 @@ class CountTest extends TestCase
             ],
         ]);
 
-        // begin-count
+        // begin-eloquent-count
         $count = Movie::where('genres', 'Biography')
             ->count();
 
         echo 'Number of documents: ' . $count;
-        // end-count
+        // end-eloquent-count
 
         $this->assertEquals(2, $count);
-        $this->expectOutputString('Number of documents: 2');
+
+        // begin-qb-count
+        $count = DB::table('movies')
+            ->where('genres', 'Biography')
+            ->count();
+
+        echo 'Number of documents: ' . $count;
+        // end-qb-count
+
+        $this->assertEquals(2, $count);
+        $this->expectOutputString('Number of documents: 2Number of documents: 2');
     }
 }

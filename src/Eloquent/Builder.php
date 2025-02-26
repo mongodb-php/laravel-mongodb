@@ -112,7 +112,7 @@ class Builder extends EloquentBuilder
      */
     public function vectorSearch(
         string $index,
-        array|string $path,
+        string $path,
         array $queryVector,
         int $limit,
         bool $exact = false,

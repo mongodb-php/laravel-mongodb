@@ -21,6 +21,11 @@ use function count;
 use function in_array;
 use function is_numeric;
 
+/**
+ * @template TRelatedModel of Model
+ * @template TDeclaringModel of Model
+ * @extends EloquentBelongsToMany<TRelatedModel, TDeclaringModel>
+ */
 class BelongsToMany extends EloquentBelongsToMany
 {
     /**

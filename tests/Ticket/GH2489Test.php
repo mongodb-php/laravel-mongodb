@@ -13,6 +13,8 @@ class GH2489Test extends TestCase
     public function tearDown(): void
     {
         Location::truncate();
+
+        parent::tearDown();
     }
 
     public function testQuerySubdocumentsUsingWhereInId()

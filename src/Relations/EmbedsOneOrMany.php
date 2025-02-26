@@ -21,6 +21,12 @@ use function is_array;
 use function str_starts_with;
 use function throw_if;
 
+/**
+ * @template TRelatedModel of Model
+ * @template TDeclaringModel of Model
+ * @template TResult
+ * @extends Relation<TRelatedModel, TDeclaringModel, TResult>
+ */
 abstract class EmbedsOneOrMany extends Relation
 {
     /**

@@ -14,6 +14,8 @@ class SeederTest extends TestCase
     public function tearDown(): void
     {
         User::truncate();
+
+        parent::tearDown();
     }
 
     public function testSeed(): void

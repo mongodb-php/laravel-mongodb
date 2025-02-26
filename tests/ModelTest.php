@@ -56,6 +56,8 @@ class ModelTest extends TestCase
         Book::truncate();
         Item::truncate();
         Guarded::truncate();
+
+        parent::tearDown();
     }
 
     public function testNewModel(): void

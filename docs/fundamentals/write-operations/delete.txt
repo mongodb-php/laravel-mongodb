@@ -1,0 +1,173 @@
+.. _laravel-fundamentals-delete-documents:
+.. _laravel-fundamentals-write-delete:
+
+================
+Delete Documents
+================
+
+.. facet::
+   :name: genre
+   :values: reference
+
+.. meta::
+   :keywords: delete, delete many, primary key, destroy, eloquent model, code example
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Overview
+--------
+
+In this guide, you can learn how to delete documents from a MongoDB
+collection by using the {+odm-short+}. Use delete operations to remove
+data from your MongoDB database.
+
+This section provides examples of the following delete operations:
+
+- :ref:`Delete one document <laravel-fundamentals-delete-one>`
+- :ref:`Delete multiple documents <laravel-fundamentals-delete-many>`
+
+.. include:: /includes/fundamentals/write-operations/sample-model-section.rst
+
+.. _laravel-fundamentals-delete-one:
+
+Delete One Document
+-------------------
+
+You can delete one document in the following ways:
+
+- Call the ``$model->delete()`` method on an instance of the model.
+- Chain methods to retrieve and delete an instance of a model by calling the
+  ``delete()`` method.
+- Call the ``Model::destroy($id)`` method on the model, passing it the
+  ``_id`` value of the document to be deleted.
+
+delete() Method
+~~~~~~~~~~~~~~~
+
+The following example shows how to delete a document by calling ``$model->delete()``
+on an instance of the model:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin delete one model
+   :end-before: end delete one model
+
+When the ``delete()`` method succeeds, the operation returns the number of
+documents deleted.
+
+If the retrieve part of the call does not match any documents in the collection,
+the operation returns ``0``.
+
+The following example shows how to chain calls to retrieve the first
+matching document and delete it:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model delete one fluent
+   :end-before: end model delete one fluent
+
+.. include:: /includes/fact-orderby-id.rst
+
+When the ``delete()`` method succeeds, it returns the number of documents
+deleted.
+
+If the ``where()`` method does not match any documents, the ``delete()`` method
+returns ``0``.
+
+destroy() Method
+~~~~~~~~~~~~~~~~
+
+The following example shows how to delete a document by passing the value of
+its ``_id`` value to the ``Model::destroy($id)`` method:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model delete by id
+   :end-before: end model delete by id
+
+When the ``destroy()`` method succeeds, it returns the number of documents
+deleted.
+
+If the ``_id`` value does not match any documents, the ``destroy()`` method
+returns ``0``.
+
+.. _laravel-fundamentals-delete-many:
+
+Delete Multiple Documents
+-------------------------
+
+You can delete multiple documents in the following ways:
+
+
+- Call the ``Model::destroy($ids)`` method, passing a list of the ids of the
+  documents or model instances to be deleted.
+- Chain methods to retrieve a Laravel collection object that references
+  multiple objects and delete them by calling the ``delete()`` method.
+
+destroy() Method
+~~~~~~~~~~~~~~~~
+
+The following example shows how to delete a document by passing an array of
+``_id`` values, represented by ``$ids``, to the ``destroy()`` method:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model delete multiple by id
+   :end-before: end model delete multiple by id
+
+.. tip::
+
+   The ``destroy()`` method performance suffers when passed large lists. For
+   better performance, use ``Model::whereIn('id', $ids)->delete()`` instead.
+
+When the ``destroy()`` method succeeds, it returns the number of documents
+deleted.
+
+If the ``_id`` values do not match any documents, the ``destroy()`` method
+returns ``0``.
+
+delete() Method
+~~~~~~~~~~~~~~~
+
+The following example shows how to chain calls to retrieve matching documents
+and delete them:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model delete multiple fluent
+   :end-before: end model delete multiple fluent
+
+When the ``delete()`` method succeeds, it returns the number of documents
+deleted.
+
+If the ``where()`` method does not match any documents, the ``delete()`` method
+returns ``0``.
+
+Additional Information
+----------------------
+
+To learn about the Laravel features available in the {+odm-short+} that
+modify delete behavior, see the following sections:
+
+- :ref:`Soft delete <laravel-model-soft-delete>`, which lets you mark
+  documents as deleted instead of removing them from the database
+- :ref:`Pruning <laravel-model-pruning>`, which lets you define conditions
+  that qualify a document for automatic deletion
+
+To view runnable code examples that demonstrate how to delete documents
+by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-delete-one-usage`
+- :ref:`laravel-delete-many-usage`
+
+To learn how to insert documents into a MongoDB collection, see the
+:ref:`laravel-fundamentals-write-insert` guide.

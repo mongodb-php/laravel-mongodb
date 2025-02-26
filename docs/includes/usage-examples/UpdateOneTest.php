@@ -28,7 +28,7 @@ class UpdateOneTest extends TestCase
             ],
         ]);
 
-        // begin-update-one
+        // begin-eloquent-update-one
         $updates = Movie::where('title', 'Carol')
             ->orderBy('id')
             ->first()
@@ -40,7 +40,7 @@ class UpdateOneTest extends TestCase
             ]);
 
         echo 'Updated documents: ' . $updates;
-        // end-update-one
+        // end-eloquent-update-one
 
         $this->assertTrue($updates);
         $this->expectOutputString('Updated documents: 1');

@@ -411,6 +411,8 @@ class QueryTest extends TestCase
     {
         $this->assertFalse(User::where('age', '>', 37)->exists());
         $this->assertTrue(User::where('age', '<', 37)->exists());
+        $this->assertTrue(User::where('age', '>', 37)->doesntExist());
+        $this->assertFalse(User::where('age', '<', 37)->doesntExist());
     }
 
     public function testSubQuery(): void

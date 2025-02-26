@@ -1,0 +1,436 @@
+.. _laravel-fundamentals-modify-documents:
+.. _laravel-fundamentals-write-modify:
+
+================
+Modify Documents
+================
+
+.. facet::
+   :name: genre
+   :values: reference
+
+.. meta::
+   :keywords: insert, insert one, code example, mass assignment, eloquent model
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Overview
+--------
+
+In this guide, you can learn how to modify documents in your MongoDB
+collection from your Laravel application by using {+odm-long+}. Use
+update operations to modify existing documents or to insert a document
+if none match the search criteria.
+
+You can persist changes on an instance of an Eloquent model or use
+Eloquent's fluent syntax to chain an update operation on methods that
+return a Laravel collection object.
+
+This guide provides examples of the following update operations:
+
+- :ref:`Update a document <laravel-modify-documents-update-one>`
+- :ref:`Update multiple documents <laravel-modify-documents-update-multiple>`
+- :ref:`Update or insert in a single operation <laravel-modify-documents-upsert>`
+- :ref:`Update arrays in a document <laravel-modify-documents-arrays>`
+
+.. include:: /includes/fundamentals/write-operations/sample-model-section.rst
+
+.. _laravel-modify-documents-update-one:
+
+Update One Document
+-------------------
+
+You can update a document in the following ways:
+
+- Modify an instance of the model and save the changes by calling the
+  ``save()`` method.
+- Chain methods to retrieve an instance of a model and perform updates
+  on it by calling the ``update()`` method.
+
+The following example shows how to update a document by modifying an instance
+of the model and calling its ``save()`` method:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model update one save
+   :end-before: end model update one save
+
+When the ``save()`` method succeeds, the model instance on which you called the
+method contains the updated values.
+
+If the operation fails, the {+odm-short+} assigns the model instance a ``null`` value.
+
+The following example shows how to update a document by chaining methods to
+retrieve and update the first matching document:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model update one fluent
+   :end-before: end model update one fluent
+
+.. include:: /includes/fact-orderby-id.rst
+
+When the ``update()`` method succeeds, the operation returns the number of
+documents updated.
+
+If the retrieve part of the call does not match any documents, the {+odm-short+}
+returns the following error:
+
+.. code-block:: none
+   :copyable: false
+
+   Error: Call to a member function update() on null
+
+.. _laravel-modify-documents-update-multiple:
+
+Update Multiple Documents
+-------------------------
+
+To perform an update on one or more documents, chain the ``update()``
+method to the results of a method that retrieves the documents as a
+Laravel collection object, such as ``where()``.
+
+The following example shows how to chain calls to retrieve matching documents
+and update them:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin model update multiple
+   :end-before: end model update multiple
+
+When the ``update()`` method succeeds, the operation returns the number of
+documents updated.
+
+If the retrieve part of the call does not match any documents in the
+collection, the {+odm-short+} returns the following error:
+
+.. code-block:: none
+   :copyable: false
+
+   Error: Call to a member function update() on null
+
+.. _laravel-modify-documents-upsert:
+
+Update or Insert in a Single Operation
+--------------------------------------
+
+An **upsert** operation lets you perform an update or insert in a single
+operation. This operation streamlines the task of updating a document or
+inserting one if it does not exist.
+
+Starting in v4.7, you can perform an upsert operation by using either of
+the following methods:
+
+- ``upsert()``: When you use this method, you can perform a **batch
+  upsert** to change or insert multiple documents in one operation.
+
+- ``update()``: When you use this method, you must specify the
+  ``upsert`` option to update all documents that match the query filter
+  or insert one document if no documents are matched. Only this upsert method
+  is supported in versions v4.6 and earlier.
+
+Upsert Method
+~~~~~~~~~~~~~
+
+The ``upsert()`` method accepts the following parameters:
+
+- ``$values``: Array of fields and values that specify documents to update or insert.
+- ``$uniqueBy``: One or more fields that uniquely identify documents in your
+  first array parameter.
+- ``$update``: Optional array of fields to update if a matching document
+  exists. If you omit this parameter, the {+odm-short+} updates all fields.
+
+To specify an upsert in the ``upsert()`` method, pass the required
+parameters as shown in the following code example:
+
+.. code-block:: php
+   :copyable: false
+
+   YourModel::upsert(
+      [/* documents to update or insert */],
+      '/* unique field */',
+      [/* fields to update */],
+   );
+
+Example
+^^^^^^^
+
+This example shows how to use the  ``upsert()``
+method to perform an update or insert in a single operation. Click the
+:guilabel:`{+code-output-label+}` button to see the resulting data changes when
+there is a document in which the value of ``performer`` is ``'Angel
+Olsen'`` in the collection already:
+
+.. io-code-block::
+
+   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+      :language: php
+      :dedent:
+      :start-after: begin model upsert
+      :end-before: end model upsert
+
+   .. output::
+      :language: json
+      :visible: false
+
+      {
+        "_id": "...",
+        "performer": "Angel Olsen",
+        "venue": "State Theatre",
+        "genres": [
+          "indie",
+          "rock"
+        ],
+        "ticketsSold": 275,
+        "updated_at": ...
+      },
+      {
+        "_id": "...",
+        "performer": "Darondo",
+        "venue": "Cafe du Nord",
+        "ticketsSold": 300,
+        "updated_at": ...
+      }
+
+In the document in which the value of ``performer`` is ``'Angel
+Olsen'``, the ``venue`` field value is not updated, as the upsert
+specifies that the update applies only to the ``ticketsSold`` field.
+
+Update Method
+~~~~~~~~~~~~~
+
+To specify an upsert in an ``update()`` method, set the ``upsert`` option to
+``true`` as shown in the following code example:
+
+.. code-block:: php
+   :emphasize-lines: 4
+   :copyable: false
+
+   YourModel::where(/* match criteria */)
+      ->update(
+          [/* update data */],
+          ['upsert' => true]);
+
+When the ``update()`` method is chained to a query, it performs one of the
+following actions:
+
+- If the query matches documents, the ``update()`` method modifies the matching
+  documents.
+- If the query matches zero documents, the ``update()`` method inserts a
+  document that contains the update data and the equality match criteria data.
+
+Example
+^^^^^^^
+
+This example shows how to pass the ``upsert`` option to the  ``update()``
+method to perform an update or insert in a single operation. Click the
+:guilabel:`{+code-output-label+}` button to see the example document inserted when no
+matching documents exist:
+
+.. io-code-block::
+
+   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+      :language: php
+      :dedent:
+      :start-after: begin model update upsert
+      :end-before: end model update upsert
+
+   .. output::
+      :language: json
+      :visible: false
+
+      {
+        "_id": "660c...",
+        "performer": "Jon Batiste",
+        "venue": "Radio City Music Hall",
+        "genres": [
+          "R&B",
+          "soul"
+        ],
+        "ticketsSold": 4000,
+        "updated_at": ...
+      }
+
+.. _laravel-modify-documents-arrays:
+
+Update Arrays in a Document
+---------------------------
+
+In this section, you can see examples of the following operations that
+update array values in a MongoDB document:
+
+- :ref:`Add values to an array <laravel-modify-documents-add-array-values>`
+- :ref:`Remove values from an array <laravel-modify-documents-remove-array-values>`
+- :ref:`Update the value of an array element <laravel-modify-documents-update-array-values>`
+
+These examples modify the sample document created by the following insert
+operation:
+
+.. literalinclude:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: begin array example document
+   :end-before: end array example document
+
+.. _laravel-modify-documents-add-array-values:
+
+Add Values to an Array Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This section shows how to use the ``push()`` method to add values to an array
+in a MongoDB document. You can pass one or more values to add and set the
+optional parameter ``unique`` to ``true`` to skip adding any duplicate values
+in the array. The following code example shows the structure of a ``push()``
+method call:
+
+.. code-block:: php
+   :copyable: false
+
+   YourModel::where(<match criteria>)
+      ->push(
+          <field name>,
+          [<values>], // array or single value to add
+          unique: true); // whether to skip existing values
+
+The following example shows how to add the value ``"baroque"`` to
+the ``genres`` array field of a matching document. Click the
+:guilabel:`{+code-output-label+}` button to see the updated document:
+
+.. io-code-block::
+
+   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+      :language: php
+      :dedent:
+      :start-after: begin model array push
+      :end-before: end model array push
+
+   .. output::
+      :language: json
+      :visible: false
+
+      {
+        "_id": "660eb...",
+        "performer": "Mitsuko Uchida",
+        "genres": [
+            "classical",
+            "dance-pop",
+
+        ],
+        "updated_at": ...,
+        "created_at": ...
+      }
+
+.. _laravel-modify-documents-remove-array-values:
+
+Remove Values From an Array Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This section shows how to use the ``pull()`` method to remove values from
+an array in a MongoDB document. You can pass one or more values to remove
+from the array. The following code example shows the structure of a
+``pull()`` method call:
+
+.. code-block:: php
+   :copyable: false
+
+   YourModel::where(<match criteria>)
+      ->pull(
+          <field name>,
+          [<values>]); // array or single value to remove
+
+The following example shows how to remove array values ``"classical"`` and
+``"dance-pop"`` from the ``genres`` array field. Click the
+:guilabel:`{+code-output-label+}` button to see the updated document:
+
+.. io-code-block::
+
+   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+      :language: php
+      :dedent:
+      :start-after: begin model array pull
+      :end-before: end model array pull
+
+   .. output::
+      :language: json
+      :visible: false
+
+      {
+        "_id": "660e...",
+        "performer": "Mitsuko Uchida",
+        "genres": [],
+        "updated_at": ...,
+        "created_at": ...
+      }
+
+.. _laravel-modify-documents-update-array-values:
+
+Update the Value of an Array Element Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This section shows how to use the ``$`` positional operator to update specific
+array elements in a MongoDB document. The ``$`` operator represents the first
+array element that matches the query. The following code example shows the
+structure of a positional operator update call on a single matching document:
+
+.. note::
+
+   Currently, the {+odm-short+} offers this operation only on the ``DB`` facade
+   and not on the Eloquent ORM.
+
+.. code-block:: php
+   :copyable: false
+
+   DB::connection('mongodb')
+      ->getCollection(<collection name>)
+      ->updateOne(
+          <match criteria>,
+          ['$set' => ['<array field>.$' => <replacement value>]]);
+
+The following example shows how to replace the array value ``"dance-pop"``
+with ``"contemporary"`` in the ``genres`` array field. Click the
+:guilabel:`{+code-output-label+}` button to see the updated document:
+
+.. io-code-block::
+
+   .. input:: /includes/fundamentals/write-operations/WriteOperationsTest.php
+      :language: php
+      :dedent:
+      :start-after: begin model array positional
+      :end-before: end model array positional
+
+   .. output::
+      :language: json
+      :visible: false
+
+      {
+        "_id": "660e...",
+        "performer": "Mitsuko Uchida",
+        "genres": [
+          "classical",
+          "contemporary"
+        ],
+        "updated_at": ...,
+        "created_at": ...
+      }
+
+To learn more about array update operators, see :manual:`Array Update Operators </reference/operator/update-array/>`
+in the {+server-docs-name+}.
+
+Additional Information
+----------------------
+
+To view runnable code examples that demonstrate how to update documents
+by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-update-one-usage`
+- :ref:`laravel-update-many-usage`
+
+To learn how to insert documents into a MongoDB collection, see the
+:ref:`laravel-fundamentals-write-insert` guide.

@@ -25,35 +25,79 @@ Count Documents
 
    .. replacement:: result-operation
 
-      the ``count()`` method to retrieve the results.
+      the ``count()`` method to retrieve the results
 
 Example
 -------
 
-This usage example performs the following actions:
+Select from the following :guilabel:`Eloquent` and :guilabel:`Query
+Builder` tabs to view usage examples for the same operation that use
+each corresponding query syntax:
 
-- Uses the ``Movie`` Eloquent model to represent the ``movies`` collection in the
-  ``sample_mflix`` database
-- Counts the documents from the ``movies`` collection that match a query filter
-- Prints the matching document count
+.. tabs::
 
-The example calls the following methods on the ``Movie`` model:
+   .. tab:: Eloquent
+      :tabid: eloquent-model-count
 
-- ``where()``: Matches documents in which the value of the ``genres`` field includes ``"Biography"``.
-- ``count()``: Counts the number of matching documents. This method returns an integer value.
+      This example performs the following actions:
+      
+      - Uses the ``Movie`` Eloquent model to represent the ``movies``
+        collection in the ``sample_mflix`` database
+      - Counts the documents from the ``movies`` collection that match a
+        query filter
+      - Prints the matching document count
+      
+      The example calls the following methods on the ``Movie`` model:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``genres`` field includes ``"Biography"``
+      - ``count()``: Counts the number of matching documents and returns
+        the count as an integer
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/CountTest.php
+            :start-after: begin-eloquent-count
+            :end-before: end-eloquent-count
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            Number of documents: 1267
 
-.. io-code-block::
+   .. tab:: Query Builder
+      :tabid: query-builder-count
 
-   .. input:: ../includes/usage-examples/CountTest.php
-      :start-after: begin-count
-      :end-before: end-count
-      :language: php
-      :dedent:
-
-   .. output::
-      :language: console
-      :visible: false
-
-      Number of documents: 1267
+      This example performs the following actions:
+      
+      - Accesses the ``movies`` collection by calling the ``table()``
+        method from the ``DB`` facade
+      - Counts the documents from the ``movies`` collection that match a
+        query filter
+      - Prints the matching document count
+      
+      The example calls the following query builder methods:
+      
+      - ``where()``: Matches documents in which the value of the
+        ``genres`` field includes ``"Biography"``
+      - ``count()``: Counts the number of matching documents and returns
+        the count as an integer
+      
+      .. io-code-block::
+      
+         .. input:: ../includes/usage-examples/CountTest.php
+            :start-after: begin-qb-count
+            :end-before: end-qb-count
+            :language: php
+            :dedent:
+      
+         .. output::
+            :language: console
+            :visible: false
+      
+            Number of documents: 1267
 
 .. include:: /includes/usage-examples/fact-edit-laravel-app.rst

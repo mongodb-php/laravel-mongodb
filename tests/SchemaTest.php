@@ -26,6 +26,8 @@ class SchemaTest extends TestCase
         assert($database instanceof Database);
         $database->dropCollection('newcollection');
         $database->dropCollection('newcollection_two');
+
+        parent::tearDown();
     }
 
     public function testCreate(): void
@@ -37,10 +39,8 @@ class SchemaTest extends TestCase
 
     public function testCreateWithCallback(): void
     {
-        $instance = $this;
-
-        Schema::create('newcollection', function ($collection) use ($instance) {
-            $instance->assertInstanceOf(Blueprint::class, $collection);
+        Schema::create('newcollection', static function ($collection) {
+            self::assertInstanceOf(Blueprint::class, $collection);
         });
 
         $this->assertTrue(Schema::hasCollection('newcollection'));
@@ -66,14 +66,12 @@ class SchemaTest extends TestCase
 
     public function testBluePrint(): void
     {
-        $instance = $this;
-
-        Schema::table('newcollection', function ($collection) use ($instance) {
-            $instance->assertInstanceOf(Blueprint::class, $collection);
+        Schema::table('newcollection', static function ($collection) {
+            self::assertInstanceOf(Blueprint::class, $collection);
         });
 
-        Schema::table('newcollection', function ($collection) use ($instance) {
-            $instance->assertInstanceOf(Blueprint::class, $collection);
+        Schema::table('newcollection', static function ($collection) {
+            self::assertInstanceOf(Blueprint::class, $collection);
         });
     }
 

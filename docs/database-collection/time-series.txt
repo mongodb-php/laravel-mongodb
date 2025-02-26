@@ -1,0 +1,174 @@
+.. _laravel-time-series:
+
+=======================
+Time Series Collections
+=======================
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 1
+   :class: singlecol
+
+.. facet::
+   :name: genre
+   :values: reference
+ 
+.. meta::
+   :keywords: chronological, data format, code example
+
+Overview
+--------
+
+In this guide, you can learn how to use the {+odm-short+} to create
+and interact with **time series collections**. These collections store
+time series data, which is composed of the following components:
+
+- Measured quantity
+- Timestamp for the measurement
+- Metadata that describes the measurement
+
+The following table describes sample situations for which you can store time
+series data:
+
+.. list-table::
+   :widths: 33, 33, 33
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - Situation
+     - Measured Quantity
+     - Metadata
+
+   * - Recording monthly sales by industry
+     - Revenue in USD
+     - Company, country
+
+   * - Tracking weather changes
+     - Precipitation level
+     - Location, sensor type
+
+   * - Recording fluctuations in housing prices
+     - Monthly rent price
+     - Location, currency
+
+.. _laravel-time-series-create:
+
+Create a Time Series Collection
+-------------------------------
+
+.. important:: Server Version for Time Series Collections
+
+   To create and interact with time series collections, you must be
+   connected to a deployment running MongoDB Server 5.0 or later.
+
+You can create a time series collection to store time series data.  
+To create a time series collection, create a migration class and
+add an ``up()`` function to specify the collection configuration.
+In the ``up()`` function, pass the new collection's name
+and the ``timeseries`` option to the ``Schema::create()`` method.
+
+.. tip::
+
+   To learn more about creating a migration class, see :ref:`laravel-eloquent-migrations`
+   in the Schema Builder guide.
+
+When setting the ``timeseries`` option, include the following fields:
+
+- ``timeField``: Specifies the field that stores a timestamp in each time series document.
+- ``metaField``: Specifies the field that stores metadata in each time series document.
+- ``granularity``: Specifies the approximate time between consecutive timestamps. The possible
+  values are ``'seconds'``, ``'minutes'``, and ``'hours'``.
+
+.. _laravel-time-series-create-example:
+
+Example
+~~~~~~~
+
+This example migration class creates the ``precipitation`` time series collection
+with the following configuration:
+
+- ``timeField`` is set to ``'timestamp'``
+- ``metaField`` is set to ``'location'``
+- ``granularity`` is set to ``'minutes'``
+
+.. literalinclude:: /includes/database-collection/time-series-migration.php
+   :language: php
+   :dedent:
+
+To verify that you successfully created the time series collection, call
+the ``Schema::hasCollection()`` method and pass the collection name as
+a parameter:
+
+.. code-block:: php
+
+   $result = Schema::hasCollection('precipitation');
+   echo $result;
+
+If the collection exists, the ``hasCollection()`` method returns a 
+value of ``true``.
+
+.. _laravel-time-series-insert:
+
+Insert Time Series Data
+-----------------------
+
+You can insert data into a time series collection by passing your documents to the ``insert()``
+method and specifying the measurement, timestamp, and metadata in each inserted document.
+
+.. tip::
+
+   To learn more about inserting documents into a collection, see :ref:`laravel-fundamentals-insert-documents`
+   in the Write Operations guide.
+
+Example
+~~~~~~~
+
+This example inserts New York City precipitation data into the ``precipitation``
+time series collection created in the :ref:`Create a Time Series Collection example
+<laravel-time-series-create-example>`. Each document contains the following fields:
+
+- ``precipitation_mm``, which stores precipitation measurements in millimeters
+- ``location``, which stores location metadata
+- ``timestamp``, which stores the time of the measurement collection
+
+.. literalinclude:: /includes/query-builder/QueryBuilderTest.php
+   :language: php
+   :dedent:
+   :start-after: begin time series
+   :end-before: end time series
+
+.. note::
+
+    The preceding example uses the :ref:`Laravel query builder <laravel-query-builder>`
+    to insert documents into the time series collection. Alternatively,
+    you can create an Eloquent model that represents the collection and
+    perform insert operations on your model. To learn more, see
+    the :ref:`laravel-eloquent-model-class` guide.
+
+.. _laravel-time-series-query:
+
+Query Time Series Collections
+-----------------------------
+
+You can use the same syntax and conventions to query data stored in a time 
+series collection as you use when performing read or aggregation operations on
+other collections. To find more information about these operations, see
+the :ref:`Additional Information <laravel-time-series-addtl-info>` section.
+
+.. _laravel-time-series-addtl-info:
+
+Additional Information
+----------------------
+
+To learn more about the concepts mentioned in this guide, see the
+following MongoDB {+server-docs-name+} entries:
+
+- :manual:`Time Series </core/timeseries-collections/>`
+- :manual:`Create and Query a Time Series Collection </core/timeseries/timeseries-procedures/>`
+- :manual:`Set Granularity for Time Series Data </core/timeseries/timeseries-granularity/>`
+
+To learn more about querying data, see the :ref:`laravel-query-builder` guide.
+
+To learn more about performing aggregation operations, see the :ref:`laravel-aggregation-builder`
+guide.
