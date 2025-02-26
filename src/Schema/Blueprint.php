@@ -29,6 +29,7 @@ class Blueprint extends SchemaBlueprint
 
     /**
      * The MongoDB collection object for this blueprint.
+     * Type added in Laravel 12.
      *
      * @var Collection
      */

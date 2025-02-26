@@ -156,7 +156,8 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
             $collections[] = [
                 'name' => $collectionName,
-                'schema' => null,
+                'schema' => $db->getDatabaseName(),
+                'schema_qualified_name' => $db->getDatabaseName() . '.' . $collectionName,
                 'size' => $stats[0]?->storageStats?->totalSize ?? null,
                 'comment' => null,
                 'collation' => null,
@@ -171,12 +172,18 @@ class Builder extends \Illuminate\Database\Schema\Builder
         return $collections;
     }
 
-    public function getTableListing($schema = null, $schemaQualified = true)
+    /**
+     * @param string|null $schema
+     * @param bool        $schemaQualified If a schema is provided, prefix the collection names with the schema name
+     *
+     * @return array
+     */
+    public function getTableListing($schema = null, $schemaQualified = false)
     {
         $collections = [];
 
         if ($schema === null || is_string($schema)) {
-            $collections[$schema ?? ''] = iterator_to_array($this->connection->getDatabase($schema)->listCollectionNames());
+            $collections[$schema ?? 0] = iterator_to_array($this->connection->getDatabase($schema)->listCollectionNames());
         } elseif (is_array($schema)) {
             foreach ($schema as $db) {
                 $collections[$db] = iterator_to_array($this->connection->getDatabase($db)->listCollectionNames());
