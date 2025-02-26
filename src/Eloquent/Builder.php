@@ -7,23 +7,37 @@ namespace MongoDB\Laravel\Eloquent;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 use MongoDB\BSON\Document;
 use MongoDB\Builder\Type\QueryInterface;
 use MongoDB\Builder\Type\SearchOperatorInterface;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\Laravel\Connection;
+use MongoDB\Laravel\Eloquent\Model as DocumentModel;
 use MongoDB\Laravel\Helpers\QueriesRelationships;
 use MongoDB\Laravel\Query\AggregationBuilder;
+use MongoDB\Laravel\Relations\EmbedsOneOrMany;
+use MongoDB\Laravel\Relations\HasMany;
 use MongoDB\Model\BSONDocument;
+use RuntimeException;
+use TypeError;
 
 use function array_key_exists;
 use function array_merge;
+use function assert;
 use function collect;
+use function count;
+use function explode;
+use function get_debug_type;
 use function is_array;
 use function is_object;
+use function is_string;
 use function iterator_to_array;
 use function property_exists;
+use function sprintf;
 
 /**
  * @method \MongoDB\Laravel\Query\Builder toBase()
@@ -33,6 +47,13 @@ class Builder extends EloquentBuilder
 {
     private const DUPLICATE_KEY_ERROR = 11000;
     use QueriesRelationships;
+
+    /**
+     * List of aggregations on the related models after the main query.
+     *
+     * @var array{relation: Relation, function: string, constraints: array, column: string, alias: string}[]
+     */
+    private array $withAggregate = [];
 
     /**
      * The methods that should be returned from query builder.
@@ -292,6 +313,112 @@ class Builder extends EloquentBuilder
 
             throw $e;
         }
+    }
+
+    /**
+     * Add subsequent queries to include an aggregate value for a relationship.
+     * For embedded relations, a projection is used to calculate the aggregate.
+     *
+     * @see \Illuminate\Database\Eloquent\Concerns\QueriesRelationships::withAggregate()
+     *
+     * @param  mixed  $relations Name of the relationship or an array of relationships to closure for constraint
+     * @param  string $column    Name of the field to aggregate
+     * @param  string $function  Required aggregation function name (count, min, max, avg)
+     *
+     * @return $this
+     */
+    public function withAggregate($relations, $column, $function = null)
+    {
+        if (empty($relations)) {
+            return $this;
+        }
+
+        assert(is_string($function), new TypeError('Argument 3 ($function) passed to withAggregate must be of the type string, ' . get_debug_type($function) . ' given'));
+
+        $relations = is_array($relations) ? $relations : [$relations];
+
+        foreach ($this->parseWithRelations($relations) as $name => $constraints) {
+            $segments = explode(' ', $name);
+
+            $alias = match (true) {
+                count($segments) === 1 => Str::snake($segments[0]) . '_' . $function,
+                count($segments) === 3 && Str::lower($segments[1]) === 'as' => $segments[2],
+                default => throw new InvalidArgumentException(sprintf('Invalid relation name format. Expected "relation as alias" or "relation", got "%s"', $name)),
+            };
+            $name = $segments[0];
+
+            $relation = $this->getRelationWithoutConstraints($name);
+
+            if (! DocumentModel::isDocumentModel($relation->getRelated())) {
+                throw new InvalidArgumentException('WithAggregate does not support hybrid relations');
+            }
+
+            if ($relation instanceof EmbedsOneOrMany) {
+                $subQuery = $this->newQuery();
+                $constraints($subQuery);
+                if ($subQuery->getQuery()->wheres) {
+                    // @see https://jira.mongodb.org/browse/PHPORM-292
+                    throw new InvalidArgumentException('Constraints are not supported for embedded relations');
+                }
+
+                switch ($function) {
+                    case 'count':
+                        $this->getQuery()->project([$alias => ['$size' => ['$ifNull' => ['$' . $name, []]]]]);
+                        break;
+                    case 'min':
+                    case 'max':
+                    case 'avg':
+                        $this->getQuery()->project([$alias => ['$' . $function => '$' . $name . '.' . $column]]);
+                        break;
+                    default:
+                        throw new InvalidArgumentException(sprintf('Invalid aggregate function "%s"', $function));
+                }
+            } else {
+                // The aggregation will be performed after the main query, during eager loading.
+                $this->withAggregate[$alias] = [
+                    'relation' => $relation,
+                    'function' => $function,
+                    'constraints' => $constraints,
+                    'column' => $column,
+                    'alias' => $alias,
+                ];
+            }
+        }
+
+        return $this;
+    }
+
+    public function eagerLoadRelations(array $models)
+    {
+        if ($this->withAggregate) {
+            $modelIds = collect($models)->pluck($this->model->getKeyName())->all();
+
+            foreach ($this->withAggregate as $withAggregate) {
+                if ($withAggregate['relation'] instanceof HasMany) {
+                    $results = $withAggregate['relation']->newQuery()
+                        ->where($withAggregate['constraints'])
+                        ->whereIn($withAggregate['relation']->getForeignKeyName(), $modelIds)
+                        ->groupBy($withAggregate['relation']->getForeignKeyName())
+                        ->aggregate($withAggregate['function'], [$withAggregate['column']]);
+
+                    foreach ($models as $model) {
+                        $value = $withAggregate['function'] === 'count' ? 0 : null;
+                        foreach ($results as $result) {
+                            if ($model->getKey() === $result->{$withAggregate['relation']->getForeignKeyName()}) {
+                                $value = $result->aggregate;
+                                break;
+                            }
+                        }
+
+                        $model->setAttribute($withAggregate['alias'], $value);
+                    }
+                } else {
+                    throw new RuntimeException(sprintf('Unsupported relation type for aggregation: %s', $withAggregate['relation']::class));
+                }
+            }
+        }
+
+        return parent::eagerLoadRelations($models);
     }
 
     /**
