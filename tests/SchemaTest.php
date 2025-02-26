@@ -395,6 +395,7 @@ class SchemaTest extends TestCase
     {
         DB::connection('mongodb')->table('newcollection')->insert(['test' => 'value']);
         DB::connection('mongodb')->table('newcollection_two')->insert(['test' => 'value']);
+        $dbName = DB::connection('mongodb')->getDatabaseName();
 
         $tables = Schema::getTables();
         $this->assertIsArray($tables);
@@ -403,9 +404,13 @@ class SchemaTest extends TestCase
         foreach ($tables as $table) {
             $this->assertArrayHasKey('name', $table);
             $this->assertArrayHasKey('size', $table);
+            $this->assertArrayHasKey('schema', $table);
+            $this->assertArrayHasKey('schema_qualified_name', $table);
 
             if ($table['name'] === 'newcollection') {
                 $this->assertEquals(8192, $table['size']);
+                $this->assertEquals($dbName, $table['schema']);
+                $this->assertEquals($dbName . '.newcollection', $table['schema_qualified_name']);
                 $found = true;
             }
         }
@@ -421,6 +426,27 @@ class SchemaTest extends TestCase
         DB::connection('mongodb')->table('newcollection_two')->insert(['test' => 'value']);
 
         $tables = Schema::getTableListing();
+
+        $this->assertIsArray($tables);
+        $this->assertGreaterThanOrEqual(2, count($tables));
+        $this->assertContains('newcollection', $tables);
+        $this->assertContains('newcollection_two', $tables);
+    }
+
+    public function testGetTableListingBySchema()
+    {
+        DB::connection('mongodb')->table('newcollection')->insert(['test' => 'value']);
+        DB::connection('mongodb')->table('newcollection_two')->insert(['test' => 'value']);
+        $dbName = DB::connection('mongodb')->getDatabaseName();
+
+        $tables = Schema::getTableListing([$dbName, 'database__that_does_not_exists'], schemaQualified: true);
+
+        $this->assertIsArray($tables);
+        $this->assertGreaterThanOrEqual(2, count($tables));
+        $this->assertContains($dbName . '.newcollection', $tables);
+        $this->assertContains($dbName . '.newcollection_two', $tables);
+
+        $tables = Schema::getTableListing([$dbName, 'database__that_does_not_exists'], schemaQualified: false);
 
         $this->assertIsArray($tables);
         $this->assertGreaterThanOrEqual(2, count($tables));

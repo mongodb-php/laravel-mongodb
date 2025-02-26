@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Class MongoDB\\\\Laravel\\\\Query\\\\Grammar does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: src/Connection.php
+
+		-
+			message: "#^Class MongoDB\\\\Laravel\\\\Schema\\\\Grammar does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: src/Connection.php
+
+		-
 			message: "#^Access to an undefined property Illuminate\\\\Container\\\\Container\\:\\:\\$config\\.$#"
 			count: 3
 			path: src/MongoDBBusServiceProvider.php

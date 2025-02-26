@@ -7,6 +7,7 @@ namespace MongoDB\Laravel\Schema;
 use Closure;
 use MongoDB\Collection;
 use MongoDB\Driver\Exception\ServerException;
+use MongoDB\Laravel\Connection;
 use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\IndexInfo;
 
@@ -16,11 +17,14 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_values;
 use function assert;
 use function count;
 use function current;
 use function implode;
 use function in_array;
+use function is_array;
+use function is_string;
 use function iterator_to_array;
 use function sort;
 use function sprintf;
@@ -28,6 +32,7 @@ use function str_ends_with;
 use function substr;
 use function usort;
 
+/** @property Connection $connection */
 class Builder extends \Illuminate\Database\Schema\Builder
 {
     /**
@@ -137,9 +142,10 @@ class Builder extends \Illuminate\Database\Schema\Builder
         }
     }
 
-    public function getTables()
+    /** @param string|null $schema Database name */
+    public function getTables($schema = null)
     {
-        $db = $this->connection->getDatabase();
+        $db = $this->connection->getDatabase($schema);
         $collections = [];
 
         foreach ($db->listCollectionNames() as $collectionName) {
@@ -150,7 +156,8 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
             $collections[] = [
                 'name' => $collectionName,
-                'schema' => null,
+                'schema' => $db->getDatabaseName(),
+                'schema_qualified_name' => $db->getDatabaseName() . '.' . $collectionName,
                 'size' => $stats[0]?->storageStats?->totalSize ?? null,
                 'comment' => null,
                 'collation' => null,
@@ -165,9 +172,29 @@ class Builder extends \Illuminate\Database\Schema\Builder
         return $collections;
     }
 
-    public function getTableListing()
+    /**
+     * @param string|null $schema
+     * @param bool        $schemaQualified If a schema is provided, prefix the collection names with the schema name
+     *
+     * @return array
+     */
+    public function getTableListing($schema = null, $schemaQualified = false)
     {
-        $collections = iterator_to_array($this->connection->getDatabase()->listCollectionNames());
+        $collections = [];
+
+        if ($schema === null || is_string($schema)) {
+            $collections[$schema ?? 0] = iterator_to_array($this->connection->getDatabase($schema)->listCollectionNames());
+        } elseif (is_array($schema)) {
+            foreach ($schema as $db) {
+                $collections[$db] = iterator_to_array($this->connection->getDatabase($db)->listCollectionNames());
+            }
+        }
+
+        if ($schema && $schemaQualified) {
+            $collections = array_map(fn ($db, $collections) => array_map(static fn ($collection) => $db . '.' . $collection, $collections), array_keys($collections), $collections);
+        }
+
+        $collections = array_merge(...array_values($collections));
 
         sort($collections);
 
