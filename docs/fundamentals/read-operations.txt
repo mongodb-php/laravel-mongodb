@@ -44,7 +44,7 @@ from a collection:
 
 .. code-block:: php
 
-   SampleModel::where('<field name>', <value>)
+   SampleModel::where('<field name>', '<value>')
        ->first();
 
 To view a runnable example that finds one document, see the
@@ -64,7 +64,7 @@ query filter from a collection:
 
 .. code-block:: php
 
-   SampleModel::where('<field name>', <value>)
+   SampleModel::where('<field name>', '<value>')
        ->get();
 
 To view a runnable example that finds documents, see the
@@ -107,8 +107,8 @@ field in a collection's documents:
 To learn more about searching on text fields, see the
 :ref:`laravel-retrieve-text-search` guide.
 
-Count Documents in a Collection
--------------------------------
+Count Documents
+---------------
 
 The following code shows how to count documents in a collection:
 
@@ -177,9 +177,9 @@ from MongoDB:
 
 .. code-block:: php
 
-Movie::where('field name', '<value>')
-    ->orderBy('<field to sort on>')
-    ->get();
+   SampleModel::where('field name', '<value>')
+       ->orderBy('<field to sort on>')
+       ->get();
 
 To learn more about modifying how {+odm-long+} returns results, see the
 :ref:`laravel-read-modify-results` guide.
