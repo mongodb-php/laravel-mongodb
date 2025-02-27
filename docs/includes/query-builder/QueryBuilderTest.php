@@ -283,6 +283,30 @@ class QueryBuilderTest extends TestCase
         $this->assertIsFloat($result);
     }
 
+    public function testCountByGroup(): void
+    {
+        // begin count by group
+        $result = DB::table('movies')
+            ->groupBy('imdb.rating')
+            ->orderBy('imdb.rating')
+            ->countByGroup();
+        // end count by group
+
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
+    }
+
+    public function testSumByGroup(): void
+    {
+        // begin sum by group
+        $result = DB::table('movies')
+            ->groupBy('year')
+            ->orderBy('year')
+            ->sumByGroup('awards.wins');
+        // end sum by group
+
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
+    }
+
     public function testOrderBy(): void
     {
         // begin query orderBy
