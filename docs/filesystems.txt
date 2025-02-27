@@ -94,7 +94,7 @@ In this case, the options ``connection`` and ``database`` are ignored:
            'driver' => 'gridfs',
            'bucket' => static function (Application $app): Bucket {
                return $app['db']->connection('mongodb')
-                   ->getMongoDB()
+                   ->getDatabase()
                    ->selectGridFSBucket([
                        'bucketName' => 'avatars',
                        'chunkSizeBytes' => 261120,
@@ -150,7 +150,7 @@ if you need to work with revisions, as shown in the following code:
 
    // Create a bucket service from the MongoDB connection
    /** @var \MongoDB\GridFS\Bucket $bucket */
-   $bucket = $app['db']->connection('mongodb')->getMongoDB()->selectGridFSBucket();
+   $bucket = $app['db']->connection('mongodb')->getDatabase()->selectGridFSBucket();
 
    // Download the last but one version of a file
    $bucket->openDownloadStreamByName('hello.txt', ['revision' => -2])
