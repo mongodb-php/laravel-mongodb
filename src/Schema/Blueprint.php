@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace MongoDB\Laravel\Schema;
 
-use Closure;
-use Illuminate\Database\Connection;
-use Illuminate\Database\Schema\Blueprint as SchemaBlueprint;
+use Illuminate\Database\Schema\Blueprint as BaseBlueprint;
 use MongoDB\Collection;
-use ReflectionMethod;
+use MongoDB\Laravel\Connection;
 
 use function array_flip;
 use function implode;
@@ -18,22 +16,18 @@ use function is_int;
 use function is_string;
 use function key;
 
-class Blueprint extends SchemaBlueprint
+/** @property Connection $connection */
+class Blueprint extends BaseBlueprint
 {
-    private static bool $hasConnectionInConstructor;
-
-    /**
-     * The MongoDB connection object for this blueprint.
-     */
-    protected Connection $connection;
+    // Import $connection property and constructor for Laravel 12 compatibility
+    use BlueprintLaravelCompatibility;
 
     /**
      * The MongoDB collection object for this blueprint.
-     * Type added in Laravel 12.
      *
      * @var Collection
      */
-    protected Collection $collection;
+    protected $collection;
 
     /**
      * Fluent columns.
@@ -41,28 +35,6 @@ class Blueprint extends SchemaBlueprint
      * @var array
      */
     protected $columns = [];
-
-    /**
-     * Create a new schema blueprint.
-     */
-    public function __construct(Connection $connection, string $collection, ?Closure $callback = null)
-    {
-        // Parent constructor signature was changed in Laravel 12
-        // https://github.com/laravel/framework/commit/f29df4740d724f1c36385c9989569e3feb9422df#diff-68f714a9f1b751481b993414d3f1300ad55bcef12084ec0eb8f47f350033c24bR107
-        self::$hasConnectionInConstructor ??= (new ReflectionMethod(parent::class, '__construct'))->getParameters()[0]->getName() === 'connection';
-
-        if (self::$hasConnectionInConstructor) {
-            // Laravel 12 and after
-            parent::__construct($connection, $collection, $callback);
-        } else {
-            // Laravel 11 and before
-            parent::__construct($collection, $callback);
-        }
-
-        $this->connection = $connection;
-
-        $this->collection = $this->connection->getCollection($collection);
-    }
 
     /** @inheritdoc */
     public function index($columns = null, $name = null, $algorithm = null, $options = [])
