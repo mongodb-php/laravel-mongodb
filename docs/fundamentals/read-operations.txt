@@ -36,22 +36,150 @@ methods that you can use to read data from MongoDB by using
    To learn more about any of the methods included in this guide,
    see the links provided in each section.
 
-Insert One
-----------
+Find One
+--------
 
-The following code shows how to insert a single document into a
+The following code shows how to retrieve the first matching document
+from a collection:
+
+.. code-block:: php
+
+   SampleModel::where('<field name>', <value>)
+       ->first();
+
+To view a runnable example that finds one document, see the
+:ref:`laravel-find-one-usage` usage example.
+
+To learn more about retrieving documents, see the
+:ref:`laravel-fundamentals-read-retrieve` guide.
+
+To learn more about the ``first()`` method, see the
+:ref:`laravel-fundamentals-read-retrieve` guide.
+
+Find Multiple
+-------------
+
+The following code shows how to retrieve all documents that match a
+query filter from a collection:
+
+.. code-block:: php
+
+   SampleModel::where('<field name>', <value>)
+       ->get();
+
+To view a runnable example that finds documents, see the
+:ref:`laravel-find-usage` usage example.
+
+To learn more about retrieving documents, see the
+:ref:`laravel-fundamentals-read-retrieve` guide.
+
+Return All Documents
+--------------------
+
+The following code shows how to retrieve all documents from a
 collection:
 
 .. code-block:: php
-    
-   SampleModel::create([
-       '<field name>' => '<value>',
-       '<field name>' => '<value>',
-       ...
-   ]);
 
-To view a runnable example that inserts one document, see the
-:ref:`laravel-insert-one-usage` usage example.
+   SampleModel::get();
 
-To learn more about inserting documents, see the
-:ref:`laravel-fundamentals-write-insert` guide.
+   /* Or, use the all() method. */
+   
+   SampleModel::all();
+
+To view a runnable example that finds documents, see the
+:ref:`laravel-find-usage` usage example.
+
+To learn more about retrieving documents, see the
+:ref:`laravel-fundamentals-read-retrieve` guide.
+
+Search Text
+-----------
+
+The following code shows how to perform a full-text search on a string
+field in a collection's documents:
+
+.. code-block:: php
+
+   SampleModel::where('$text', ['$search' => '<search term or phrase>'])
+       ->get();
+
+To learn more about searching on text fields, see the
+:ref:`laravel-retrieve-text-search` guide.
+
+Count Documents in a Collection
+-------------------------------
+
+The following code shows how to count documents in a collection:
+
+.. code-block:: php
+
+   SampleModel::count();
+
+   /* You can also count documents that match a filter. */
+   
+   SampleModel::where('<field name>', '<value>')
+       ->count();
+
+To view a runnable example that counts documents, see the
+:ref:`laravel-count-usage` usage example.
+
+Retrieve Distinct Values
+------------------------
+
+The following code shows how to retrieve the distinct values of a
+specified field:
+
+.. code-block:: php
+
+   SampleModel::select('<field name>')
+       ->distinct()
+       ->get();
+
+To view a runnable example that returns distinct field values, see the
+:ref:`laravel-distinct-usage` usage example.
+
+Skip Results
+------------
+
+The following code shows how to skip a specified number of documents
+returned from MongoDB:
+
+.. code-block:: php
+
+   SampleModel::where('<field name>', '<value>')
+       ->skip(<number to skip>)
+       ->get();
+
+To learn more about modifying how {+odm-long+} returns results, see the
+:ref:`laravel-read-modify-results` guide.
+
+Limit Results
+-------------
+
+The following code shows how to return only a specified number of
+documents from MongoDB:
+
+.. code-block:: php
+
+   SampleModel::where('<field name>', '<value>')
+       ->take(<number to return>)
+       ->get();
+
+To learn more about modifying how {+odm-long+} returns results, see the
+:ref:`laravel-read-modify-results` guide.
+
+Sort Results
+------------
+
+The following code shows how to set a sort order on results returned
+from MongoDB:
+
+.. code-block:: php
+
+Movie::where('field name', '<value>')
+    ->orderBy('<field to sort on>')
+    ->get();
+
+To learn more about modifying how {+odm-long+} returns results, see the
+:ref:`laravel-read-modify-results` guide.

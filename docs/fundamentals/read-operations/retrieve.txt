@@ -44,6 +44,13 @@ To retrieve documents that match a set of criteria, call the ``where()``
 method on the collection's corresponding Eloquent model, then pass a query
 filter to the method.
 
+.. tip:: Retrieve One Document
+
+   The ``where()`` method retrieves all matching documents. To retrieve
+   the first matching document, you can chain the ``first()`` method. To
+   learn more and view an example, see the :ref:`laravel-retrieve-one`
+   section of the Modify Query Results guide.
+
 A query filter specifies field value requirements and instructs the find
 operation to return only documents that meet these requirements.
 
@@ -221,3 +228,6 @@ operations by using the {+odm-short+}, see the following usage examples:
 
 To learn how to insert data into MongoDB, see the
 :ref:`laravel-fundamentals-write-ops` guide.
+
+To learn how to modify the way that the {+odm-short+} returns results,
+see the :ref:`laravel-read-modify-results` guide.
