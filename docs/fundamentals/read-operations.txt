@@ -83,8 +83,7 @@ collection:
 
    SampleModel::get();
 
-   /* Or, use the all() method. */
-   
+   // Or, use the all() method.
    SampleModel::all();
 
 To view a runnable example that finds documents, see the
@@ -116,8 +115,7 @@ The following code shows how to count documents in a collection:
 
    SampleModel::count();
 
-   /* You can also count documents that match a filter. */
-   
+   // You can also count documents that match a filter.
    SampleModel::where('<field name>', '<value>')
        ->count();
 
