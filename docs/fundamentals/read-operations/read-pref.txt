@@ -137,5 +137,5 @@ Additional Information
 To learn how to retrieve data based on filter criteria, see the
 :ref:`laravel-fundamentals-read-retrieve` guide.
 
-To learn how to retrieve data based on filter criteria, see the
-:ref:`laravel-fundamentals-read-retrieve` guide.
+To learn how to modify the way that the {+odm-short+} returns results,
+see the :ref:`laravel-read-modify-results` guide.
