@@ -21,6 +21,8 @@ final class CallBuilderTest extends TestCase
     protected function tearDown(): void
     {
         User::truncate();
+
+        parent::tearDown();
     }
 
     #[Dataprovider('provideFunctionNames')]

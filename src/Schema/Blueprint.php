@@ -251,7 +251,7 @@ class Blueprint extends SchemaBlueprint
     {
         $collection = $this->collection->getCollectionName();
 
-        $db = $this->connection->getMongoDB();
+        $db = $this->connection->getDatabase();
 
         // Ensure the collection is created.
         $db->createCollection($collection, $options);
@@ -299,6 +299,52 @@ class Blueprint extends SchemaBlueprint
         $options['unique'] = true;
 
         $this->index($columns, null, null, $options);
+
+        return $this;
+    }
+
+    /**
+     * Create an Atlas Search Index.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#std-label-search-index-definition-create
+     *
+     * @phpstan-param array{
+     *      analyzer?: string,
+     *      analyzers?: list<array>,
+     *      searchAnalyzer?: string,
+     *      mappings: array{dynamic: true} | array{dynamic?: bool, fields: array<string, array>},
+     *      storedSource?: bool|array,
+     *      synonyms?: list<array>,
+     *      ...
+     *  } $definition
+     */
+    public function searchIndex(array $definition, string $name = 'default'): static
+    {
+        $this->collection->createSearchIndex($definition, ['name' => $name, 'type' => 'search']);
+
+        return $this;
+    }
+
+    /**
+     * Create an Atlas Vector Search Index.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#std-label-vector-search-index-definition-create
+     *
+     * @phpstan-param array{fields: array<string, array{type: string, ...}>} $definition
+     */
+    public function vectorSearchIndex(array $definition, string $name = 'default'): static
+    {
+        $this->collection->createSearchIndex($definition, ['name' => $name, 'type' => 'vectorSearch']);
+
+        return $this;
+    }
+
+    /**
+     * Drop an Atlas Search or Vector Search index
+     */
+    public function dropSearchIndex(string $name): static
+    {
+        $this->collection->dropSearchIndex($name);
 
         return $this;
     }

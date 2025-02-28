@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace MongoDB\Laravel\Schema;
 
 use Closure;
+use MongoDB\Collection;
+use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\IndexInfo;
 
+use function array_column;
 use function array_fill_keys;
 use function array_filter;
 use function array_keys;
 use function array_map;
+use function array_merge;
 use function assert;
 use function count;
 use function current;
@@ -72,7 +76,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
      */
     public function hasCollection($name)
     {
-        $db = $this->connection->getMongoDB();
+        $db = $this->connection->getDatabase();
 
         $collections = iterator_to_array($db->listCollections([
             'filter' => ['name' => $name],
@@ -135,7 +139,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getTables()
     {
-        $db = $this->connection->getMongoDB();
+        $db = $this->connection->getDatabase();
         $collections = [];
 
         foreach ($db->listCollectionNames() as $collectionName) {
@@ -163,7 +167,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getTableListing()
     {
-        $collections = iterator_to_array($this->connection->getMongoDB()->listCollectionNames());
+        $collections = iterator_to_array($this->connection->getDatabase()->listCollectionNames());
 
         sort($collections);
 
@@ -172,7 +176,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getColumns($table)
     {
-        $stats = $this->connection->getMongoDB()->selectCollection($table)->aggregate([
+        $stats = $this->connection->getDatabase()->selectCollection($table)->aggregate([
             // Sample 1,000 documents to get a representative sample of the collection
             ['$sample' => ['size' => 1_000]],
             // Convert each document to an array of fields
@@ -225,9 +229,11 @@ class Builder extends \Illuminate\Database\Schema\Builder
 
     public function getIndexes($table)
     {
-        $indexes = $this->connection->getMongoDB()->selectCollection($table)->listIndexes();
-
+        $collection = $this->connection->getDatabase()->selectCollection($table);
+        assert($collection instanceof Collection);
         $indexList = [];
+
+        $indexes = $collection->listIndexes();
         foreach ($indexes as $index) {
             assert($index instanceof IndexInfo);
             $indexList[] = [
@@ -238,10 +244,38 @@ class Builder extends \Illuminate\Database\Schema\Builder
                     $index->isText() => 'text',
                     $index->is2dSphere() => '2dsphere',
                     $index->isTtl() => 'ttl',
-                    default => 'default',
+                    default => null,
                 },
                 'unique' => $index->isUnique(),
             ];
+        }
+
+        try {
+            $indexes = $collection->listSearchIndexes(['typeMap' => ['root' => 'array', 'array' => 'array', 'document' => 'array']]);
+            foreach ($indexes as $index) {
+                // Status 'DOES_NOT_EXIST' means the index has been dropped but is still in the process of being removed
+                if ($index['status'] === 'DOES_NOT_EXIST') {
+                    continue;
+                }
+
+                $indexList[] = [
+                    'name' => $index['name'],
+                    'columns' => match ($index['type']) {
+                        'search' => array_merge(
+                            $index['latestDefinition']['mappings']['dynamic'] ? ['dynamic'] : [],
+                            array_keys($index['latestDefinition']['mappings']['fields'] ?? []),
+                        ),
+                        'vectorSearch' => array_column($index['latestDefinition']['fields'], 'path'),
+                    },
+                    'type' => $index['type'],
+                    'primary' => false,
+                    'unique' => false,
+                ];
+            }
+        } catch (ServerException $exception) {
+            if (! self::isAtlasSearchNotSupportedException($exception)) {
+                throw $exception;
+            }
         }
 
         return $indexList;
@@ -267,7 +301,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
      */
     public function getCollection($name)
     {
-        $db = $this->connection->getMongoDB();
+        $db = $this->connection->getDatabase();
 
         $collections = iterator_to_array($db->listCollections([
             'filter' => ['name' => $name],
@@ -284,10 +318,22 @@ class Builder extends \Illuminate\Database\Schema\Builder
     protected function getAllCollections()
     {
         $collections = [];
-        foreach ($this->connection->getMongoDB()->listCollections() as $collection) {
+        foreach ($this->connection->getDatabase()->listCollections() as $collection) {
             $collections[] = $collection->getName();
         }
 
         return $collections;
+    }
+
+    /** @internal */
+    public static function isAtlasSearchNotSupportedException(ServerException $e): bool
+    {
+        return in_array($e->getCode(), [
+            59,      // MongoDB 4 to 6, 7-community: no such command: 'createSearchIndexes'
+            40324,   // MongoDB 4 to 6: Unrecognized pipeline stage name: '$listSearchIndexes'
+            115,     // MongoDB 7-ent: Search index commands are only supported with Atlas.
+            6047401, // MongoDB 7: $listSearchIndexes stage is only allowed on MongoDB Atlas
+            31082,   // MongoDB 8: Using Atlas Search Database Commands and the $listSearchIndexes aggregation stage requires additional configuration.
+        ], true);
     }
 }

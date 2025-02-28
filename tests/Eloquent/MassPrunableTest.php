@@ -20,6 +20,8 @@ class MassPrunableTest extends TestCase
     {
         User::truncate();
         Soft::truncate();
+
+        parent::tearDown();
     }
 
     public function testPruneWithQuery(): void

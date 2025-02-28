@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace MongoDB\Laravel\Tests\Models;
 
 use MongoDB\Laravel\Eloquent\HasSchemaVersion;
-use MongoDB\Laravel\Eloquent\Model as Eloquent;
+use MongoDB\Laravel\Eloquent\Model;
 
-class SchemaVersion extends Eloquent
+class SchemaVersion extends Model
 {
     use HasSchemaVersion;
 

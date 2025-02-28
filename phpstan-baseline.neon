@@ -6,9 +6,44 @@ parameters:
 			path: src/MongoDBBusServiceProvider.php
 
 		-
+			message: "#^Access to an undefined property Illuminate\\\\Foundation\\\\Application\\:\\:\\$config\\.$#"
+			count: 4
+			path: src/MongoDBServiceProvider.php
+
+		-
+			message: "#^Call to an undefined method TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:pull\\(\\)\\.$#"
+			count: 1
+			path: src/Relations/BelongsToMany.php
+
+		-
 			message: "#^Method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:push\\(\\) invoked with 3 parameters, 0 required\\.$#"
 			count: 3
 			path: src/Relations/BelongsToMany.php
+
+		-
+			message: "#^Call to an undefined method MongoDB\\\\Laravel\\\\Relations\\\\EmbedsMany\\<TRelatedModel of Illuminate\\\\Database\\\\Eloquent\\\\Model, TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model, TResult\\>\\:\\:contains\\(\\)\\.$#"
+			count: 1
+			path: src/Relations/EmbedsMany.php
+
+		-
+			message: "#^Call to an undefined method TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:getParentRelation\\(\\)\\.$#"
+			count: 1
+			path: src/Relations/EmbedsOneOrMany.php
+
+		-
+			message: "#^Call to an undefined method TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:setParentRelation\\(\\)\\.$#"
+			count: 1
+			path: src/Relations/EmbedsOneOrMany.php
+
+		-
+			message: "#^Call to an undefined method TRelatedModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:setParentRelation\\(\\)\\.$#"
+			count: 2
+			path: src/Relations/EmbedsOneOrMany.php
+
+		-
+			message: "#^Call to an undefined method TDeclaringModel of Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:pull\\(\\)\\.$#"
+			count: 2
+			path: src/Relations/MorphToMany.php
 
 		-
 			message: "#^Method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:push\\(\\) invoked with 3 parameters, 0 required\\.$#"
@@ -19,3 +54,8 @@ parameters:
 			message: "#^Method Illuminate\\\\Database\\\\Schema\\\\Blueprint\\:\\:create\\(\\) invoked with 1 parameter, 0 required\\.$#"
 			count: 1
 			path: src/Schema/Builder.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Support\\\\HigherOrderCollectionProxy\\<\\(int\\|string\\), Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:pushSoftDeleteMetadata\\(\\)\\.$#"
+			count: 1
+			path: src/Scout/ScoutEngine.php

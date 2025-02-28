@@ -7,11 +7,14 @@ namespace MongoDB\Laravel;
 use Closure;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Repository;
+use Illuminate\Container\Container;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Foundation\Application;
+use Illuminate\Session\SessionManager;
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
+use Laravel\Scout\EngineManager;
 use League\Flysystem\Filesystem;
 use League\Flysystem\GridFS\GridFSAdapter;
 use League\Flysystem\ReadOnly\ReadOnlyFilesystemAdapter;
@@ -19,7 +22,9 @@ use MongoDB\GridFS\Bucket;
 use MongoDB\Laravel\Cache\MongoStore;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Queue\MongoConnector;
+use MongoDB\Laravel\Scout\ScoutEngine;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\MongoDbSessionHandler;
 
 use function assert;
 use function class_exists;
@@ -53,6 +58,25 @@ class MongoDBServiceProvider extends ServiceProvider
             });
         });
 
+        // Session handler for MongoDB
+        $this->app->resolving(SessionManager::class, function (SessionManager $sessionManager) {
+            $sessionManager->extend('mongodb', function (Application $app) {
+                $connectionName = $app->config->get('session.connection') ?: 'mongodb';
+                $connection = $app->make('db')->connection($connectionName);
+
+                assert($connection instanceof Connection, new InvalidArgumentException(sprintf('The database connection "%s" used for the session does not use the "mongodb" driver.', $connectionName)));
+
+                return new MongoDbSessionHandler(
+                    $connection->getClient(),
+                    $app->config->get('session.options', []) + [
+                        'database' => $connection->getDatabaseName(),
+                        'collection' => $app->config->get('session.table') ?: 'sessions',
+                        'ttl' => $app->config->get('session.lifetime'),
+                    ],
+                );
+            });
+        });
+
         // Add cache and lock drivers.
         $this->app->resolving('cache', function (CacheManager $cache) {
             $cache->extend('mongodb', function (Application $app, array $config): Repository {
@@ -81,6 +105,7 @@ class MongoDBServiceProvider extends ServiceProvider
         });
 
         $this->registerFlysystemAdapter();
+        $this->registerScoutEngine();
     }
 
     private function registerFlysystemAdapter(): void
@@ -107,8 +132,8 @@ class MongoDBServiceProvider extends ServiceProvider
                         throw new InvalidArgumentException(sprintf('The database connection "%s" does not use the "mongodb" driver.', $config['connection'] ?? $app['config']['database.default']));
                     }
 
-                    $bucket = $connection->getMongoClient()
-                        ->selectDatabase($config['database'] ?? $connection->getDatabaseName())
+                    $bucket = $connection->getClient()
+                        ->getDatabase($config['database'] ?? $connection->getDatabaseName())
                         ->selectGridFSBucket(['bucketName' => $config['bucket'] ?? 'fs', 'disableMD5' => true]);
                 }
 
@@ -132,6 +157,24 @@ class MongoDBServiceProvider extends ServiceProvider
 
                 return new FilesystemAdapter(new Filesystem($adapter, $config), $adapter, $config);
             });
+        });
+    }
+
+    private function registerScoutEngine(): void
+    {
+        $this->app->resolving(EngineManager::class, function (EngineManager $engineManager) {
+            $engineManager->extend('mongodb', function (Container $app) {
+                $connectionName = $app->get('config')->get('scout.mongodb.connection', 'mongodb');
+                $connection = $app->get('db')->connection($connectionName);
+                $softDelete = (bool) $app->get('config')->get('scout.soft_delete', false);
+                $indexDefinitions = $app->get('config')->get('scout.mongodb.index-definitions', []);
+
+                assert($connection instanceof Connection, new InvalidArgumentException(sprintf('The connection "%s" is not a MongoDB connection.', $connectionName)));
+
+                return new ScoutEngine($connection->getDatabase(), $softDelete, $indexDefinitions);
+            });
+
+            return $engineManager;
         });
     }
 }

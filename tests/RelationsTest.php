@@ -35,6 +35,8 @@ class RelationsTest extends TestCase
         Photo::truncate();
         Label::truncate();
         Skill::truncate();
+
+        parent::tearDown();
     }
 
     public function testHasMany(): void

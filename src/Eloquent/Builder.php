@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace MongoDB\Laravel\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use MongoDB\BSON\Document;
+use MongoDB\Builder\Type\QueryInterface;
+use MongoDB\Builder\Type\SearchOperatorInterface;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\Laravel\Connection;
@@ -21,7 +25,10 @@ use function is_object;
 use function iterator_to_array;
 use function property_exists;
 
-/** @method \MongoDB\Laravel\Query\Builder toBase() */
+/**
+ * @method \MongoDB\Laravel\Query\Builder toBase()
+ * @template TModel of Model
+ */
 class Builder extends EloquentBuilder
 {
     private const DUPLICATE_KEY_ERROR = 11000;
@@ -49,6 +56,7 @@ class Builder extends EloquentBuilder
         'insertusing',
         'max',
         'min',
+        'autocomplete',
         'pluck',
         'pull',
         'push',
@@ -67,6 +75,53 @@ class Builder extends EloquentBuilder
         $result = $this->toBase()->aggregate($function, $columns);
 
         return $result ?: $this;
+    }
+
+    /**
+     * Performs a full-text search of the field or fields in an Atlas collection.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-search/aggregation-stages/search/
+     *
+     * @return Collection<int, TModel>
+     */
+    public function search(
+        SearchOperatorInterface|array $operator,
+        ?string $index = null,
+        ?array $highlight = null,
+        ?bool $concurrent = null,
+        ?string $count = null,
+        ?string $searchAfter = null,
+        ?string $searchBefore = null,
+        ?bool $scoreDetails = null,
+        ?array $sort = null,
+        ?bool $returnStoredSource = null,
+        ?array $tracking = null,
+    ): Collection {
+        $results = $this->toBase()->search($operator, $index, $highlight, $concurrent, $count, $searchAfter, $searchBefore, $scoreDetails, $sort, $returnStoredSource, $tracking);
+
+        return $this->model->hydrate($results->all());
+    }
+
+    /**
+     * Performs a semantic search on data in your Atlas Vector Search index.
+     * NOTE: $vectorSearch is only available for MongoDB Atlas clusters, and is not available for self-managed deployments.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/
+     *
+     * @return Collection<int, TModel>
+     */
+    public function vectorSearch(
+        string $index,
+        string $path,
+        array $queryVector,
+        int $limit,
+        bool $exact = false,
+        QueryInterface|array $filter = [],
+        int|null $numCandidates = null,
+    ): Collection {
+        $results = $this->toBase()->vectorSearch($index, $path, $queryVector, $limit, $exact, $filter, $numCandidates);
+
+        return $this->model->hydrate($results->all());
     }
 
     /** @inheritdoc */

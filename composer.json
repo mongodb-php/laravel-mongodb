@@ -30,17 +30,18 @@
         "illuminate/database": "^10.30|^11",
         "illuminate/events": "^10.0|^11",
         "illuminate/support": "^10.0|^11",
-        "mongodb/mongodb": "^1.18"
+        "mongodb/mongodb": "^1.21",
+        "symfony/http-foundation": "^6.4|^7"
     },
     "require-dev": {
-        "mongodb/builder": "^0.2",
+        "laravel/scout": "^10.3",
         "league/flysystem-gridfs": "^3.28",
         "league/flysystem-read-only": "^3.0",
-        "phpunit/phpunit": "^10.3",
+        "phpunit/phpunit": "^10.3|^11.5.3",
         "orchestra/testbench": "^8.0|^9.0",
-        "mockery/mockery": "^1.4.4",
+        "mockery/mockery": "^1.4.4@stable",
         "doctrine/coding-standard": "12.0.x-dev",
-        "spatie/laravel-query-builder": "^5.6",
+        "spatie/laravel-query-builder": "^5.6|^6",
         "phpstan/phpstan": "^1.10",
         "rector/rector": "^1.2"
     },
@@ -52,6 +53,7 @@
         "mongodb/builder": "Provides a fluent aggregation builder for MongoDB pipelines"
     },
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "replace": {
         "jenssegers/mongodb": "self.version"
     },

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace MongoDB\Laravel\Tests;
 
 use Illuminate\Foundation\Application;
+use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Laravel\MongoDBServiceProvider;
+use MongoDB\Laravel\Schema\Builder;
 use MongoDB\Laravel\Tests\Models\User;
 use MongoDB\Laravel\Validation\ValidationServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -63,5 +65,18 @@ class TestCase extends OrchestraTestCase
         ]);
         $app['config']->set('queue.failed.database', 'mongodb2');
         $app['config']->set('queue.failed.driver', 'mongodb');
+    }
+
+    public function skipIfSearchIndexManagementIsNotSupported(): void
+    {
+        try {
+            $this->getConnection('mongodb')->getCollection('test')->listSearchIndexes(['name' => 'just_for_testing']);
+        } catch (ServerException $e) {
+            if (Builder::isAtlasSearchNotSupportedException($e)) {
+                self::markTestSkipped('Search index management is not supported on this server');
+            }
+
+            throw $e;
+        }
     }
 }

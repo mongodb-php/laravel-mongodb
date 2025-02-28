@@ -22,8 +22,11 @@ use function filter_var;
 use function implode;
 use function is_array;
 use function preg_match;
+use function sprintf;
 use function str_contains;
+use function trigger_error;
 
+use const E_USER_DEPRECATED;
 use const FILTER_FLAG_IPV6;
 use const FILTER_VALIDATE_IP;
 
@@ -65,9 +68,10 @@ class Connection extends BaseConnection
 
         // Create the connection
         $this->connection = $this->createConnection($dsn, $config, $options);
+        $this->database = $this->getDefaultDatabaseName($dsn, $config);
 
         // Select database
-        $this->db = $this->connection->selectDatabase($this->getDefaultDatabaseName($dsn, $config));
+        $this->db = $this->connection->getDatabase($this->database);
 
         $this->tablePrefix = $config['prefix'] ?? '';
 
@@ -114,29 +118,53 @@ class Connection extends BaseConnection
     /**
      * Get the MongoDB database object.
      *
+     * @deprecated since mongodb/laravel-mongodb:5.2, use getDatabase() instead
+     *
      * @return Database
      */
     public function getMongoDB()
     {
+        trigger_error(sprintf('Since mongodb/laravel-mongodb:5.2, Method "%s()" is deprecated, use "getDatabase()" instead.', __FUNCTION__), E_USER_DEPRECATED);
+
         return $this->db;
     }
 
     /**
-     * return MongoDB object.
+     * Get the MongoDB database object.
+     *
+     * @param string|null $name Name of the database, if not provided the default database will be returned.
+     *
+     * @return Database
+     */
+    public function getDatabase(?string $name = null): Database
+    {
+        if ($name && $name !== $this->database) {
+            return $this->connection->getDatabase($name);
+        }
+
+        return $this->db;
+    }
+
+    /**
+     * Return MongoDB object.
+     *
+     * @deprecated since mongodb/laravel-mongodb:5.2, use getClient() instead
      *
      * @return Client
      */
     public function getMongoClient()
     {
-        return $this->connection;
+        trigger_error(sprintf('Since mongodb/laravel-mongodb:5.2, method "%s()" is deprecated, use "getClient()" instead.', __FUNCTION__), E_USER_DEPRECATED);
+
+        return $this->getClient();
     }
 
     /**
-     * {@inheritDoc}
+     * Get the MongoDB client.
      */
-    public function getDatabaseName()
+    public function getClient(): ?Client
     {
-        return $this->getMongoDB()->getDatabaseName();
+        return $this->connection;
     }
 
     public function enableQueryLog()
@@ -233,7 +261,7 @@ class Connection extends BaseConnection
      */
     public function ping(): void
     {
-        $this->getMongoClient()->getManager()->selectServer(new ReadPreference(ReadPreference::PRIMARY_PREFERRED));
+        $this->getClient()->getManager()->selectServer(new ReadPreference(ReadPreference::PRIMARY_PREFERRED));
     }
 
     /** @inheritdoc */

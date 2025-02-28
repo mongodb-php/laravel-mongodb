@@ -17,6 +17,7 @@ Read Operations
    Retrieve Data </fundamentals/read-operations/retrieve>
    Search Text </fundamentals/read-operations/search-text>
    Modify Query Results </fundamentals/read-operations/modify-results>
+   Set Read Preference </fundamentals/read-operations/read-pref>
 
 .. contents:: On this page
    :local:
@@ -178,3 +179,18 @@ from MongoDB:
 
 To learn more about modifying how {+odm-long+} returns results, see the
 :ref:`laravel-read-modify-results` guide.
+
+Set a Read Preference
+---------------------
+
+The following code shows how to set a read preference when performing a
+find operation:
+
+.. code-block:: php
+
+   SampleModel::where('field name', '<value>')
+       ->readPreference(ReadPreference::SECONDARY_PREFERRED)
+       ->get();
+
+To learn more about read preferences, see the :ref:`laravel-read-pref`
+guide.

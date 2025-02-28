@@ -42,6 +42,8 @@ class HybridRelationsTest extends TestCase
         Skill::truncate();
         Experience::truncate();
         Label::truncate();
+
+        parent::tearDown();
     }
 
     public function testSqlRelations()

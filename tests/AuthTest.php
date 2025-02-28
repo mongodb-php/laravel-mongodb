@@ -17,10 +17,10 @@ class AuthTest extends TestCase
 {
     public function tearDown(): void
     {
-        parent::setUp();
-
         User::truncate();
         DB::table('password_reset_tokens')->truncate();
+
+        parent::tearDown();
     }
 
     public function testAuthAttempt()

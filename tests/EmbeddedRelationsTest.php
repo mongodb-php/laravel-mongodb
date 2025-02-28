@@ -20,6 +20,8 @@ class EmbeddedRelationsTest extends TestCase
     {
         Mockery::close();
         User::truncate();
+
+        parent::tearDown();
     }
 
     public function testEmbedsManySave()

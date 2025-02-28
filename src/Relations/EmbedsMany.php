@@ -21,6 +21,12 @@ use function method_exists;
 use function throw_if;
 use function value;
 
+/**
+ * @template TRelatedModel of Model
+ * @template TDeclaringModel of Model
+ * @template TResult
+ * @extends EmbedsOneOrMany<TRelatedModel, TDeclaringModel, TResult>
+ */
 class EmbedsMany extends EmbedsOneOrMany
 {
     /** @inheritdoc */

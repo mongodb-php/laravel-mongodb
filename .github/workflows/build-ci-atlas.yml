@@ -1,0 +1,74 @@
+name: "Atlas CI"
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    build:
+        runs-on: "${{ matrix.os }}"
+
+        name: "PHP ${{ matrix.php }} Laravel ${{ matrix.laravel }} Atlas"
+
+        strategy:
+            matrix:
+                os:
+                    - "ubuntu-latest"
+                php:
+                    - "8.2"
+                    - "8.3"
+                    - "8.4"
+                laravel:
+                    - "11.*"
+
+        steps:
+            -   uses: "actions/checkout@v4"
+
+            -   name: "Create MongoDB Atlas Local"
+                run: |
+                    docker run --name mongodb -p 27017:27017 --detach mongodb/mongodb-atlas-local:latest
+                    until docker exec --tty mongodb mongosh --eval "db.runCommand({ ping: 1 })"; do
+                      sleep 1
+                    done
+                    until docker exec --tty mongodb mongosh --eval "db.createCollection('connection_test') && db.getCollection('connection_test').createSearchIndex({mappings:{dynamic: true}})"; do
+                      sleep 1
+                    done
+
+            -   name: "Show MongoDB server status"
+                run: |
+                    docker exec --tty mongodb mongosh --eval "db.runCommand({ serverStatus: 1 })"
+
+            -   name: "Installing php"
+                uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: ${{ matrix.php }}
+                    extensions: "curl,mbstring,xdebug"
+                    coverage: "xdebug"
+                    tools: "composer"
+
+            -   name: "Show Docker version"
+                if: ${{ runner.debug }}
+                run: "docker version && env"
+
+            -   name: "Restrict Laravel version"
+                run: "composer require --dev --no-update 'laravel/framework:${{ matrix.laravel }}'"
+
+            -   name: "Download Composer cache dependencies from cache"
+                id: "composer-cache"
+                run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+            -   name: "Cache Composer dependencies"
+                uses: "actions/cache@v4"
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: "${{ matrix.os }}-composer-${{ hashFiles('**/composer.json') }}"
+                    restore-keys: "${{ matrix.os }}-composer-"
+
+            -   name: "Install dependencies"
+                run: |
+                  composer update --no-interaction
+
+            -   name: "Run tests"
+                run: |
+                  export MONGODB_URI="mongodb://127.0.0.1:27017/?directConnection=true"
+                  ./vendor/bin/phpunit --coverage-clover coverage.xml --group atlas-search
