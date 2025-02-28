@@ -1,0 +1,157 @@
+.. _laravel-fundamentals-search-text:
+.. _laravel-retrieve-text-search:
+
+===========
+Search Text
+===========
+
+.. facet::
+   :name: genre
+   :values: reference
+
+.. meta::
+   :keywords: filter, string, CRUD, code example
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Overview
+--------
+
+In this guide, you can learn how to run a **text search** by using
+{+odm-long+}.
+
+You can use a text search to retrieve documents that contain a term or a
+phrase in a specified field. A term is a sequence of characters that
+excludes whitespace characters. A phrase is a sequence of terms with any
+number of whitespace characters.
+
+This guide describes the Eloquent model methods that you can use to
+search text and provides examples. To learn more about Eloquent models
+in the {+odm-short+}, see the :ref:`laravel-eloquent-models` section.
+
+.. include:: /includes/fundamentals/read-operations/before-you-get-started.rst
+
+Search Text Fields
+------------------
+
+Before you can perform a text search, you must create a :manual:`text
+index </core/indexes/index-types/index-text/>` on
+the text-valued field. To learn more about creating
+indexes, see the :ref:`laravel-eloquent-indexes` section of the
+Schema Builder guide.
+
+You can perform a text search by using the :manual:`$text
+</reference/operator/query/text>` operator followed
+by the ``$search`` field in your query filter that you pass to the
+``where()`` method. The ``$text`` operator performs a text search on the
+text-indexed fields. The ``$search`` field specifies the text to search for.
+
+After building your query by using the ``where()`` method, chain the ``get()``
+method to retrieve the query results.
+
+This example calls the ``where()`` method on the ``Movie`` Eloquent model to
+retrieve documents in which the ``plot`` field contains the phrase
+``"love story"``. To perform this text search, the collection must have
+a text index on the ``plot`` field.
+
+.. tabs::
+
+   .. tab:: Query Syntax
+      :tabid: query-syntax
+
+      Use the following syntax to specify the query:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-text
+         :end-before: end-text
+
+   .. tab:: Controller Method
+      :tabid: controller
+
+      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
+      in the ``MovieController.php`` file to resemble the following code:
+
+      .. io-code-block::
+         :copyable: true
+
+         .. input::
+            :language: php
+
+            class MovieController
+            {
+                public function show()
+                {
+                     $movies = Movie::where('$text', ['$search' => '"love story"'])
+                         ->get();
+
+                     return view('browse_movies', [
+                         'movies' => $movies
+                     ]);
+                }
+            }
+
+         .. output::
+            :language: none
+            :visible: false
+
+            Title: Cafè de Flore
+            Year: 2011
+            Runtime: 120
+            IMDB Rating: 7.4
+            IMDB Votes: 9663
+            Plot: A love story between a man and woman ...
+
+            Title: Paheli
+            Year: 2005
+            Runtime: 140
+            IMDB Rating: 6.7
+            IMDB Votes: 8909
+            Plot: A folk tale - supernatural love story about a ghost ...
+
+            Title: Por un puèado de besos
+            Year: 2014
+            Runtime: 98
+            IMDB Rating: 6.1
+            IMDB Votes: 223
+            Plot: A girl. A boy. A love story ...
+
+            ...
+
+Search Score
+------------
+
+A text search assigns a numerical :manual:`text score </reference/operator/query/text/#text-score>` to indicate how closely
+each result matches the string in your query filter. You can sort the
+results by relevance by using the ``orderBy()`` method to sort on the
+``textScore`` metadata field. You can access this metadata by using the
+:manual:`$meta </reference/operator/aggregation/meta/>` operator:
+
+.. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+   :language: php
+   :dedent:
+   :start-after: start-text-relevance
+   :end-before: end-text-relevance
+   :emphasize-lines: 2
+
+.. tip::
+
+   To learn more about the ``orderBy()`` method, see the
+   :ref:`laravel-sort` section of the Modify Query Output guide.
+
+Additional Information
+----------------------
+
+To view runnable code examples that demonstrate how to perform find
+operations by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-find-one-usage`
+- :ref:`laravel-find-usage`
+
+To learn how to retrieve data based on filter criteria, see the
+:ref:`laravel-fundamentals-read-retrieve` guide.

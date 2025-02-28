@@ -1,0 +1,227 @@
+.. _laravel-modify-find:
+.. _laravel-read-modify-results:
+
+====================
+Modify Query Results
+====================
+
+.. facet::
+   :name: genre
+   :values: reference
+
+.. meta::
+   :keywords: filter, criteria, CRUD, code example
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Overview
+--------
+
+In this guide, you can learn how to customize the way that {+odm-long+}
+returns results from queries. You can modify the results of a find
+operation by chaining more methods to the ``where()`` method. 
+
+The following sections demonstrate how to modify the behavior of the
+``where()`` method:
+
+- :ref:`laravel-skip-limit` uses the ``skip()`` method to set the number of documents
+  to skip and the ``take()`` method to set the total number of documents to return
+- :ref:`laravel-sort` uses the ``orderBy()`` method to return query
+  results in a specified order based on field values
+
+To learn more about Eloquent models in the {+odm-short+}, see the
+:ref:`laravel-eloquent-models` section.
+
+.. include:: /includes/fundamentals/read-operations/before-you-get-started.rst
+
+.. _laravel-skip-limit:
+
+Skip and Limit Results
+----------------------
+
+This example queries for documents in which the ``year`` value is ``1999``.
+The operation skips the first ``2`` matching documents and outputs a total of ``3``
+documents.
+
+.. tabs::
+
+   .. tab:: Query Syntax
+      :tabid: query-syntax
+
+      Use the following syntax to specify the query:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-skip-limit
+         :end-before: end-skip-limit
+
+   .. tab:: Controller Method
+      :tabid: controller
+
+      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
+      in the ``MovieController.php`` file to resemble the following code:
+
+      .. io-code-block::
+         :copyable: true
+
+         .. input::
+            :language: php
+
+            class MovieController
+            {
+                public function show()
+                {
+                     $movies = Movie::where('year', 1999)
+                         ->skip(2)
+                         ->take(3)
+                         ->get();
+
+                     return view('browse_movies', [
+                         'movies' => $movies
+                     ]);
+                }
+            }
+
+         .. output::
+            :language: none
+            :visible: false
+
+            Title: Three Kings
+            Year: 1999
+            Runtime: 114
+            IMDB Rating: 7.2
+            IMDB Votes: 130677
+            Plot: In the aftermath of the Persian Gulf War, 4 soldiers set out to steal gold
+            that was stolen from Kuwait, but they discover people who desperately need their help.
+
+            Title: Toy Story 2
+            Year: 1999
+            Runtime: 92
+            IMDB Rating: 7.9
+            IMDB Votes: 346655
+            Plot: When Woody is stolen by a toy collector, Buzz and his friends vow to rescue him,
+            but Woody finds the idea of immortality in a museum tempting.
+
+            Title: Beowulf
+            Year: 1999
+            Runtime: 95
+            IMDB Rating: 4
+            IMDB Votes: 9296
+            Plot: A sci-fi update of the famous 6th Century poem. In a besieged land, Beowulf must
+            battle against the hideous creature Grendel and his vengeance seeking mother.
+
+.. _laravel-sort:
+
+Sort Query Results
+------------------
+
+To order query results based on the values of specified fields, use the ``where()`` method
+followed by the ``orderBy()`` method.
+
+You can set an **ascending** or **descending** sort direction on
+results. By default, the ``orderBy()`` method sets an ascending sort on
+the supplied field name, but you can explicitly specify an ascending
+sort by passing ``"asc"`` as the second parameter. To
+specify a descending sort, pass ``"desc"`` as the second parameter.
+
+If your documents contain duplicate values in a specific field, you can
+handle the tie by specifying more fields to sort on. This ensures consistent
+results if the other fields contain unique values.
+
+This example queries for documents in which the value of the ``countries`` field contains
+``"Indonesia"`` and orders results first by an ascending sort on the
+``year`` field, then a descending sort on the ``title`` field.
+
+.. tabs::
+
+   .. tab:: Query Syntax
+      :tabid: query-syntax
+
+      Use the following syntax to specify the query:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-sort
+         :end-before: end-sort
+
+   .. tab:: Controller Method
+      :tabid: controller
+
+      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
+      in the ``MovieController.php`` file to resemble the following code:
+
+      .. io-code-block::
+         :copyable: true
+
+         .. input::
+            :language: php
+
+            class MovieController
+            {
+                public function show()
+                {
+                    $movies = Movie::where('countries', 'Indonesia')
+                        ->orderBy('year')
+                        ->orderBy('title', 'desc')
+                        ->get();
+
+                    return view('browse_movies', [
+                        'movies' => $movies
+                    ]);
+                }
+            }
+
+         .. output::
+            :language: none
+            :visible: false
+
+            Title: Joni's Promise
+            Year: 2005
+            Runtime: 83
+            IMDB Rating: 7.6
+            IMDB Votes: 702
+            Plot: A film delivery man promises ...
+
+            Title: Gie
+            Year: 2005
+            Runtime: 147
+            IMDB Rating: 7.5
+            IMDB Votes: 470
+            Plot: Soe Hok Gie is an activist who lived in the sixties ...
+
+            Title: Requiem from Java
+            Year: 2006
+            Runtime: 120
+            IMDB Rating: 6.6
+            IMDB Votes: 316
+            Plot: Setyo (Martinus Miroto) and Siti (Artika Sari Dewi)
+            are young married couple ...
+
+            ...
+
+.. tip::
+
+   To learn more about sorting, see the following resources:
+
+   - :manual:`Natural order </reference/glossary/#std-term-natural-order>`
+     in the {+server-docs-name+} glossary
+   - `Ordering, Grouping, Limit, and Offset <https://laravel.com/docs/queries#ordering-grouping-limit-and-offset>`__
+     in the Laravel documentation
+
+Additional Information
+----------------------
+
+To view runnable code examples that demonstrate how to perform find
+operations by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-find-one-usage`
+- :ref:`laravel-find-usage`
+
+To learn how to retrieve data based on filter criteria, see the
+:ref:`laravel-fundamentals-read-retrieve` guide.

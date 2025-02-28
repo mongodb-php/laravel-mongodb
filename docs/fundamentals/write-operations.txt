@@ -133,8 +133,7 @@ matching document doesn't exist:
            ['upsert' => true],
        );
        
-    /* Or, use the upsert() method. */
-    
+    // Or, use the upsert() method.
     SampleModel::upsert(
        [<documents to update or insert>],
        '<unique field name>',
