@@ -1,0 +1,304 @@
+.. _laravel-fundamentals-retrieve-documents:
+.. _laravel-fundamentals-read-retrieve:
+
+=============
+Retrieve Data
+=============
+
+.. facet::
+   :name: genre
+   :values: reference
+
+.. meta::
+   :keywords: filter, criteria, CRUD, code example
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Overview
+--------
+
+In this guide, you can learn how to retrieve data from MongoDB
+collections by using {+odm-long+}. This guide describes the Eloquent
+model methods that you can use to retrieve data and provides examples
+of different types of find operations.
+
+To learn more about Eloquent models in the {+odm-short+}, see the
+:ref:`laravel-eloquent-models` section.
+
+.. include:: /includes/fundamentals/read-operations/before-you-get-started.rst
+
+.. _laravel-retrieve-matching:
+
+Retrieve Documents that Match a Query
+-------------------------------------
+
+You can use Laravel's Eloquent object-relational mapper (ORM) to create models
+that represent MongoDB collections and chain methods on them to specify
+query criteria.
+
+To retrieve documents that match a set of criteria, call the ``where()``
+method on the collection's corresponding Eloquent model, then pass a query
+filter to the method.
+
+.. tip:: Retrieve One Document
+
+   The ``where()`` method retrieves all matching documents. To retrieve
+   the first matching document, you can chain the ``first()`` method. To
+   learn more and view an example, see the :ref:`laravel-retrieve-one`
+   section of this guide.
+
+A query filter specifies field value requirements and instructs the find
+operation to return only documents that meet these requirements.
+
+You can use one of the following ``where()`` method calls to build a query:
+
+- ``where('<field name>', <value>)`` builds a query that matches documents in
+  which the target field has the exact specified value
+
+- ``where('<field name>', '<comparison operator>', <value>)`` builds a query
+  that matches documents in which the target field's value meets the comparison
+  criteria
+
+To apply multiple sets of criteria to the find operation, you can chain a series
+of ``where()`` methods together.
+
+After building your query by using the ``where()`` method, chain the ``get()``
+method to retrieve the query results.
+
+This example calls two ``where()`` methods on the ``Movie`` Eloquent model to
+retrieve documents that meet the following criteria:
+
+- ``year`` field has a value of ``2010``
+- ``imdb.rating`` nested field has a value greater than ``8.5``
+
+.. tabs::
+
+   .. tab:: Query Syntax
+      :tabid: query-syntax
+
+      Use the following syntax to specify the query:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-query
+         :end-before: end-query
+
+   .. tab:: Controller Method
+      :tabid: controller
+
+      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
+      in the ``MovieController.php`` file to resemble the following code:
+
+      .. io-code-block::
+         :copyable: true
+
+         .. input::
+            :language: php
+
+            class MovieController
+            {
+                public function show()
+                {
+                     $movies = Movie::where('year', 2010)
+                         ->where('imdb.rating', '>', 8.5)
+                         ->get();
+
+                     return view('browse_movies', [
+                         'movies' => $movies
+                     ]);
+                }
+            }
+
+         .. output::
+            :language: none
+            :visible: false
+
+            Title: Inception
+            Year: 2010
+            Runtime: 148
+            IMDB Rating: 8.8
+            IMDB Votes: 1294646
+            Plot: A thief who steals corporate secrets through use of dream-sharing
+            technology is given the inverse task of planting an idea into the mind of a CEO.
+
+            Title: Senna
+            Year: 2010
+            Runtime: 106
+            IMDB Rating: 8.6
+            IMDB Votes: 41904
+            Plot: A documentary on Brazilian Formula One racing driver Ayrton Senna, who won the
+            F1 world championship three times before his death at age 34.
+
+To learn how to query by using the Laravel query builder instead of the
+Eloquent ORM, see the :ref:`laravel-query-builder` page.
+
+Match Array Field Elements
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can specify a query filter to match array field elements when
+retrieving documents. If your documents contain an array field, you can
+match documents based on if the value contains all or some specified
+array elements.
+
+You can use one of the following ``where()`` method calls to build a
+query on an array field:
+
+- ``where('<array field>', <array>)`` builds a query that matches documents in
+  which the array field value is exactly the specified array
+
+- ``where('<array field>', 'in', <array>)`` builds a query
+  that matches documents in which the array field value contains one or
+  more of the specified array elements
+
+After building your query by using the ``where()`` method, chain the ``get()``
+method to retrieve the query results.
+
+Select from the following :guilabel:`Exact Array Match` and
+:guilabel:`Element Match` tabs to view the query syntax for each pattern:
+
+.. tabs::
+
+   .. tab:: Exact Array Match
+      :tabid: exact-array
+
+      This example retrieves documents in which the ``countries`` array is
+      exactly ``['Indonesia', 'Canada']``:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-exact-array
+         :end-before: end-exact-array
+
+   .. tab:: Element Match
+      :tabid: element-match
+
+      This example retrieves documents in which the ``countries`` array
+      contains one of the values in the array ``['Canada', 'Egypt']``:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-elem-match
+         :end-before: end-elem-match
+
+To learn how to query array fields by using the Laravel query builder instead of the
+Eloquent ORM, see the :ref:`laravel-query-builder-elemMatch` section in
+the Query Builder guide.
+
+.. _laravel-retrieve-one:
+
+Retrieve the First Result
+-------------------------
+
+To retrieve the first document that matches a set of criteria, use the ``where()`` method
+followed by the ``first()`` method.
+
+Chain the ``orderBy()`` method to ``first()`` to get consistent results when you query on a unique
+value. If you omit the ``orderBy()`` method, MongoDB returns the matching documents according to
+the documents' natural order, or as they appear in the collection.
+
+This example queries for documents in which the value of the ``runtime`` field is
+``30`` and returns the first matching document according to the value of the ``_id``
+field.
+
+.. tabs::
+
+   .. tab:: Query Syntax
+      :tabid: query-syntax
+
+      Use the following syntax to specify the query:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-first
+         :end-before: end-first
+
+   .. tab:: Controller Method
+      :tabid: controller
+
+      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
+      in the ``MovieController.php`` file to resemble the following code:
+
+      .. io-code-block::
+         :copyable: true
+
+         .. input::
+            :language: php
+
+            class MovieController
+            {
+                public function show()
+                {
+                    $movie = Movie::where('runtime', 30)
+                        ->orderBy('_id')
+                        ->first();
+
+                    return view('browse_movies', [
+                        'movies' => $movie
+                    ]);
+                }
+            }
+
+         .. output::
+            :language: none
+            :visible: false
+
+            Title: Statues also Die
+            Year: 1953
+            Runtime: 30
+            IMDB Rating: 7.6
+            IMDB Votes: 620
+            Plot: A documentary of black art.
+
+.. tip::
+
+   To learn more about the ``orderBy()`` method, see the
+   :ref:`laravel-sort` section of the Modify Query Results guide.
+
+.. _laravel-retrieve-all:
+
+Retrieve All Documents in a Collection
+--------------------------------------
+
+You can retrieve all documents in a collection by omitting the query filter.
+To return the documents, call the ``get()`` method on an Eloquent model that
+represents your collection. Alternatively, you can use the ``get()`` method's
+alias ``all()`` to perform the same operation.
+
+Use the following syntax to run a find operation that matches all documents:
+
+.. code-block:: php
+
+   $movies = Movie::get();
+
+.. warning::
+
+   The ``movies`` collection in the Atlas sample dataset contains a large amount of data.
+   Retrieving and displaying all documents in this collection might cause your web
+   application to time out.
+
+   To avoid this issue, specify a document limit by using the ``take()`` method. For
+   more information about ``take()``, see the :ref:`laravel-modify-find`
+   section of the Modify Query Output guide.
+
+Additional Information
+----------------------
+
+To view runnable code examples that demonstrate how to perform find
+operations by using the {+odm-short+}, see the following usage examples:
+
+- :ref:`laravel-find-one-usage`
+- :ref:`laravel-find-usage`
+
+To learn how to insert data into MongoDB, see the
+:ref:`laravel-fundamentals-write-ops` guide.
+
+To learn how to modify the way that the {+odm-short+} returns results,
+see the :ref:`laravel-read-modify-results` guide.

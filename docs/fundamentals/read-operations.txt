@@ -10,7 +10,14 @@ Read Operations
    :values: tutorial
 
 .. meta::
-   :keywords: find one, find many, code example
+   :keywords: find one, find many, skip, limit, paginate, string, code example
+
+.. toctree::
+
+   Retrieve Data </fundamentals/read-operations/retrieve>
+   Search Text </fundamentals/read-operations/search-text>
+   Modify Query Results </fundamentals/read-operations/modify-results>
+   Set Read Preference </fundamentals/read-operations/read-pref>
 
 .. contents:: On this page
    :local:
@@ -21,697 +28,169 @@ Read Operations
 Overview
 --------
 
-In this guide, you can learn how to use {+odm-long+} to perform **find operations**
-on your MongoDB collections. Find operations allow you to retrieve documents based on
-criteria that you specify.
+In this guide, you can see code templates of common
+methods that you can use to read data from MongoDB by using
+{+odm-long+}.
 
-This guide shows you how to perform the following tasks:
+.. tip::
 
-- :ref:`laravel-retrieve-matching`
-- :ref:`laravel-retrieve-all`
-- :ref:`laravel-retrieve-text-search`
-- :ref:`Modify Find Operation Behavior <laravel-modify-find>`
+   To learn more about any of the methods included in this guide,
+   see the links provided in each section.
 
-Before You Get Started
-----------------------
+Find One
+--------
 
-To run the code examples in this guide, complete the :ref:`Quick Start <laravel-quick-start>`
-tutorial. This tutorial provides instructions on setting up a MongoDB Atlas instance with
-sample data and creating the following files in your Laravel web application:
-
-- ``Movie.php`` file, which contains a ``Movie`` model to represent documents in the ``movies``
-  collection
-- ``MovieController.php`` file, which contains a ``show()`` function to run database operations
-- ``browse_movies.blade.php`` file, which contains HTML code to display the results of database
-  operations
-
-The following sections describe how to edit the files in your Laravel application to run
-the find operation code examples and view the expected output.
-
-.. _laravel-retrieve-matching:
-
-Retrieve Documents that Match a Query
--------------------------------------
-
-You can use Laravel's Eloquent object-relational mapper (ORM) to create models
-that represent MongoDB collections and chain methods on them to specify
-query criteria.
-
-To retrieve documents that match a set of criteria, call the ``where()``
-method on the collection's corresponding Eloquent model, then pass a query
-filter to the method.
-
-A query filter specifies field value requirements and instructs the find
-operation to return only documents that meet these requirements.
-
-You can use one of the following ``where()`` method calls to build a query:
-
-- ``where('<field name>', <value>)`` builds a query that matches documents in
-  which the target field has the exact specified value
-
-- ``where('<field name>', '<comparison operator>', <value>)`` builds a query
-  that matches documents in which the target field's value meets the comparison
-  criteria
-
-To apply multiple sets of criteria to the find operation, you can chain a series
-of ``where()`` methods together.
-
-After building your query by using the ``where()`` method, chain the ``get()``
-method to retrieve the query results.
-
-This example calls two ``where()`` methods on the ``Movie`` Eloquent model to
-retrieve documents that meet the following criteria:
-
-- ``year`` field has a value of ``2010``
-- ``imdb.rating`` nested field has a value greater than ``8.5``
-
-.. tabs::
-
-   .. tab:: Query Syntax
-      :tabid: query-syntax
-
-      Use the following syntax to specify the query:
-
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-query
-         :end-before: end-query
-
-   .. tab:: Controller Method
-      :tabid: controller
-
-      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
-      in the ``MovieController.php`` file to resemble the following code:
-
-      .. io-code-block::
-         :copyable: true
-
-         .. input::
-            :language: php
-
-            class MovieController
-            {
-                public function show()
-                {
-                     $movies = Movie::where('year', 2010)
-                         ->where('imdb.rating', '>', 8.5)
-                         ->get();
-
-                     return view('browse_movies', [
-                         'movies' => $movies
-                     ]);
-                }
-            }
-
-         .. output::
-            :language: none
-            :visible: false
-
-            Title: Inception
-            Year: 2010
-            Runtime: 148
-            IMDB Rating: 8.8
-            IMDB Votes: 1294646
-            Plot: A thief who steals corporate secrets through use of dream-sharing
-            technology is given the inverse task of planting an idea into the mind of a CEO.
-
-            Title: Senna
-            Year: 2010
-            Runtime: 106
-            IMDB Rating: 8.6
-            IMDB Votes: 41904
-            Plot: A documentary on Brazilian Formula One racing driver Ayrton Senna, who won the
-            F1 world championship three times before his death at age 34.
-
-To learn how to query by using the Laravel query builder instead of the
-Eloquent ORM, see the :ref:`laravel-query-builder` page.
-
-Match Array Field Elements
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can specify a query filter to match array field elements when
-retrieving documents. If your documents contain an array field, you can
-match documents based on if the value contains all or some specified
-array elements.
-
-You can use one of the following ``where()`` method calls to build a
-query on an array field:
-
-- ``where('<array field>', <array>)`` builds a query that matches documents in
-  which the array field value is exactly the specified array
-
-- ``where('<array field>', 'in', <array>)`` builds a query
-  that matches documents in which the array field value contains one or
-  more of the specified array elements
-
-After building your query by using the ``where()`` method, chain the ``get()``
-method to retrieve the query results.
-
-Select from the following :guilabel:`Exact Array Match` and
-:guilabel:`Element Match` tabs to view the query syntax for each pattern:
-
-.. tabs::
-
-   .. tab:: Exact Array Match
-      :tabid: exact-array
-
-      This example retrieves documents in which the ``countries`` array is
-      exactly ``['Indonesia', 'Canada']``:
-
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-exact-array
-         :end-before: end-exact-array
-
-   .. tab:: Element Match
-      :tabid: element-match
-
-      This example retrieves documents in which the ``countries`` array
-      contains one of the values in the array ``['Canada', 'Egypt']``:
-
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-elem-match
-         :end-before: end-elem-match
-
-To learn how to query array fields by using the Laravel query builder instead of the
-Eloquent ORM, see the :ref:`laravel-query-builder-elemMatch` section in
-the Query Builder guide.
-
-.. _laravel-retrieve-all:
-
-Retrieve All Documents in a Collection
---------------------------------------
-
-You can retrieve all documents in a collection by omitting the query filter.
-To return the documents, call the ``get()`` method on an Eloquent model that
-represents your collection. Alternatively, you can use the ``get()`` method's
-alias ``all()`` to perform the same operation.
-
-Use the following syntax to run a find operation that matches all documents:
+The following code shows how to retrieve the first matching document
+from a collection:
 
 .. code-block:: php
 
-   $movies = Movie::get();
+   SampleModel::where('<field name>', '<value>')
+       ->first();
 
-.. warning::
+To view a runnable example that finds one document, see the
+:ref:`laravel-find-one-usage` usage example.
 
-   The ``movies`` collection in the Atlas sample dataset contains a large amount of data.
-   Retrieving and displaying all documents in this collection might cause your web
-   application to time out.
+To learn more about retrieving documents and the ``first()`` method, see
+the :ref:`laravel-fundamentals-read-retrieve` guide.
 
-   To avoid this issue, specify a document limit by using the ``take()`` method. For
-   more information about ``take()``, see the :ref:`laravel-modify-find` section of this
-   guide.
+Find Multiple
+-------------
 
-.. _laravel-retrieve-text-search:
+The following code shows how to retrieve all documents that match a
+query filter from a collection:
 
-Search Text Fields
-------------------
+.. code-block:: php
 
-A text search retrieves documents that contain a **term** or a **phrase** in the
-text-indexed fields. A term is a sequence of characters that excludes
-whitespace characters. A phrase is a sequence of terms with any number
-of whitespace characters.
+   SampleModel::where('<field name>', '<value>')
+       ->get();
 
-.. note::
+To view a runnable example that finds documents, see the
+:ref:`laravel-find-usage` usage example.
 
-   Before you can perform a text search, you must create a :manual:`text
-   index </core/indexes/index-types/index-text/>` on
-   the text-valued field. To learn more about creating
-   indexes, see the :ref:`laravel-eloquent-indexes` section of the
-   Schema Builder guide.
+To learn more about retrieving documents, see the
+:ref:`laravel-fundamentals-read-retrieve` guide.
 
-You can perform a text search by using the :manual:`$text
-</reference/operator/query/text>` operator followed
-by the ``$search`` field in your query filter that you pass to the
-``where()`` method. The ``$text`` operator performs a text search on the
-text-indexed fields. The ``$search`` field specifies the text to search for.
+Return All Documents
+--------------------
 
-After building your query by using the ``where()`` method, chain the ``get()``
-method to retrieve the query results.
+The following code shows how to retrieve all documents from a
+collection:
 
-This example calls the ``where()`` method on the ``Movie`` Eloquent model to
-retrieve documents in which the ``plot`` field contains the phrase
-``"love story"``. To perform this text search, the collection must have
-a text index on the ``plot`` field.
+.. code-block:: php
 
-.. tabs::
+   SampleModel::get();
 
-   .. tab:: Query Syntax
-      :tabid: query-syntax
+   // Or, use the all() method.
+   SampleModel::all();
 
-      Use the following syntax to specify the query:
+To view a runnable example that finds documents, see the
+:ref:`laravel-find-usage` usage example.
 
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-text
-         :end-before: end-text
+To learn more about retrieving documents, see the
+:ref:`laravel-fundamentals-read-retrieve` guide.
 
-   .. tab:: Controller Method
-      :tabid: controller
+Search Text
+-----------
 
-      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
-      in the ``MovieController.php`` file to resemble the following code:
+The following code shows how to perform a full-text search on a string
+field in a collection's documents:
 
-      .. io-code-block::
-         :copyable: true
+.. code-block:: php
 
-         .. input::
-            :language: php
+   SampleModel::where('$text', ['$search' => '<search term or phrase>'])
+       ->get();
 
-            class MovieController
-            {
-                public function show()
-                {
-                     $movies = Movie::where('$text', ['$search' => '"love story"'])
-                         ->get();
+To learn more about searching on text fields, see the
+:ref:`laravel-retrieve-text-search` guide.
 
-                     return view('browse_movies', [
-                         'movies' => $movies
-                     ]);
-                }
-            }
-
-         .. output::
-            :language: none
-            :visible: false
-
-            Title: Cafè de Flore
-            Year: 2011
-            Runtime: 120
-            IMDB Rating: 7.4
-            IMDB Votes: 9663
-            Plot: A love story between a man and woman ...
-
-            Title: Paheli
-            Year: 2005
-            Runtime: 140
-            IMDB Rating: 6.7
-            IMDB Votes: 8909
-            Plot: A folk tale - supernatural love story about a ghost ...
-
-            Title: Por un puèado de besos
-            Year: 2014
-            Runtime: 98
-            IMDB Rating: 6.1
-            IMDB Votes: 223
-            Plot: A girl. A boy. A love story ...
-
-            ...
-
-A text search assigns a numerical :manual:`text score </reference/operator/query/text/#text-score>` to indicate how closely
-each result matches the string in your query filter. You can sort the
-results by relevance by using the ``orderBy()`` method to sort on the
-``textScore`` metadata field. You can access this metadata by using the
-:manual:`$meta </reference/operator/aggregation/meta/>` operator:
-
-.. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-   :language: php
-   :dedent:
-   :start-after: start-text-relevance
-   :end-before: end-text-relevance
-   :emphasize-lines: 2
-
-.. tip::
-
-   To learn more about the ``orderBy()`` method, see the
-   :ref:`laravel-sort` section of this guide.
-
-.. _laravel-modify-find:
-
-Modify Behavior
+Count Documents
 ---------------
 
-You can modify the results of a find operation by chaining more methods
-to ``where()``.
+The following code shows how to count documents in a collection:
 
-The following sections demonstrate how to modify the behavior of the ``where()``
-method:
+.. code-block:: php
 
-- :ref:`laravel-skip-limit` uses the ``skip()`` method to set the number of documents
-  to skip and the ``take()`` method to set the total number of documents to return
-- :ref:`laravel-sort` uses the ``orderBy()`` method to return query
-  results in a specified order based on field values
-- :ref:`laravel-retrieve-one` uses the ``first()`` method to return the first document
-  that matches the query filter
-- :ref:`laravel-read-pref` uses the ``readPreference()`` method to direct the query
-  to specific replica set members
+   SampleModel::count();
 
-.. _laravel-skip-limit:
+   // You can also count documents that match a filter.
+   SampleModel::where('<field name>', '<value>')
+       ->count();
 
-Skip and Limit Results
-~~~~~~~~~~~~~~~~~~~~~~
+To view a runnable example that counts documents, see the
+:ref:`laravel-count-usage` usage example.
 
-This example queries for documents in which the ``year`` value is ``1999``.
-The operation skips the first ``2`` matching documents and outputs a total of ``3``
-documents.
+Retrieve Distinct Values
+------------------------
 
-.. tabs::
+The following code shows how to retrieve the distinct values of a
+specified field:
 
-   .. tab:: Query Syntax
-      :tabid: query-syntax
+.. code-block:: php
 
-      Use the following syntax to specify the query:
+   SampleModel::select('<field name>')
+       ->distinct()
+       ->get();
 
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-skip-limit
-         :end-before: end-skip-limit
+To view a runnable example that returns distinct field values, see the
+:ref:`laravel-distinct-usage` usage example.
 
-   .. tab:: Controller Method
-      :tabid: controller
+Skip Results
+------------
 
-      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
-      in the ``MovieController.php`` file to resemble the following code:
+The following code shows how to skip a specified number of documents
+returned from MongoDB:
 
-      .. io-code-block::
-         :copyable: true
+.. code-block:: php
 
-         .. input::
-            :language: php
+   SampleModel::where('<field name>', '<value>')
+       ->skip(<number to skip>)
+       ->get();
 
-            class MovieController
-            {
-                public function show()
-                {
-                     $movies = Movie::where('year', 1999)
-                         ->skip(2)
-                         ->take(3)
-                         ->get();
+To learn more about modifying how {+odm-long+} returns results, see the
+:ref:`laravel-read-modify-results` guide.
 
-                     return view('browse_movies', [
-                         'movies' => $movies
-                     ]);
-                }
-            }
+Limit Results
+-------------
 
-         .. output::
-            :language: none
-            :visible: false
+The following code shows how to return only a specified number of
+documents from MongoDB:
 
-            Title: Three Kings
-            Year: 1999
-            Runtime: 114
-            IMDB Rating: 7.2
-            IMDB Votes: 130677
-            Plot: In the aftermath of the Persian Gulf War, 4 soldiers set out to steal gold
-            that was stolen from Kuwait, but they discover people who desperately need their help.
+.. code-block:: php
 
-            Title: Toy Story 2
-            Year: 1999
-            Runtime: 92
-            IMDB Rating: 7.9
-            IMDB Votes: 346655
-            Plot: When Woody is stolen by a toy collector, Buzz and his friends vow to rescue him,
-            but Woody finds the idea of immortality in a museum tempting.
+   SampleModel::where('<field name>', '<value>')
+       ->take(<number to return>)
+       ->get();
 
-            Title: Beowulf
-            Year: 1999
-            Runtime: 95
-            IMDB Rating: 4
-            IMDB Votes: 9296
-            Plot: A sci-fi update of the famous 6th Century poem. In a besieged land, Beowulf must
-            battle against the hideous creature Grendel and his vengeance seeking mother.
+To learn more about modifying how {+odm-long+} returns results, see the
+:ref:`laravel-read-modify-results` guide.
 
-.. _laravel-sort:
+Sort Results
+------------
 
-Sort Query Results
-~~~~~~~~~~~~~~~~~~
+The following code shows how to set a sort order on results returned
+from MongoDB:
 
-To order query results based on the values of specified fields, use the ``where()`` method
-followed by the ``orderBy()`` method.
+.. code-block:: php
 
-You can set an **ascending** or **descending** sort direction on
-results. By default, the ``orderBy()`` method sets an ascending sort on
-the supplied field name, but you can explicitly specify an ascending
-sort by passing ``"asc"`` as the second parameter. To
-specify a descending sort, pass ``"desc"`` as the second parameter.
+   SampleModel::where('field name', '<value>')
+       ->orderBy('<field to sort on>')
+       ->get();
 
-If your documents contain duplicate values in a specific field, you can
-handle the tie by specifying more fields to sort on. This ensures consistent
-results if the other fields contain unique values.
-
-This example queries for documents in which the value of the ``countries`` field contains
-``"Indonesia"`` and orders results first by an ascending sort on the
-``year`` field, then a descending sort on the ``title`` field.
-
-.. tabs::
-
-   .. tab:: Query Syntax
-      :tabid: query-syntax
-
-      Use the following syntax to specify the query:
-
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-sort
-         :end-before: end-sort
-
-   .. tab:: Controller Method
-      :tabid: controller
-
-      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
-      in the ``MovieController.php`` file to resemble the following code:
-
-      .. io-code-block::
-         :copyable: true
-
-         .. input::
-            :language: php
-
-            class MovieController
-            {
-                public function show()
-                {
-                    $movies = Movie::where('countries', 'Indonesia')
-                        ->orderBy('year')
-                        ->orderBy('title', 'desc')
-                        ->get();
-
-                    return view('browse_movies', [
-                        'movies' => $movies
-                    ]);
-                }
-            }
-
-         .. output::
-            :language: none
-            :visible: false
-
-            Title: Joni's Promise
-            Year: 2005
-            Runtime: 83
-            IMDB Rating: 7.6
-            IMDB Votes: 702
-            Plot: A film delivery man promises ...
-
-            Title: Gie
-            Year: 2005
-            Runtime: 147
-            IMDB Rating: 7.5
-            IMDB Votes: 470
-            Plot: Soe Hok Gie is an activist who lived in the sixties ...
-
-            Title: Requiem from Java
-            Year: 2006
-            Runtime: 120
-            IMDB Rating: 6.6
-            IMDB Votes: 316
-            Plot: Setyo (Martinus Miroto) and Siti (Artika Sari Dewi)
-            are young married couple ...
-
-            ...
-
-.. tip::
-
-   To learn more about sorting, see the following resources:
-
-   - :manual:`Natural order </reference/glossary/#std-term-natural-order>`
-     in the {+server-docs-name+} glossary
-   - `Ordering, Grouping, Limit, and Offset <https://laravel.com/docs/queries#ordering-grouping-limit-and-offset>`__
-     in the Laravel documentation
-
-.. _laravel-retrieve-one:
-
-Return the First Result
-~~~~~~~~~~~~~~~~~~~~~~~
-
-To retrieve the first document that matches a set of criteria, use the ``where()`` method
-followed by the ``first()`` method.
-
-Chain the ``orderBy()`` method to ``first()`` to get consistent results when you query on a unique
-value. If you omit the ``orderBy()`` method, MongoDB returns the matching documents according to
-the documents' natural order, or as they appear in the collection.
-
-This example queries for documents in which the value of the ``runtime`` field is
-``30`` and returns the first matching document according to the value of the ``_id``
-field.
-
-.. tabs::
-
-   .. tab:: Query Syntax
-      :tabid: query-syntax
-
-      Use the following syntax to specify the query:
-
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-first
-         :end-before: end-first
-
-   .. tab:: Controller Method
-      :tabid: controller
-
-      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
-      in the ``MovieController.php`` file to resemble the following code:
-
-      .. io-code-block::
-         :copyable: true
-
-         .. input::
-            :language: php
-
-            class MovieController
-            {
-                public function show()
-                {
-                    $movie = Movie::where('runtime', 30)
-                        ->orderBy('_id')
-                        ->first();
-
-                    return view('browse_movies', [
-                        'movies' => $movie
-                    ]);
-                }
-            }
-
-         .. output::
-            :language: none
-            :visible: false
-
-            Title: Statues also Die
-            Year: 1953
-            Runtime: 30
-            IMDB Rating: 7.6
-            IMDB Votes: 620
-            Plot: A documentary of black art.
-
-.. tip::
-
-   To learn more about the ``orderBy()`` method, see the
-   :ref:`laravel-sort` section of this guide.
-
-.. _laravel-read-pref:
+To learn more about modifying how {+odm-long+} returns results, see the
+:ref:`laravel-read-modify-results` guide.
 
 Set a Read Preference
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
-To specify which replica set members receive your read operations,
-set a read preference by using the ``readPreference()`` method.
+The following code shows how to set a read preference when performing a
+find operation:
 
-The ``readPreference()`` method accepts the following parameters:
- 
-- ``mode``: *(Required)* A string value specifying the read preference
-  mode.
+.. code-block:: php
 
-- ``tagSets``: *(Optional)* An array value specifying key-value tags that correspond to 
-  certain replica set members.
+   SampleModel::where('field name', '<value>')
+       ->readPreference(ReadPreference::SECONDARY_PREFERRED)
+       ->get();
 
-- ``options``: *(Optional)* An array value specifying additional read preference options.
-
-.. tip::
-
-   To view a full list of available read preference modes and options, see
-   :php:`MongoDB\Driver\ReadPreference::__construct </manual/en/mongodb-driver-readpreference.construct.php>`
-   in the MongoDB PHP extension documentation.
-
-The following example queries for documents in which the value of the ``title``
-field is ``"Carrie"`` and sets the read preference to ``ReadPreference::SECONDARY_PREFERRED``.
-As a result, the query retrieves the results from secondary replica set
-members or the primary member if no secondaries are available:
-
-.. tabs::
-
-   .. tab:: Query Syntax
-      :tabid: query-syntax
-
-      Use the following syntax to specify the query:
-
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-read-pref
-         :end-before: end-read-pref
-
-   .. tab:: Controller Method
-      :tabid: controller
-
-      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
-      in the ``MovieController.php`` file to resemble the following code:
-
-      .. io-code-block::
-         :copyable: true
-
-         .. input::
-            :language: php
-
-            class MovieController
-            {
-                public function show()
-                {
-                   $movies = Movie::where('title', 'Carrie')
-                        ->readPreference(ReadPreference::SECONDARY_PREFERRED)
-                        ->get();
-
-                    return view('browse_movies', [
-                        'movies' => $movies
-                    ]);
-                }
-            }
-
-         .. output::
-            :language: none
-            :visible: false
-
-            Title: Carrie
-            Year: 1952
-            Runtime: 118
-            IMDB Rating: 7.5
-            IMDB Votes: 1458
-            Plot: Carrie boards the train to Chicago with big ambitions. She gets a
-            job stitching shoes and her sister's husband takes almost all of her pay
-            for room and board. Then she injures a finger and ...
-
-            Title: Carrie
-            Year: 1976
-            Runtime: 98
-            IMDB Rating: 7.4
-            IMDB Votes: 115528
-            Plot: A shy, outcast 17-year old girl is humiliated by her classmates for the
-            last time.
-
-            Title: Carrie
-            Year: 2002
-            Runtime: 132
-            IMDB Rating: 5.5
-            IMDB Votes: 7412
-            Plot: Carrie White is a lonely and painfully shy teenage girl with telekinetic
-            powers who is slowly pushed to the edge of insanity by frequent bullying from
-            both her classmates and her domineering, religious mother.
-
-            Title: Carrie
-            Year: 2013
-            Runtime: 100
-            IMDB Rating: 6
-            IMDB Votes: 98171
-            Plot: A reimagining of the classic horror tale about Carrie White, a shy girl
-            outcast by her peers and sheltered by her deeply religious mother, who unleashes
-            telekinetic terror on her small town after being pushed too far at her senior prom.
+To learn more about read preferences, see the :ref:`laravel-read-pref`
+guide.
