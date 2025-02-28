@@ -32,8 +32,6 @@ The following sections demonstrate how to modify the behavior of the
   to skip and the ``take()`` method to set the total number of documents to return
 - :ref:`laravel-sort` uses the ``orderBy()`` method to return query
   results in a specified order based on field values
-- :ref:`laravel-retrieve-one` uses the ``first()`` method to return the first document
-  that matches the query filter
 
 To learn more about Eloquent models in the {+odm-short+}, see the
 :ref:`laravel-eloquent-models` section.
@@ -215,77 +213,6 @@ This example queries for documents in which the value of the ``countries`` field
      in the {+server-docs-name+} glossary
    - `Ordering, Grouping, Limit, and Offset <https://laravel.com/docs/queries#ordering-grouping-limit-and-offset>`__
      in the Laravel documentation
-
-.. _laravel-retrieve-one:
-
-Return the First Result
------------------------
-
-To retrieve the first document that matches a set of criteria, use the ``where()`` method
-followed by the ``first()`` method.
-
-Chain the ``orderBy()`` method to ``first()`` to get consistent results when you query on a unique
-value. If you omit the ``orderBy()`` method, MongoDB returns the matching documents according to
-the documents' natural order, or as they appear in the collection.
-
-This example queries for documents in which the value of the ``runtime`` field is
-``30`` and returns the first matching document according to the value of the ``_id``
-field.
-
-.. tabs::
-
-   .. tab:: Query Syntax
-      :tabid: query-syntax
-
-      Use the following syntax to specify the query:
-
-      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
-         :language: php
-         :dedent:
-         :start-after: start-first
-         :end-before: end-first
-
-   .. tab:: Controller Method
-      :tabid: controller
-
-      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
-      in the ``MovieController.php`` file to resemble the following code:
-
-      .. io-code-block::
-         :copyable: true
-
-         .. input::
-            :language: php
-
-            class MovieController
-            {
-                public function show()
-                {
-                    $movie = Movie::where('runtime', 30)
-                        ->orderBy('_id')
-                        ->first();
-
-                    return view('browse_movies', [
-                        'movies' => $movie
-                    ]);
-                }
-            }
-
-         .. output::
-            :language: none
-            :visible: false
-
-            Title: Statues also Die
-            Year: 1953
-            Runtime: 30
-            IMDB Rating: 7.6
-            IMDB Votes: 620
-            Plot: A documentary of black art.
-
-.. tip::
-
-   To learn more about the ``orderBy()`` method, see the
-   :ref:`laravel-sort` section of this guide.
 
 Additional Information
 ----------------------

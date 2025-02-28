@@ -49,7 +49,7 @@ filter to the method.
    The ``where()`` method retrieves all matching documents. To retrieve
    the first matching document, you can chain the ``first()`` method. To
    learn more and view an example, see the :ref:`laravel-retrieve-one`
-   section of the Modify Query Results guide.
+   section of this guide.
 
 A query filter specifies field value requirements and instructs the find
 operation to return only documents that meet these requirements.
@@ -190,6 +190,77 @@ Select from the following :guilabel:`Exact Array Match` and
 To learn how to query array fields by using the Laravel query builder instead of the
 Eloquent ORM, see the :ref:`laravel-query-builder-elemMatch` section in
 the Query Builder guide.
+
+.. _laravel-retrieve-one:
+
+Retrieve the First Result
+-------------------------
+
+To retrieve the first document that matches a set of criteria, use the ``where()`` method
+followed by the ``first()`` method.
+
+Chain the ``orderBy()`` method to ``first()`` to get consistent results when you query on a unique
+value. If you omit the ``orderBy()`` method, MongoDB returns the matching documents according to
+the documents' natural order, or as they appear in the collection.
+
+This example queries for documents in which the value of the ``runtime`` field is
+``30`` and returns the first matching document according to the value of the ``_id``
+field.
+
+.. tabs::
+
+   .. tab:: Query Syntax
+      :tabid: query-syntax
+
+      Use the following syntax to specify the query:
+
+      .. literalinclude:: /includes/fundamentals/read-operations/ReadOperationsTest.php
+         :language: php
+         :dedent:
+         :start-after: start-first
+         :end-before: end-first
+
+   .. tab:: Controller Method
+      :tabid: controller
+
+      To see the query results in the ``browse_movies`` view, edit the ``show()`` function
+      in the ``MovieController.php`` file to resemble the following code:
+
+      .. io-code-block::
+         :copyable: true
+
+         .. input::
+            :language: php
+
+            class MovieController
+            {
+                public function show()
+                {
+                    $movie = Movie::where('runtime', 30)
+                        ->orderBy('_id')
+                        ->first();
+
+                    return view('browse_movies', [
+                        'movies' => $movie
+                    ]);
+                }
+            }
+
+         .. output::
+            :language: none
+            :visible: false
+
+            Title: Statues also Die
+            Year: 1953
+            Runtime: 30
+            IMDB Rating: 7.6
+            IMDB Votes: 620
+            Plot: A documentary of black art.
+
+.. tip::
+
+   To learn more about the ``orderBy()`` method, see the
+   :ref:`laravel-sort` section of the Modify Query Results guide.
 
 .. _laravel-retrieve-all:
 

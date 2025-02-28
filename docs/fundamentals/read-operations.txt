@@ -50,11 +50,8 @@ from a collection:
 To view a runnable example that finds one document, see the
 :ref:`laravel-find-one-usage` usage example.
 
-To learn more about retrieving documents, see the
-:ref:`laravel-fundamentals-read-retrieve` guide.
-
-To learn more about the ``first()`` method, see the
-:ref:`laravel-fundamentals-read-retrieve` guide.
+To learn more about retrieving documents and the ``first()`` method, see
+the :ref:`laravel-fundamentals-read-retrieve` guide.
 
 Find Multiple
 -------------
