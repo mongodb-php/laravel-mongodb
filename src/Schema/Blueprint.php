@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace MongoDB\Laravel\Schema;
 
-use Illuminate\Database\Connection;
-use Illuminate\Database\Schema\Blueprint as SchemaBlueprint;
+use Illuminate\Database\Schema\Blueprint as BaseBlueprint;
 use MongoDB\Collection;
+use MongoDB\Laravel\Connection;
 
 use function array_flip;
 use function implode;
@@ -16,17 +16,14 @@ use function is_int;
 use function is_string;
 use function key;
 
-class Blueprint extends SchemaBlueprint
+/** @property Connection $connection */
+class Blueprint extends BaseBlueprint
 {
-    /**
-     * The MongoConnection object for this blueprint.
-     *
-     * @var Connection
-     */
-    protected $connection;
+    // Import $connection property and constructor for Laravel 12 compatibility
+    use BlueprintLaravelCompatibility;
 
     /**
-     * The Collection object for this blueprint.
+     * The MongoDB collection object for this blueprint.
      *
      * @var Collection
      */
@@ -38,18 +35,6 @@ class Blueprint extends SchemaBlueprint
      * @var array
      */
     protected $columns = [];
-
-    /**
-     * Create a new schema blueprint.
-     */
-    public function __construct(Connection $connection, string $collection)
-    {
-        parent::__construct($collection);
-
-        $this->connection = $connection;
-
-        $this->collection = $this->connection->getCollection($collection);
-    }
 
     /** @inheritdoc */
     public function index($columns = null, $name = null, $algorithm = null, $options = [])
